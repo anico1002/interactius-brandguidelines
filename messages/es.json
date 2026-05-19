@@ -134,5 +134,15 @@
   "prompts": {
     "title": "Prompts IA",
     "soon": "Próximamente · prompts copy-on-click para generar imagen, copy y presentaciones respetando la marca."
+  },
+  "iaReady": {
+    "title": "Manual operativo para IA",
+    "lead": "Este manual no solo se lee, también se ejecuta: cualquier modelo de lenguaje puede leerlo y aplicar la marca.",
+    "body": "Copia el prompt completo y pégalo en NotebookLM, Claude Projects o un GPT personalizado como instrucciones del sistema. El resto del trabajo lo hace el modelo, con la marca ya cargada como capa dura sobre cualquier petición posterior.",
+    "copyLabel": "Copiar prompt completo",
+    "copyToast": "Prompt completo copiado al portapapeles",
+    "openLlmsLabel": "Abrir llms.txt sin formato",
+    "openJsonLabel": "Abrir brand.json",
+    "endpointsTitle": "Endpoints en crudo"
   }
 }

@@ -134,5 +134,15 @@
   "prompts": {
     "title": "AI prompts",
     "soon": "Coming soon · copy-on-click prompts to generate imagery, copy and presentations that respect the brand."
+  },
+  "iaReady": {
+    "title": "Operating manual for AI",
+    "lead": "This manual isn't only read, it also runs: any language model can ingest it and apply the brand.",
+    "body": "Copy the full prompt and paste it into NotebookLM, Claude Projects or a custom GPT as system instructions. The rest of the work is done by the model, with the brand loaded as a hard layer over any later request.",
+    "copyLabel": "Copy full prompt",
+    "copyToast": "Full prompt copied to clipboard",
+    "openLlmsLabel": "Open raw llms.txt",
+    "openJsonLabel": "Open brand.json",
+    "endpointsTitle": "Raw endpoints"
   }
 }

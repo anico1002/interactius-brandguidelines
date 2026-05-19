@@ -11,6 +11,7 @@ import { SectionUsosIncorrectos } from '@/components/sections/SectionUsosIncorre
 import { SectionTipografia } from '@/components/sections/SectionTipografia';
 import { SectionColor } from '@/components/sections/SectionColor';
 import { SectionUniversoVisual } from '@/components/sections/SectionUniversoVisual';
+import { SectionIaReady } from '@/components/sections/SectionIaReady';
 
 export default async function Page({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -28,6 +29,7 @@ export default async function Page({ params }: { params: Promise<{ locale: strin
       <SectionTipografia />
       <SectionColor />
       <SectionUniversoVisual />
+      <SectionIaReady />
     </ToastProvider>
   );
 }

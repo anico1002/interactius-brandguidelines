@@ -8,7 +8,8 @@ export type SectionId =
   | 'usos-incorrectos'
   | 'tipografia'
   | 'color'
-  | 'universo-visual';
+  | 'universo-visual'
+  | 'ia-ready';
 
 export type SectionDef = {
   id: SectionId;
@@ -27,4 +28,5 @@ export const sections: SectionDef[] = [
   { id: 'tipografia',        num: '08', label: { es: 'Tipografía',       en: 'Typography' } },
   { id: 'color',             num: '09', label: { es: 'Color',            en: 'Colour' } },
   { id: 'universo-visual',   num: '10', label: { es: 'Imágenes',         en: 'Images' } },
+  { id: 'ia-ready',          num: '11', label: { es: 'Manual para IA',   en: 'Manual for AI' } },
 ];
