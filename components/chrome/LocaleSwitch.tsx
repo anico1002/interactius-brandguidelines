@@ -25,7 +25,6 @@ export function LocaleSwitch({ variant = 'light' }: Props) {
 
   return (
     <div className="font-mono text-[11px] flex items-center gap-2">
-      <span className={labelColor}>{t('menu.locale')}</span>
       <button
         type="button"
         onClick={() => switchTo('es')}
@@ -44,6 +43,16 @@ export function LocaleSwitch({ variant = 'light' }: Props) {
                     ${locale === 'en' ? active : `${inactive} hover:${active}`}`}
       >
         EN
+      </button>
+      <span className={dotColor}>·</span>
+      <button
+        type="button"
+        onClick={() => switchTo('ca')}
+        aria-pressed={locale === 'ca'}
+        className={`uppercase transition-colors duration-300 ease-expo
+                    ${locale === 'ca' ? active : `${inactive} hover:${active}`}`}
+      >
+        CA
       </button>
     </div>
   );

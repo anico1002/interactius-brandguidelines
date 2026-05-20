@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server';
 import { evalText, type EvalViolation } from '@/lib/eval';
 import esMessages from '@/messages/es.json';
 import enMessages from '@/messages/en.json';
+import caMessages from '@/messages/ca.json';
 
 export const dynamic = 'force-dynamic';
 
@@ -88,7 +89,7 @@ function isLengthOnly(violation: EvalViolation): boolean {
 }
 
 type LocaleReport = {
-  locale: 'es' | 'en';
+  locale: 'es' | 'en' | 'ca';
   totalStrings: number;
   evaluatedStrings: number;
   excludedStrings: number;
@@ -103,7 +104,7 @@ type LocaleReport = {
   }>;
 };
 
-function reportForLocale(locale: 'es' | 'en', messages: unknown): LocaleReport {
+function reportForLocale(locale: 'es' | 'en' | 'ca', messages: unknown): LocaleReport {
   const all = flatten(messages);
   const evaluated = all.filter((e) => !isExcluded(e.path));
   const excluded = all.length - evaluated.length;
@@ -152,10 +153,12 @@ function reportForLocale(locale: 'es' | 'en', messages: unknown): LocaleReport {
 export function GET() {
   const es = reportForLocale('es', esMessages);
   const en = reportForLocale('en', enMessages);
+  const ca = reportForLocale('ca', caMessages);
 
   const summary = {
-    totalHardFail: es.hardFailEntries + en.hardFailEntries,
-    totalEntriesWithViolations: es.entriesWithViolations + en.entriesWithViolations,
+    totalHardFail: es.hardFailEntries + en.hardFailEntries + ca.hardFailEntries,
+    totalEntriesWithViolations:
+      es.entriesWithViolations + en.entriesWithViolations + ca.entriesWithViolations,
     rulesApplied: {
       forbidden: 'detect via regex word-boundary, case-insensitive, over ForbiddenEntry.family',
       sentenceLength: 'skipped for strings under 6 words (labels/eyebrows)',
@@ -164,7 +167,7 @@ export function GET() {
     excludedPathsCount: META_PATHS_EXCLUDED.length,
   };
 
-  return NextResponse.json({ summary, es, en }, {
+  return NextResponse.json({ summary, es, en, ca }, {
     headers: { 'Cache-Control': 'no-store' },
   });
 }

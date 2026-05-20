@@ -1,0 +1,186 @@
+{
+  "meta": {
+    "title": "Interactius · Brand Guidelines 2026",
+    "description": "Guies de marca vives i preparades per a IA per a Interactius. Logotip, tipografia, paleta cromàtica i univers visual."
+  },
+  "chrome": {
+    "openMenu": "Obrir menú",
+    "closeMenu": "Tancar menú",
+    "downloadPdf": "Descarregar PDF original",
+    "version": "v1 · maig 2026"
+  },
+  "menu": {
+    "index": "Índex",
+    "locale": "Idioma"
+  },
+  "ui": {
+    "copy": "Copiar",
+    "copied": "Copiat",
+    "download": "Descarregar",
+    "downloadSvg": "Descarregar SVG",
+    "soon": "Pròximament"
+  },
+  "intro": {
+    "tagline": "Actitud liminal",
+    "kicker": "Introducció",
+    "lead": "Aquesta plataforma no és un conjunt de normes estàtiques ni un catàleg de restriccions cosmètiques. Funciona com la font de veritat tècnica i conceptual sobre la qual es construeix tota decisió de marca. La seva funció és concreta: dotar l'equip humà i els nostres sistemes automatitzats del criteri per prendre decisions alineades amb la identitat.",
+    "body": "A les seccions següents es despleguen els paràmetres que defineixen com operem, com ens estructurem visualment i com es modula la nostra veu. Aquest document és un sistema viu, dissenyat per executar-se amb el mateix rigor en cada decisió de marca. S'aplica tant al disseny d'un producte com a la ingesta de directrius per a models d'intel·ligència artificial."
+  },
+  "tonoMarca": {
+    "title": "To de marca",
+    "voiceTitle": "La Veu d'Interactius",
+    "voiceBody": "No escrivim per demostrar el nostre pensament crític, sinó per activar el de qui ens llegeix. La nostra veu no busca l'aplaudiment ni la complaença; busca moure el marc de la conversa. Ens posicionem com una mirada exploradora que conserva el rigor de qui sap on trepitja quan avança.",
+    "axesTitle": "Els Quatre Eixos de To",
+    "ax1Title": "Directes però reflexius",
+    "ax1Body": "Anem al gra sense giragonses corporatives ni introduccions de farciment que dilueixin l'argument central. Diem les coses de manera afilada, però cada afirmació se sustenta en un criteri sòlid.",
+    "ax2Title": "Propers però professionals",
+    "ax2Body": "Parlem entre persones reals, no de corporació a corporació ni de plataforma a plataforma anònima. El to és accessible i humà (Tribu), però manté la distància justa que exigeix el rigor tècnic.",
+    "ax3Title": "Crítics però constructius",
+    "ax3Body": "Qüestionem els supòsits del mercat i les respostes evidents, però sempre des de l'honestedat de proposar una hipòtesi de treball superadora.",
+    "ax4Title": "Sobris però suggerents",
+    "ax4Body": "Eliminem el soroll visual i l'ornament literari perquè el contingut respiri en cada decisió editorial. La sofisticació rau en la precisió de la paraula triada, no en la quantitat de text.",
+    "redTitle": "Restriccions Semàntiques (Llista Vermella)",
+    "redBody": "Per mantenir el caràcter, Interactius renuncia explícitament al vocabulari comodí de les consultores tradicionals. Substituïm els conceptes buits per descripcions concretes.",
+    "redHeadWord": "Paraules Prohibides",
+    "redHeadRule": "Criteri de Substitució",
+    "red1Word": "Innovació / Innovador",
+    "red1Rule": "Substituir per la solució o el canvi tècnic real que s'està proposant.",
+    "red2Word": "Holístic / 360",
+    "red2Rule": "Substituir per \"context integrat\", \"anàlisi de sistema\" o descriure les variables que conviuen.",
+    "red3Word": "Disruptiu",
+    "red3Rule": "Descriure l'impacte o l'anomalia sense fer servir l'adjectiu.",
+    "red4Word": "Solucions / Casos d'èxit",
+    "red4Rule": "Parlar de \"resultats\", \"hipòtesis validades\" o \"direcció estratègica\".",
+    "red5Word": "Empoderar / Mindset / Sinergia",
+    "red5Rule": "Eliminar per complet. Fer servir llenguatge directe: \"capacitar\", \"criteri d'equip\", \"col·laboració\".",
+    "puncTitle": "Criteri de Puntuació Estricte",
+    "punc1": "Queda estrictament prohibit l'ús de signes d'exclamació (¡ !). L'èmfasi s'aconsegueix mitjançant l'argument, mai alterant la puntuació.",
+    "punc2": "Evitar els punts suspensius (…) com a recurs retòric. Les frases acaben amb un punt ferm.",
+    "copyPromptLabel": "Copiar prompt del to de marca",
+    "copyPromptToast": "Prompt del to de marca copiat"
+  },
+  "concepto": {
+    "title": "Concepte de marca",
+    "part1Title": "Construcció i Funció Fonètica",
+    "part1P1": "La morfologia de la paraula exigeix que l'accentuació i el pes rítmic recaiguin de manera estricta en la segona vocal feble (Interactíus). Per contrarestar la inèrcia natural del lector de desplaçar l'accent cap a la síl·laba central, el logotip intervé la tipografia mitjançant la inclusió d'un macró sobre la última i.",
+    "macronDef": "/ˈmakrɒn/ una marca escrita o impresa (¯) que es fa servir per indicar una vocal llarga en alguns idiomes, o una vocal accentuada en vers.",
+    "part1P2": "Aquest element gràfic no és ornamental; actua com un regulador fonètic que fixa la cadència correcta i desplaça deliberadament l'eix d'atenció visual cap al marge de la paraula.",
+    "part2Title": "Actitud liminal i Dinamisme vertical",
+    "part2P1": "L'elongació del punt de la i per formar el macró trenca la línia superior de la tipografia i defineix el comportament del sistema. Aquest estirament vertical delimita la zona de transició —l'espai liminal— i s'estableix com el vector primari que regeix els moviments, transicions i la càrrega d'elements a la interfície digital, convertint una correcció acústica en la signatura visual de la marca."
+  },
+  "logo": {
+    "verticalTitle": "Ús vertical",
+    "verticalEyebrow": "Marca al marge",
+    "verticalLead": "El logo es pot compondre en vertical per ocupar el marge lateral d'una peça digital o impresa.",
+    "verticalBody": "Aquesta variant reforça el concepte liminal del sistema visual: la marca no domina el centre, sustenta la vora. Operem en l'espai entre la peça i el seu límit, on el lector tria si entra o surt del relat.",
+    "verticalApplicationsLabel": "Aplicacions canòniques",
+    "verticalApplications": "Apareix a la barra lateral d'interfícies web, a la columna marginal de presentacions i a la coberta vertical de documents.",
+    "verticalDownload": "Descarregar logo vertical",
+    "verticalCaption": "Logo vertical",
+    "title": "Marca principal",
+    "principal": "Marca principal",
+    "positive": "Versió positiva",
+    "negative": "Versió negativa",
+    "isotipo": "Isotip",
+    "downloadPositive": "Descarregar logo positiu",
+    "downloadNegative": "Descarregar logo negatiu",
+    "downloadIsoPositive": "Descarregar isotip positiu",
+    "downloadIsoNegative": "Descarregar isotip negatiu"
+  },
+  "areaReserva": {
+    "title": "Àrea de reserva",
+    "body": "Per garantir la llegibilitat del logotip, hem de mantenir sempre un camp d'espai lliure. L'espai lliure aïlla el logotip d'elements gràfics competidors, com text o fotografies, que poden desviar l'atenció del logotip.",
+    "measure": "Aquesta àrea es mesura utilitzant l'alçada de la a minúscula del logotip. No han d'aparèixer altres elements gràfics, tipografia, regles o imatges dins d'aquest espai lliure."
+  },
+  "tamanoMinimo": {
+    "title": "Mida mínima",
+    "body": "La mida mínima fa referència a les dimensions més petites permeses per al logotip d'Interactius.",
+    "print": "Per a impressió",
+    "printValue": "10 mm d'alçada mínima",
+    "digital": "Per a suports digitals",
+    "digitalValue": "20 píxels d'alçada mínima"
+  },
+  "usosIncorrectos": {
+    "title": "Do/Dont's",
+    "body": "El logotip d'Interactius no s'ha d'ajustar ni editar de cap manera. A continuació es mostren alguns exemples dels usos no permesos:",
+    "rules": {
+      "1": "No canviar els colors.",
+      "2": "No col·locar elements a l'espai lliure.",
+      "3": "No condensar, expandir ni distorsionar.",
+      "4": "No afegir cap efecte de text.",
+      "5": "No col·locar el logotip sobre imatge sense llegibilitat.",
+      "6": "No canviar cap element individual del logotip.",
+      "7": "No girar (excepte ús a 90º).",
+      "8": "No retallar."
+    }
+  },
+  "tipografia": {
+    "title": "Tipografia",
+    "brandTitle": "Tipografia de marca",
+    "brandBody": "La identitat es construeix sobre la IBM Plex Mono, una font que reflecteix la precisió i el caràcter tècnic de la marca, i serveix de base per a la construcció del logotip.",
+    "brandNotes": "Ús preferent de pesos Regular i Semibold per a destacats. Evitar l'ús de cursiva.",
+    "contrastTitle": "Tipografia de contrast",
+    "contrastBody": "La IBM Plex Serif s'estableix com la tipografia de contrast del sistema visual, i aporta una dimensió humanista i sofisticada a la identitat. El seu ús es destina a titulars i destacats.",
+    "contrastNotes": "Ús preferent de pesos Light i Regular per a destacats. Evitar l'ús de cursiva.",
+    "downloadGoogleFonts": "Descarregar Google Fonts"
+  },
+  "color": {
+    "title": "Paleta cromàtica",
+    "baseTitle": "Colors base",
+    "baseBody": "La paleta institucional es basa en una gamma de tons neutres i càlids que reforcen el caràcter sobri i sofisticat de la identitat. Aquests colors estableixen l'atmosfera visual de la marca, prioritzant la llegibilitat i el descans visual mitjançant un contrast suau i una estètica editorial contemporània.",
+    "accentTitle": "Colors d'accent",
+    "accentBody": "Sistema de colors d'accent per a la identificació i segmentació dels serveis de l'empresa. Cada to actua com un identificador visual específic, sense trencar la coherència global del sistema.",
+    "clickHint": "Fes clic a qualsevol valor per copiar-lo"
+  },
+  "sistemaTexto": {
+    "title": "Sistema de text",
+    "lead": "Aquesta taula documenta els tokens reals de tipografia que utilitzem per construir cada interfície digital d'Interactius.",
+    "body": "Cada nivell defineix un ús concret, una família tipogràfica recomanada i un conjunt de pesos canònics. Qui dissenya, desenvolupa o entrena un model d'IA amb aquest manual ha d'operar sobre aquests tokens, no sobre mides arbitràries."
+  },
+  "universoVisual": {
+    "title": "Univers visual",
+    "lead": "El tractament de la imatge es basa en la representació d'allò liminal, és a dir, en l'espai de transició. Treballem el concepte de l'Entre com un buit que carrega significat en lloc d'eliminar-lo.",
+    "body": "Prioritzem l'ús de fotografia conceptual que capturi el moviment, l'ambigüitat i la pausa. No busquem la literalitat, sinó generar una atmosfera que parli de precisió tècnica convivint amb la sensibilitat artística. Les imatges han d'actuar com a extensions de l'espai negatiu, permetent que la marca respiri i treballi 'en l'entre'.",
+    "copyPromptLabel": "Copiar prompt tècnic d'imatge per a IA",
+    "copyPromptToast": "Prompt tècnic d'imatge copiat"
+  },
+  "sistemaGrafico": {
+    "title": "Sistema gràfic",
+    "lead": "Aquesta secció agrupa els recursos gràfics del sistema, començant per les formes associades a cada servei.",
+    "body": "Cada forma encarna el caràcter del servei que representa i comparteix el seu color d'accent. El catàleg creix a mesura que la marca afegeix patterns, marques decoratives o qualsevol altre recurs gràfic operatiu.",
+    "shapesTitle": "Formes per servei",
+    "downloadLabel": "Descarregar SVG"
+  },
+  "aplicaciones": {
+    "title": "Aplicacions",
+    "lead": "Aquesta secció recull mockups que mostren la marca aplicada sobre peces reals del sistema d'identitat.",
+    "captionMovil": "Aplicació digital · mòbil",
+    "captionTarjetas": "Targetes de visita",
+    "captionFolder": "Folder editorial"
+  },
+  "movimiento": {
+    "title": "Moviment",
+    "lead": "El moviment no és decoració: és el vehicle amb què la marca apareix, es transita i desapareix de cada peça.",
+    "body": "Cada corba i cada durada del sistema està pensada per sostenir la sensació liminal: entrar sense estridència, sortir sense truncar l'atenció. Qui dissenya o anima una peça per a Interactius ha d'operar sobre aquests easings, no sobre corbes inventades en el moment.",
+    "easingsTitle": "Corbes d'easing",
+    "durationsTitle": "Temps canònics",
+    "referenceTitle": "Referència aplicada",
+    "referenceLabel": "Veure el hero en producció",
+    "playLabel": "Reproduir easing",
+    "videoFallback": "El teu navegador no admet vídeo HTML5."
+  },
+  "prompts": {
+    "title": "Prompts IA",
+    "soon": "Pròximament · prompts copy-on-click per generar imatge, copy i presentacions respectant la marca."
+  },
+  "iaReady": {
+    "title": "Manual operatiu per a IA",
+    "lead": "Aquest manual no només es llegeix, també s'executa: qualsevol model de llenguatge pot llegir-lo i aplicar la marca.",
+    "body": "Copia el prompt complet i enganxa'l a NotebookLM, Claude Projects o un GPT personalitzat com a instruccions del sistema. La resta de la feina la fa el model, amb la marca ja carregada com a capa dura sobre qualsevol petició posterior.",
+    "copyLabel": "Copiar prompt complet",
+    "copyToast": "Prompt complet copiat al porta-retalls",
+    "openLlmsLabel": "Obrir llms.txt sense format",
+    "openJsonLabel": "Obrir brand.json",
+    "endpointsTitle": "Endpoints en cru"
+  }
+}

@@ -23,12 +23,12 @@ export type Easing = {
   /* Recommended companion duration in ms. */
   recommendedMs?: number;
   /* Where this easing is used, bilingual. */
-  usage: { es: string; en: string };
+  usage: { es: string; en: string; ca: string };
 };
 
 export type Duration = {
   ms: number;
-  usage: { es: string; en: string };
+  usage: { es: string; en: string; ca: string };
 };
 
 export const easings: readonly Easing[] = [
@@ -42,6 +42,7 @@ export const easings: readonly Easing[] = [
     usage: {
       es: 'Curva por defecto del sistema. Aplica a transiciones laterales, hovers, aperturas de menú y aparición de cualquier elemento que entra desde el margen.',
       en: 'System default curve. Applies to lateral transitions, hovers, menu openings and the appearance of any element entering from the margin.',
+      ca: 'Corba per defecte del sistema. S\'aplica a transicions laterals, hovers, obertures de menú i aparició de qualsevol element que entra des del marge.',
     },
   },
   {
@@ -53,6 +54,7 @@ export const easings: readonly Easing[] = [
     usage: {
       es: 'Underline wipe canónico en enlaces y botones. Movimiento horizontal pausado, perceptible pero discreto.',
       en: 'Canonical underline wipe on links and buttons. Slow horizontal motion, perceptible but discreet.',
+      ca: 'Underline wipe canònic en enllaços i botons. Moviment horitzontal pausat, perceptible però discret.',
     },
   },
   {
@@ -65,17 +67,18 @@ export const easings: readonly Easing[] = [
     usage: {
       es: 'Cortina de transición entre páginas. Velocidad uniforme con entrada y salida fuertemente atenuadas, sin rebote.',
       en: 'Page transition curtain. Uniform speed with strongly eased entry and exit, without bounce.',
+      ca: 'Cortina de transició entre pàgines. Velocitat uniforme amb entrada i sortida fortament atenuades, sense rebot.',
     },
   },
 ];
 
 export const durations: readonly Duration[] = [
-  { ms: 200, usage: { es: 'Hover micro: cambio de color, opacidad o estado inmediato.',         en: 'Hover micro: colour, opacity or immediate state change.' } },
-  { ms: 300, usage: { es: 'Transiciones de estado de UI: tabs, toggles, switch de idioma.',     en: 'UI state transitions: tabs, toggles, language switch.' } },
-  { ms: 450, usage: { es: 'Movimientos laterales cortos: apertura de menú, slide de paneles.',   en: 'Short lateral motion: menu open, panel slide.' } },
-  { ms: 700, usage: { es: 'Hover-wipe canónico de subrayado en enlaces y botones.',              en: 'Canonical hover-wipe underline on links and buttons.' } },
-  { ms: 900, usage: { es: 'Reveal de imágenes por clip-path lateral derecha→izquierda.',        en: 'Image reveal via lateral right→left clip-path.' } },
-  { ms: 1100, usage: { es: 'Cortina de transición entre páginas (cover + uncover).',             en: 'Page transition curtain (cover + uncover).' } },
+  { ms: 200, usage: { es: 'Hover micro: cambio de color, opacidad o estado inmediato.',         en: 'Hover micro: colour, opacity or immediate state change.',     ca: 'Hover micro: canvi de color, opacitat o estat immediat.' } },
+  { ms: 300, usage: { es: 'Transiciones de estado de UI: tabs, toggles, switch de idioma.',     en: 'UI state transitions: tabs, toggles, language switch.',       ca: 'Transicions d\'estat d\'UI: tabs, toggles, canvi d\'idioma.' } },
+  { ms: 450, usage: { es: 'Movimientos laterales cortos: apertura de menú, slide de paneles.',   en: 'Short lateral motion: menu open, panel slide.',               ca: 'Moviments laterals curts: obertura de menú, slide de panells.' } },
+  { ms: 700, usage: { es: 'Hover-wipe canónico de subrayado en enlaces y botones.',              en: 'Canonical hover-wipe underline on links and buttons.',        ca: 'Hover-wipe canònic de subratllat en enllaços i botons.' } },
+  { ms: 900, usage: { es: 'Reveal de imágenes por clip-path lateral derecha→izquierda.',        en: 'Image reveal via lateral right→left clip-path.',              ca: 'Reveal d\'imatges per clip-path lateral dreta→esquerra.' } },
+  { ms: 1100, usage: { es: 'Cortina de transición entre páginas (cover + uncover).',             en: 'Page transition curtain (cover + uncover).',                  ca: 'Cortina de transició entre pàgines (cover + uncover).' } },
 ];
 
 /* Public production reference. Linked from the Motion section as canonical

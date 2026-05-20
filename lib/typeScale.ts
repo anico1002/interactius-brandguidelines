@@ -16,7 +16,7 @@ export type TypeScaleEntry = {
   family: TypeFamily;
   weights: readonly number[];   // canonical weights for this size
   sample: string;               // visual word/phrase rendered in the spec
-  usage: { es: string; en: string };
+  usage: { es: string; en: string; ca: string };
 };
 
 export const typeScale: readonly TypeScaleEntry[] = [
@@ -31,6 +31,7 @@ export const typeScale: readonly TypeScaleEntry[] = [
     usage: {
       es: 'Hero de portada o sección de apertura. Una palabra o un titular muy corto.',
       en: 'Cover or opening-section hero. A single word or very short headline.',
+      ca: 'Hero de portada o secció d\'obertura. Una paraula o un titular molt curt.',
     },
   },
   {
@@ -44,6 +45,7 @@ export const typeScale: readonly TypeScaleEntry[] = [
     usage: {
       es: 'Titulares principales de sección dentro de un manual, landing o deck.',
       en: 'Primary section titles within a manual, landing page or deck.',
+      ca: 'Titulars principals de secció dins d\'un manual, landing o deck.',
     },
   },
   {
@@ -57,6 +59,7 @@ export const typeScale: readonly TypeScaleEntry[] = [
     usage: {
       es: 'Titulares de pieza de comunicación: post, artículo o slide principal.',
       en: 'Communication piece titles: post, article or primary slide.',
+      ca: 'Titulars de peça de comunicació: post, article o slide principal.',
     },
   },
   {
@@ -70,6 +73,7 @@ export const typeScale: readonly TypeScaleEntry[] = [
     usage: {
       es: 'Subtítulos y separadores de sección dentro de una página o documento.',
       en: 'Subtitles and section dividers within a page or document.',
+      ca: 'Subtítols i separadors de secció dins d\'una pàgina o document.',
     },
   },
   {
@@ -83,6 +87,7 @@ export const typeScale: readonly TypeScaleEntry[] = [
     usage: {
       es: 'Prosa de cuerpo en piezas digitales largas: landing extensa, blog, documento.',
       en: 'Body prose for long-form digital pieces: extended landing, blog, document.',
+      ca: 'Prosa de cos en peces digitals llargues: landing extensa, blog, document.',
     },
   },
   {
@@ -96,6 +101,7 @@ export const typeScale: readonly TypeScaleEntry[] = [
     usage: {
       es: 'Tamaño canónico de lead y body en piezas compactas. Default del propio manual.',
       en: 'Canonical lead and body size in compact pieces. Default size of this manual.',
+      ca: 'Mida canònica de lead i body en peces compactes. Default del mateix manual.',
     },
   },
   {
@@ -110,6 +116,7 @@ export const typeScale: readonly TypeScaleEntry[] = [
     usage: {
       es: 'Eyebrows, etiquetas, notas técnicas y elementos auxiliares de interfaz.',
       en: 'Eyebrows, labels, technical notes and auxiliary interface elements.',
+      ca: 'Eyebrows, etiquetes, notes tècniques i elements auxiliars d\'interfície.',
     },
   },
 ];

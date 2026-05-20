@@ -82,8 +82,8 @@ export function GET() {
       },
     },
     prompts: {
-      master: { es: getMasterPrompt('es'), en: getMasterPrompt('en') },
-      tone: { es: getTonePrompt('es'), en: getTonePrompt('en') },
+      master: { es: getMasterPrompt('es'), en: getMasterPrompt('en'), ca: getMasterPrompt('ca') },
+      tone: { es: getTonePrompt('es'), en: getTonePrompt('en'), ca: getTonePrompt('ca') },
     },
     examples: {
       approved: examples.filter((e) => e.status === 'approved'),
