@@ -45,7 +45,7 @@ export async function SectionSistemaGrafico() {
                 <div className="font-mono text-caption text-dark/60">
                   {s.colorName} · {s.fillColor}
                 </div>
-                <p className="mt-2 font-mono text-body-sm text-dark/70 leading-[1.6]">
+                <p className="mt-2 font-mono text-body-sm text-dark/40 leading-[1.6]">
                   {s.usage[locale]}
                 </p>
                 <div className="mt-2">
