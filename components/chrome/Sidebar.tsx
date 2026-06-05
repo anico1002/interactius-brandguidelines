@@ -56,9 +56,6 @@ export function Sidebar() {
             className="block w-[180px] h-auto"
           />
         </a>
-        <div className="font-serif font-normal text-[16px] leading-[1.05] text-dark tracking-tight pt-5">
-          Brand Guidelines 2026
-          </div>
         <div className="mt-4">
           <LocaleSwitch />
         </div>
@@ -99,7 +96,10 @@ export function Sidebar() {
       </nav>
 
       <div className="px-7 py-7">
-       <div className="mt-3 font-mono text-[11px] tracking-wide text-dark/40">
+        <div className="font-serif font-normal text-[28px] leading-[1.05] text-dark tracking-tight">
+          Brand<br />Guidelines<br />2026
+        </div>
+        <div className="mt-3 font-mono text-[11px] tracking-wide text-dark/40">
           v1_05.26
         </div>
         <div className="mt-1.5 flex items-center gap-x-2 font-mono text-[11px] tracking-wide">

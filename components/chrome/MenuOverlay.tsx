@@ -71,6 +71,12 @@ export function MenuOverlay() {
           </nav>
 
           <div className="px-6 py-7">
+            <div className="font-serif font-normal text-[20px] leading-[1.05] text-dark tracking-tight">
+              Brand<br />Guidelines<br />2026
+            </div>
+            <div className="mt-3 font-mono text-[11px] tracking-wide text-dark/40">
+              v1_05.26
+            </div>
             <div className="mt-1.5 flex items-center gap-x-2 font-mono text-[11px] tracking-wide">
               <a
                 href="/Brand-Kit.zip"
