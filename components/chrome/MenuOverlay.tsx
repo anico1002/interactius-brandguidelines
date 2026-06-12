@@ -8,9 +8,11 @@ import { useMenu } from '@/lib/store/menu';
 import { scrollToSection } from '@/lib/hooks/useScrollToSection';
 import { sections } from '@/lib/sections';
 import type { Locale } from '@/lib/i18n/routing';
+import { Link } from '@/lib/i18n/routing';
 import { LocaleSwitch } from './LocaleSwitch';
 
 const EASE = [0.16, 1, 0.3, 1] as const;
+const PRESENTACIONES = { es: 'Presentaciones', en: 'Presentations', ca: 'Presentacions' } as const;
 
 export function MenuOverlay() {
   const { isOpen, close } = useMenu();
@@ -93,6 +95,19 @@ export function MenuOverlay() {
                   </button>
                 </li>
               ))}
+              <li className="mt-3 pt-3 border-t border-dark/10">
+                <Link
+                  href="/presentaciones"
+                  onClick={() => close()}
+                  className="group w-full flex items-baseline gap-3 py-[8px]
+                             text-left font-mono text-[13px] leading-snug
+                             text-dark/70 hover:text-dark
+                             transition-colors duration-300 ease-expo"
+                >
+                  <span className="text-[10px] text-dark/35" aria-hidden>→</span>
+                  <span className="flex-1">{PRESENTACIONES[locale]}</span>
+                </Link>
+              </li>
               </ul>
             </nav>
             <div

@@ -5,12 +5,17 @@ import { useLocale, useTranslations } from 'next-intl';
 
 import { sections } from '@/lib/sections';
 import type { Locale } from '@/lib/i18n/routing';
+import { Link, usePathname } from '@/lib/i18n/routing';
 import { scrollToSection } from '@/lib/hooks/useScrollToSection';
 import { LocaleSwitch } from './LocaleSwitch';
+
+const PRESENTACIONES = { es: 'Presentaciones', en: 'Presentations', ca: 'Presentacions' } as const;
 
 export function Sidebar() {
   const t = useTranslations();
   const locale = useLocale() as Locale;
+  const pathname = usePathname();
+  const onDeck = pathname === '/presentaciones';
   const [active, setActive] = useState<string>('intro');
 
   useEffect(() => {
@@ -92,6 +97,26 @@ export function Sidebar() {
               </li>
             );
           })}
+          <li className="mt-3 pt-3 border-t border-dark/10">
+            <Link
+              href="/presentaciones"
+              className={`group w-full flex items-baseline gap-3 py-[7px]
+                          text-left font-mono text-[12px] leading-snug
+                          transition-colors duration-300 ease-expo
+                          ${onDeck ? 'text-dark' : 'text-dark/55 hover:text-dark'}`}
+              aria-current={onDeck ? 'page' : undefined}
+            >
+              <span className={`text-[10px] ${onDeck ? 'text-dark/70' : 'text-dark/35'}`} aria-hidden>
+                →
+              </span>
+              <span className="flex-1">{PRESENTACIONES[locale]}</span>
+              <span
+                aria-hidden
+                className={`block w-1 h-1 rounded-full bg-dark transition-opacity duration-300 ease-expo
+                            ${onDeck ? 'opacity-100' : 'opacity-0'}`}
+              />
+            </Link>
+          </li>
         </ul>
       </nav>
 
