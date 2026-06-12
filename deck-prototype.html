@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Interactius · Deck prototype (webscroll)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Serif:wght@300;400&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --dark:#1C1A17; --white:#FFFFFF; --grey:#E8E6E3; --warm-light:#F5F2ED;
+    --warm-dark:#E0DAD2; --ash:#75706B; --ash-dark:#46433F;
+    --opal:#B0B5B0; --bordeaux:#99335F; --emerald:#5999A6;
+    --serif:'IBM Plex Serif', ui-serif, serif;
+    --mono:'IBM Plex Mono', ui-monospace, monospace;
+    --expo:cubic-bezier(0.16,1,0.3,1);
+    --s:1;
+    /* Shared grid (coords inside the fixed 1280×720 frame) */
+    --ml:108px;   /* content left line — shared across the whole deck */
+    --mr:108px;   /* content right inset */
+    --mt:64px;    /* top safe margin */
+    --mb:56px;    /* bottom safe margin */
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-snap-type:y proximity; scroll-behavior:smooth;}
+  body{background:#0e0d0b; font-family:var(--mono);}
+
+  /* Each slide = one screen-height block; the fixed 1280×720 frame is scaled to fit. */
+  .slide{width:100%; height:calc(720px * var(--s)); display:flex; justify-content:center; align-items:center;
+         scroll-snap-align:center;}
+  .fwrap{width:calc(1280px * var(--s)); height:calc(720px * var(--s)); position:relative;}
+  .frame{position:absolute; top:0; left:0; width:1280px; height:720px; overflow:hidden;
+         transform:scale(var(--s)); transform-origin:top left; box-shadow:0 14px 70px rgba(0,0,0,.45);}
+  .theme-dark{background:var(--dark); color:var(--warm-light);}
+  .theme-light{background:var(--warm-light); color:var(--dark);}
+
+  /* ── Persistent chrome ────────────────────────────────── */
+  .rule{position:absolute; left:64px; top:0; bottom:0; width:1px;}
+  .theme-light .rule{background:rgba(28,26,23,.14);}
+  .theme-dark .rule{background:rgba(245,242,237,.16);}
+  .mark{position:absolute; left:26px; top:28px; width:24px; z-index:3;}
+  .mark img{width:24px; height:24px; display:block;}
+  .mark .yr{margin-top:7px; text-align:center; font:600 8.5px/1 var(--mono); letter-spacing:.02em;}
+  .theme-light .mark .yr{color:var(--ash);} .theme-dark .mark .yr{color:var(--warm-light); opacity:.6;}
+  .pageno{position:absolute; left:26px; bottom:24px; z-index:3; font:400 11px/1 var(--mono); letter-spacing:.02em;}
+  .theme-light .pageno{color:var(--ash);} .theme-dark .pageno{color:var(--warm-light); opacity:.55;}
+
+  /* ── Shared type ──────────────────────────────────────── */
+  .eyebrow{font:500 11px/1.4 var(--mono); letter-spacing:.14em; text-transform:uppercase;}
+  .theme-light .eyebrow{color:var(--ash);} .theme-dark .eyebrow{color:var(--warm-light); opacity:.6;}
+  .body{font:400 13px/1.6 var(--mono);}
+  .theme-light .body{color:var(--ash-dark);} .theme-dark .body{color:var(--warm-light); opacity:.8;}
+
+  /* ── Editable image slot ──────────────────────────────── */
+  .imgslot{background-size:cover; background-position:center; cursor:pointer;}
+  .imgslot .imghint{position:absolute; left:0; right:0; bottom:0; padding:10px 14px;
+                    display:flex; align-items:center; gap:7px; opacity:0; transition:opacity .3s var(--expo);
+                    font:500 10px/1 var(--mono); letter-spacing:.08em; text-transform:uppercase;
+                    color:#fff; background:linear-gradient(to top, rgba(28,26,23,.78), transparent);}
+  .imgslot:hover .imghint{opacity:1;}
+  .imgslot .imghint::before{content:"↑"; font-size:12px;}
+
+  /* ── 1 · Cover ────────────────────────────────────────── */
+  .cover .photo{position:absolute; inset:0;}
+  .cover .scrim{position:absolute; inset:0; pointer-events:none;
+                background:
+                  linear-gradient(to top right, rgba(28,26,23,.92), rgba(28,26,23,.10) 62%),
+                  linear-gradient(to top, rgba(28,26,23,.55), transparent 38%);}
+  .cover .logo{position:absolute; left:var(--ml); top:56px; z-index:4;}
+  .cover .logo img{height:28px; display:block;}
+  .cover .lockup{position:absolute; left:var(--ml); bottom:108px; max-width:700px; z-index:4;}
+  .cover h1{font-family:var(--serif); font-weight:400; font-size:60px; line-height:1.04; color:var(--warm-light);}
+  .cover .sub{margin-top:24px; font:400 12.5px/1.6 var(--mono); color:var(--warm-light); opacity:.72; max-width:440px;}
+  .cover .foot{position:absolute; left:var(--ml); bottom:52px; z-index:4; font:400 10px/1 var(--mono); letter-spacing:.06em; color:var(--warm-light); opacity:.62;}
+  .cover .foot b{font-weight:500; opacity:1; background:rgba(245,242,237,.14); padding:3px 6px;}
+
+  /* ── 2 · Image + text split ───────────────────────────── */
+  .split .photo{position:absolute; left:0; top:0; bottom:0; width:548px;}
+  .split .txt{position:absolute; left:620px; right:var(--mr); top:150px;}
+  .split .eyebrow{margin-bottom:26px;}
+  .split h2{font-family:var(--serif); font-weight:400; font-size:46px; line-height:1.06; margin-bottom:26px;}
+  .split .txt .body{max-width:470px;}
+
+  /* ── 3 · Statement ────────────────────────────────────── */
+  .statement .wrap{position:absolute; left:var(--ml); top:120px; right:var(--mr);}
+  .statement .eyebrow{margin-bottom:34px;}
+  .statement h2{font-family:var(--serif); font-weight:400; font-size:84px; line-height:1.02; color:var(--warm-light); letter-spacing:-.01em;}
+
+  /* ── 4 · Bullets ──────────────────────────────────────── */
+  .bullets .title{position:absolute; left:var(--ml); top:108px; width:360px; font-family:var(--serif); font-weight:400; font-size:56px; line-height:1.04;}
+  .bullets .list{position:absolute; left:560px; top:158px; right:var(--mr);}
+  .bullets .item{display:grid; grid-template-columns:26px 1fr; gap:8px; margin-bottom:30px;}
+  .bullets .dia{font-size:11px; line-height:1.7; color:var(--dark);}
+  .bullets .item .body{max-width:430px;}
+
+  /* ── 5 · Three columns ────────────────────────────────── */
+  .cols .title{position:absolute; left:var(--ml); top:88px; font-family:var(--serif); font-weight:400; font-size:60px; line-height:1;}
+  .cols .grid{position:absolute; left:var(--ml); right:var(--mr); top:216px; display:grid; grid-template-columns:repeat(3,1fr); gap:48px;}
+  .cols .num{font:500 11px/1 var(--mono); letter-spacing:.08em; color:var(--opal);}
+  .cols .colhd{margin:18px 0 14px; font-family:var(--serif); font-weight:400; font-size:25px; line-height:1.1;}
+  .cols .colbody{font:400 12px/1.65 var(--mono); color:var(--ash-dark);}
+  .cols .colbody b{font-weight:600; color:var(--dark);}
+
+  /* ── 6 · Gantt ────────────────────────────────────────── */
+  .gantt .title{position:absolute; left:var(--ml); top:72px; font-family:var(--serif); font-weight:400; font-size:42px;}
+  .gantt .sub{position:absolute; left:calc(var(--ml) + 2px); top:136px; font:400 13px/1 var(--mono); color:var(--ash-dark);}
+  .gantt .chart{position:absolute; left:var(--ml); right:var(--mr); top:236px; display:grid; grid-template-columns:130px repeat(8,1fr); align-items:center;}
+  .gantt .ghd{font:600 13px/1 var(--mono); text-align:center; padding-bottom:14px; color:var(--dark);}
+  .gantt .ghd.lbl{text-align:left;}
+  .gantt .rlabel{font:400 13px/1 var(--mono); color:var(--ash-dark); padding:18px 0 18px 10px; background:rgba(28,26,23,.04); margin-right:10px;}
+  .gantt .cell{height:58px; border-left:1px solid rgba(28,26,23,.5); position:relative;}
+  .gantt .cell:last-child{border-right:1px solid rgba(28,26,23,.5);}
+  .gantt .sep{grid-column:1 / -1; border-top:1px dashed rgba(28,26,23,.28); height:0;}
+  .gantt .bar{position:absolute; top:50%; transform:translateY(-50%); height:30px; left:6px;}
+  .gantt .mil{font-size:13px; text-align:center; color:var(--dark); padding:16px 0;}
+  .gantt .note{position:absolute; right:var(--mr); bottom:56px; width:300px; font:400 11px/1.6 var(--mono); color:var(--ash);}
+
+  /* ── 7 · Closing ──────────────────────────────────────── */
+  .closing{display:flex; flex-direction:column; align-items:center; justify-content:center;}
+  .closing .wm{position:absolute; top:96px; left:50%; transform:translateX(-50%);}
+  .closing .wm img{height:28px; display:block;}
+  .closing h2{font-family:var(--serif); font-weight:400; font-size:124px; line-height:1; color:var(--warm-light);}
+  .closing .url{margin-top:22px; font:400 13px/1 var(--mono); letter-spacing:.04em; color:var(--warm-light); opacity:.62; text-decoration:underline; text-underline-offset:4px;}
+
+  /* ── Scroll progress (subtle, replaces nav arrows) ────── */
+  #prog{position:fixed; right:14px; top:0; bottom:0; width:3px; z-index:20; display:flex; flex-direction:column; gap:6px; align-items:center; justify-content:center;}
+  #prog .dot{width:6px; height:6px; border-radius:50%; background:rgba(255,255,255,.22); transition:all .3s var(--expo); cursor:pointer;}
+  #prog .dot.on{background:rgba(255,255,255,.85); transform:scale(1.25);}
+
+  /* ── Print: one 16:9 slide per page ───────────────────── */
+  @media print{
+    @page{ size: 1280px 720px; margin:0; }
+    html{ scroll-snap-type:none; }
+    body{ background:#fff; }
+    .slide{ height:720px; display:block; page-break-after:always; }
+    .fwrap{ width:1280px; height:720px; }
+    .frame{ transform:none; box-shadow:none; }
+    #prog{ display:none; }
+  }
+</style>
+</head>
+<body>
+
+  <!-- 1 · COVER -->
+  <section class="slide"><div class="fwrap"><div class="frame theme-dark cover">
+    <div class="photo imgslot" style="position:absolute; inset:0; background-image:url('public/universo/universo-02.jpg')"><div class="imghint">Clic para reemplazar imagen</div></div>
+    <div class="scrim"></div>
+    <div class="logo"><img src="public/logo/interactius-negativo.svg" alt="interactīus" /></div>
+    <div class="lockup">
+      <h1>Rediscutir lo que el sector da por descontado.</h1>
+      <div class="sub">Diagnóstico de criterios y arquitectura de decisión para el ecommerce de la marca.</div>
+    </div>
+    <div class="foot">Propuesta de colaboración · <b>Junio 2026</b></div>
+  </div></div></section>
+
+  <!-- 2 · IMAGE + TEXT SPLIT -->
+  <section class="slide"><div class="fwrap"><div class="frame theme-light split">
+    <div class="photo imgslot" style="background-image:url('public/universo/universo-01.jpg')"><div class="imghint">Clic para reemplazar imagen</div></div>
+    <div class="mark"><img src="public/logo/isotipo-negativo.svg" alt="" /></div>
+    <div class="txt">
+      <div class="eyebrow">Contexto</div>
+      <h2>El espacio del Entre, donde se decide lo que aún nadie ha defendido.</h2>
+      <div class="body">La marca trabaja en la transición: el momento de ambigüedad y pausa donde una decisión todavía puede cambiar de dirección. Cada proyecto empieza por leer ese espacio antes de proponer nada.</div>
+    </div>
+    <div class="pageno" style="left:auto; right:var(--mr); color:var(--ash)">02</div>
+  </div></div></section>
+
+  <!-- 3 · STATEMENT -->
+  <section class="slide"><div class="fwrap"><div class="frame theme-dark statement">
+    <div class="rule"></div>
+    <div class="mark"><img src="public/logo/isotipo-negativo.svg" alt="" /><div class="yr">2026</div></div>
+    <div class="wrap"><div class="eyebrow">El reto</div><h2>Incrementar la conversión sin añadir más capas al proceso de compra.</h2></div>
+    <div class="pageno">03</div>
+  </div></div></section>
+
+  <!-- 4 · BULLETS -->
+  <section class="slide"><div class="fwrap"><div class="frame theme-light bullets">
+    <div class="rule"></div>
+    <div class="mark"><img src="public/logo/isotipo-positivo.svg" alt="" /><div class="yr">2026</div></div>
+    <div class="title">¿Cómo lo<br>haremos?</div>
+    <div class="list">
+      <div class="item"><div class="dia">◆</div><div class="body">Auditoría heurística del recorrido completo, evaluado en los dos momentos que deciden la compra.</div></div>
+      <div class="item"><div class="dia">◆</div><div class="body">Pruebas con usuarios reales para separar la fricción percibida de la que de verdad cuesta dinero.</div></div>
+      <div class="item"><div class="dia">◆</div><div class="body">Backlog de oportunidades ordenado por criterio, no por volumen de hallazgos sueltos.</div></div>
+      <div class="item"><div class="dia">◆</div><div class="body">Una base medible para discutir cada decisión el día en que incomode.</div></div>
+    </div>
+    <div class="pageno">04</div>
+  </div></div></section>
+
+  <!-- 5 · THREE COLUMNS -->
+  <section class="slide"><div class="fwrap"><div class="frame theme-light cols">
+    <div class="rule"></div>
+    <div class="mark"><img src="public/logo/isotipo-positivo.svg" alt="" /><div class="yr">2026</div></div>
+    <div class="title">Enfoque</div>
+    <div class="grid">
+      <div class="col"><div class="num">01</div><div class="colhd">Tipología</div><div class="colbody">Mystery shopping aplicado a canal online, con enfoque mixto: <b>cuantitativo</b> en escala y <b>cualitativo</b> en causa raíz.</div></div>
+      <div class="col"><div class="num">02</div><div class="colhd">Unidad de análisis</div><div class="colbody">El pedido completo, evaluado en dos momentos: <b>seguimiento logístico</b> y <b>unboxing</b> de la entrega.</div></div>
+      <div class="col"><div class="num">03</div><div class="colhd">Momentos</div><div class="colbody">Cuatro semanas de compras por persona, con <b>recepción</b> y <b>evaluación</b> de cada pedido del periodo.</div></div>
+    </div>
+    <div class="pageno">05</div>
+  </div></div></section>
+
+  <!-- 6 · GANTT -->
+  <section class="slide"><div class="fwrap"><div class="frame theme-light gantt">
+    <div class="rule"></div>
+    <div class="mark"><img src="public/logo/isotipo-positivo.svg" alt="" /><div class="yr">2026</div></div>
+    <div class="title">Roadmap</div>
+    <div class="sub">Calendario estimado</div>
+    <div class="chart">
+      <div class="ghd lbl">Semanas</div>
+      <div class="ghd">1</div><div class="ghd">2</div><div class="ghd">3</div><div class="ghd">4</div>
+      <div class="ghd">5</div><div class="ghd">6</div><div class="ghd">7</div><div class="ghd">8</div>
+      <div class="sep"></div>
+      <div class="rlabel">Diagnóstico</div>
+      <div class="cell"><div class="bar" style="background:var(--opal); right:6px"></div></div>
+      <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
+      <div class="sep"></div>
+      <div class="rlabel">Discovery</div>
+      <div class="cell"></div>
+      <div class="cell"><div class="bar" style="background:var(--bordeaux); left:6px; width:calc(200% - 12px)"></div></div>
+      <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
+      <div class="sep"></div>
+      <div class="rlabel">Volumetría</div>
+      <div class="cell"></div><div class="cell"></div><div class="cell"></div>
+      <div class="cell"><div class="bar" style="background:var(--emerald); left:6px; width:calc(500% - 12px)"></div></div>
+      <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
+      <div class="sep"></div>
+      <div class="rlabel" style="background:transparent; font-weight:600; color:var(--dark)">Cliente</div>
+      <div class="mil">◆</div><div class="mil"></div><div class="mil">◆</div><div class="mil"></div>
+      <div class="mil">◆</div><div class="mil"></div><div class="mil"></div><div class="mil">◆</div>
+    </div>
+    <div class="note">Estimación aproximada. Una vez aprobado el proyecto, el PM planifica el detalle de cada fase con el cliente.</div>
+    <div class="pageno">06</div>
+  </div></div></section>
+
+  <!-- 7 · CLOSING -->
+  <section class="slide"><div class="fwrap"><div class="frame theme-dark closing">
+    <div class="wm"><img src="public/logo/interactius-negativo.svg" alt="interactīus" /></div>
+    <h2>Gracias</h2>
+    <div class="url">www.interactius.com</div>
+  </div></div></section>
+
+  <nav id="prog"></nav>
+
+<script>
+  const slides=[...document.querySelectorAll('.slide')];
+  function fit(){ const s=Math.min(innerWidth/1280, innerHeight/720);
+    document.documentElement.style.setProperty('--s', s); }
+  addEventListener('resize', fit); fit();
+
+  // Editable images: click any slot → pick a file from disk → replace.
+  document.querySelectorAll('.imgslot').forEach(slot=>{
+    slot.addEventListener('click',e=>{ e.stopPropagation();
+      const inp=document.createElement('input'); inp.type='file'; inp.accept='image/*';
+      inp.onchange=()=>{ const f=inp.files&&inp.files[0]; if(f) slot.style.backgroundImage=`url('${URL.createObjectURL(f)}')`; };
+      inp.click();
+    });
+  });
+
+  // Subtle scroll-progress dots (click to jump). No arrows, no page-flipping.
+  const prog=document.getElementById('prog');
+  slides.forEach((s,k)=>{ const d=document.createElement('div'); d.className='dot';
+    d.onclick=()=>s.scrollIntoView({behavior:'smooth'}); prog.appendChild(d); });
+  const dots=[...prog.children];
+  const io=new IntersectionObserver(es=>{ es.forEach(en=>{ if(en.isIntersecting){
+    const i=slides.indexOf(en.target); dots.forEach((d,k)=>d.classList.toggle('on',k===i)); } }); },{threshold:.6});
+  slides.forEach(s=>io.observe(s));
+</script>
+</body>
+</html>
