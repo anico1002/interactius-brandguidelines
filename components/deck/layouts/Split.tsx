@@ -1,0 +1,24 @@
+import type { Slide } from '@/lib/deck/types';
+import { Chrome } from '../Chrome';
+import { ImageSlot } from '../ImageSlot';
+
+export function Split({ slide, page }: { slide: Extract<Slide, { kind: 'split' }>; page: number }) {
+  const iso = slide.theme === 'dark' ? '/logo/isotipo-negativo.svg' : '/logo/isotipo-positivo.svg';
+  return (
+    <div className={`frame theme-${slide.theme} split`}>
+      <ImageSlot image={slide.image} className="photo" />
+      <div className="mark">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={iso} alt="" />
+      </div>
+      <div className="txt">
+        {slide.eyebrow && <div className="eyebrow">{slide.eyebrow}</div>}
+        <h2>{slide.title}</h2>
+        {slide.body && <div className="body">{slide.body}</div>}
+      </div>
+      <div className="pageno" style={{ left: 'auto', right: 'var(--mr)', color: 'var(--ash)' }}>
+        {String(page).padStart(2, '0')}
+      </div>
+    </div>
+  );
+}

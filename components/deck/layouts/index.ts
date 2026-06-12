@@ -1,0 +1,8 @@
+export { Cover } from './Cover';
+export { Statement } from './Statement';
+export { Bullets } from './Bullets';
+export { Columns } from './Columns';
+export { Split } from './Split';
+export { Gantt } from './Gantt';
+export { Closing } from './Closing';
+export { Paragraph } from './Paragraph';
