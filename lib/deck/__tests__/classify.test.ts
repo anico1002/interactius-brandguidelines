@@ -14,11 +14,19 @@ test('first slide with title+subtitle+client → cover', () => {
   assert.equal(s.theme, 'dark');
 });
 
-test('caps + heading → statement', () => {
-  const s = one('EL RETO\n# Incrementar la conversión') as any;
+test('generic caps eyebrow + heading → statement', () => {
+  const s = one('NUESTRA MIRADA\n# Incrementar la conversión') as any;
   assert.equal(s.kind, 'statement');
-  assert.equal(s.eyebrow, 'EL RETO');
+  assert.equal(s.eyebrow, 'NUESTRA MIRADA');
   assert.equal(s.title, 'Incrementar la conversión');
+});
+
+test('EL RETO keyword → elreto; CONTEXTO → contexto; OBJETIVOS → objetivos; ROADMAP → roadmapPhases; PRESUPUESTO → budget', () => {
+  assert.equal((one('EL RETO\n# Incrementar la conversión') as any).kind, 'elreto');
+  assert.equal((one('CONTEXTO\nUn párrafo corto de contexto.') as any).kind, 'contexto');
+  assert.equal((one('## Objetivos\n- a\n- b') as any).kind, 'objetivos');
+  assert.equal((one('## Roadmap\n### Diagnóstico\nx\n- y') as any).kind, 'roadmapPhases');
+  assert.equal((one('## Presupuesto') as any).kind, 'budget');
 });
 
 test('heading + list → bullets', () => {

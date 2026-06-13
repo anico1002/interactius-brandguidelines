@@ -10,10 +10,6 @@ const COMMERCIAL_INTRO: Slide[] = [
   { kind: 'team', theme: 'light' },
   { kind: 'clients', theme: 'light' },
 ];
-const COMMERCIAL_END: Slide[] = [
-  { kind: 'budget', theme: 'light' },
-  { kind: 'acceptance', theme: 'light' },
-];
 
 export function compileDeck(md: string, type: DeckType = 'comercial'): Deck {
   const sources = parse(md);
@@ -23,8 +19,13 @@ export function compileDeck(md: string, type: DeckType = 'comercial'): Deck {
     const introAt = slides[0]?.kind === 'cover' ? 1 : 0;
     slides.splice(introAt, 0, ...COMMERCIAL_INTRO.map((s) => ({ ...s })));
 
-    const endAt = slides[slides.length - 1]?.kind === 'closing' ? slides.length - 1 : slides.length;
-    slides.splice(endAt, 0, ...COMMERCIAL_END.map((s) => ({ ...s })));
+    // Always append the approval page right after every budget page.
+    for (let i = 0; i < slides.length; i++) {
+      if (slides[i].kind === 'budget') {
+        slides.splice(i + 1, 0, { kind: 'acceptance', theme: 'light' });
+        i++;
+      }
+    }
   }
 
   return { slides };

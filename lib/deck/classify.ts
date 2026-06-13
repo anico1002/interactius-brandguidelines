@@ -7,6 +7,25 @@ const find = <T extends Token['t']>(tokens: Token[], t: T) =>
 const heading = (tokens: Token[]) =>
   tokens.find((x) => x.t === 'h') as Extract<Token, { t: 'h' }> | undefined;
 
+function extractPhases(tokens: Token[]): { name: string; body: string; items: string[] }[] {
+  const phases: { name: string; body: string; items: string[] }[] = [];
+  for (let i = 0; i < tokens.length; i++) {
+    const t = tokens[i];
+    if (t.t === 'h' && t.level >= 3) {
+      let body = '';
+      const items: string[] = [];
+      for (let j = i + 1; j < tokens.length; j++) {
+        const u = tokens[j];
+        if (u.t === 'h' && u.level >= 3) break;
+        if (u.t === 'p' && !body) body = u.text;
+        if (u.t === 'ul') items.push(...u.items);
+      }
+      phases.push({ name: t.text, body, items });
+    }
+  }
+  return phases;
+}
+
 function overrideTheme(text: string): { clean: string; theme: Theme | undefined } {
   const m = text.match(/\s*\{(oscuro|dark|claro|light)\}\s*$/i);
   if (!m) return { clean: text, theme: undefined };
@@ -33,10 +52,30 @@ export function classify(src: SlideSource, position: number, total: number): Sli
   const isLast = position === total - 1;
   const clientLine = quote?.text.match(/^cliente:\s*(.+)$/i);
 
-  // 1. Explicit data blocks
+  // 1. Explicit data blocks (gantt fence wins, incl. "Roadmap" + gantt)
   if (fence && fence.lang === 'gantt') {
     const g = parseGantt(fence.body);
     return { kind: 'gantt', theme: T('gantt'), title: title || 'Roadmap', subtitle: paras[0]?.text, weeks: g.weeks, rows: g.rows, milestones: g.milestones, note: paras[1]?.text };
+  }
+
+  // 1b. Keyword-mapped commercial sections (ref slides 22/29/31/32/35 + Presupuesto)
+  const eb = caps?.text.trim().toUpperCase();
+  const hk = title.trim().toUpperCase();
+  if (eb === 'CONTEXTO') {
+    const body = paras.map((p) => p.text).join(' ') || quote?.text || '';
+    return { kind: 'contexto', theme: T('contexto'), body, long: body.length >= 150 };
+  }
+  if (eb === 'EL RETO') {
+    return { kind: 'elreto', theme: T('elreto'), title, image: image ? { src: image.src, alt: image.alt } : undefined };
+  }
+  if (hk === 'OBJETIVOS') {
+    return { kind: 'objetivos', theme: T('objetivos'), title, items: list?.items ?? [], image: image ? { src: image.src, alt: image.alt } : undefined };
+  }
+  if (hk === 'ROADMAP') {
+    return { kind: 'roadmapPhases', theme: T('roadmapPhases'), title, subtitle: paras[0]?.text, phases: extractPhases(tokens) };
+  }
+  if (hk === 'PRESUPUESTO') {
+    return { kind: 'budget', theme: 'light' };
   }
 
   // 2. Cover: first slide with an H1 that carries a subtitle/client/image, or simply no caps eyebrow.

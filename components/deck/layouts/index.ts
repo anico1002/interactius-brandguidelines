@@ -11,3 +11,7 @@ export { Team } from './Team';
 export { Clients } from './Clients';
 export { Budget } from './Budget';
 export { Acceptance } from './Acceptance';
+export { Contexto } from './Contexto';
+export { ElReto } from './ElReto';
+export { Objetivos } from './Objetivos';
+export { RoadmapPhases } from './RoadmapPhases';

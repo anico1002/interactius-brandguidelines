@@ -12,31 +12,44 @@ Diagnóstico de criterios y arquitectura de decisión para el ecommerce de la ma
 
 ---
 
+CONTEXTO
+Naturgy tiene la oportunidad de establecer un nuevo estándar digital que unifique su experiencia online y aporte coherencia, escalabilidad y alineación con la marca. Hoy existen inconsistencias en experiencia, diseño y flujos que generan fricción y reducen eficiencia.
+
+---
+
 EL RETO
-# Incrementar la conversión sin añadir más capas al proceso de compra
+# Incrementar la conversión en el ecommerce principal de la marca
+![El reto](/universo/universo-01.jpg)
 
 ---
 
-## El espacio del Entre
-![Universo visual](/universo/universo-01.jpg)
-La marca trabaja en la transición: el momento de ambigüedad y pausa donde una decisión todavía puede cambiar de dirección. Cada proyecto empieza por leer ese espacio antes de proponer nada.
+## Objetivos
+- Establecer una línea base cuantificada del nivel de calidad actual por país, tipología de pedido y modalidad de recogida.
+- Identificar qué dimensiones, mercados o tipologías presentan mayor frecuencia y severidad de incidencias.
+- Comparar el rendimiento entre países para detectar diferencias operativas significativas.
+- Sentar las bases metodológicas y operativas para la Fase 2, en la que los evaluadores serán usuarios reales de la marca.
+![Objetivos](/universo/universo-03.jpg)
 
 ---
 
-## ¿Cómo lo haremos?
-- Auditoría heurística del recorrido completo, evaluado en los dos momentos que deciden la compra
-- Pruebas con usuarios reales para separar la fricción percibida de la que cuesta dinero
-- Backlog de oportunidades ordenado por criterio, no por volumen de hallazgos
-
----
-
-## Enfoque
-### Tipología
-Mystery shopping aplicado a canal online, con enfoque mixto cuantitativo y cualitativo.
-### Unidad de análisis
-El pedido completo, evaluado en dos momentos: seguimiento logístico y unboxing.
-### Momentos
-Cuatro semanas de compras por persona, con recepción y evaluación de cada pedido.
+## Roadmap
+Estimamos que la duración del proyecto será de 6 semanas.
+### Diagnóstico
+La fase de inmersión nos permite comprender el contexto actual y las expectativas del proyecto.
+- Kick Off: alineación de objetivos y definición del marco.
+- Inmersión inicial: revisión de fuentes internas y externas.
+### Discovery
+Investigación exhaustiva que combina la inmersión con la experiencia del usuario.
+- Mapa de tendencias y competencia.
+- Entrevistas en profundidad.
+### Ideación
+Fase de síntesis donde los insights se transforman en valor estratégico.
+- Workshop Business Model Canvas.
+- Workshop de Ideación.
+### Activación
+Definición de la estrategia de marca y la hoja de ruta práctica.
+- Análisis de áreas de oportunidad.
+- Roadmap de acciones estratégicas.
 
 ---
 
@@ -48,6 +61,10 @@ Discovery: 2-3
 Volumetría: 4-8
 hitos cliente: 1, 3, 5, 8
 \`\`\`
+
+---
+
+## Presupuesto
 
 ---
 

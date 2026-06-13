@@ -4,6 +4,7 @@ export type Accent = 'opal' | 'bordeaux' | 'emerald';
 export type ImageRef = { src?: string; alt?: string; prompt?: string };
 export type GanttRow = { label: string; start: number; end: number; accent: Accent };
 export type Column = { label: string; heading: string; body: string };
+export type Phase = { name: string; body: string; items: string[] };
 
 export type Slide =
   | { kind: 'cover'; theme: Theme; title: string; subtitle?: string; eyebrow?: string; client?: string; image?: ImageRef; footer?: string }
@@ -19,7 +20,12 @@ export type Slide =
   | { kind: 'team'; theme: Theme }
   | { kind: 'clients'; theme: Theme }
   | { kind: 'budget'; theme: Theme }
-  | { kind: 'acceptance'; theme: Theme };
+  | { kind: 'acceptance'; theme: Theme }
+  // Keyword-mapped commercial sections (ref slides 22/29/31/32/35)
+  | { kind: 'contexto'; theme: Theme; body: string; long: boolean }
+  | { kind: 'elreto'; theme: Theme; title: string; image?: ImageRef }
+  | { kind: 'objetivos'; theme: Theme; title: string; items: string[]; image?: ImageRef }
+  | { kind: 'roadmapPhases'; theme: Theme; title: string; subtitle?: string; phases: Phase[] };
 
 export type DeckType = 'comercial' | 'informe' | 'generica';
 
