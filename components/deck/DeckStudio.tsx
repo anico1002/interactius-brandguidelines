@@ -7,6 +7,7 @@ import { ToneReport } from './ToneReport';
 const SAMPLE = `# Propuesta de colaboración
 Diagnóstico de criterios y arquitectura de decisión para el ecommerce de la marca.
 > cliente: Naturgy
+![Portada · universo visual](/universo/universo-02.jpg)
 
 ---
 
