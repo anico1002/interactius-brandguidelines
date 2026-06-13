@@ -71,12 +71,12 @@
 .ix-deck .cover .foot{position:absolute; left:var(--ml); bottom:52px; z-index:4; font:400 10px/1 var(--mono); letter-spacing:.06em; color:var(--warm-light); opacity:.62;}
 .ix-deck .cover .foot b{font-weight:500; opacity:1; background:rgba(245,242,237,.14); padding:3px 6px;}
 
-/* 2 · Image + text split */
-.ix-deck .split .photo{position:absolute; left:0; top:0; bottom:0; width:548px;}
-.ix-deck .split .txt{position:absolute; left:620px; right:var(--mr); top:150px;}
+/* 2 · Image + text split — image always on the RIGHT (left stays light for the tab) */
+.ix-deck .split .photo{position:absolute; right:0; top:0; bottom:0; width:548px;}
+.ix-deck .split .txt{position:absolute; left:var(--ml); right:600px; top:150px;}
 .ix-deck .split .eyebrow{margin-bottom:26px;}
-.ix-deck .split h2{font-family:var(--serif); font-weight:400; font-size:46px; line-height:1.06; margin-bottom:26px;}
-.ix-deck .split .txt .body{max-width:470px;}
+.ix-deck .split h2{font-family:var(--serif); font-weight:400; font-size:44px; line-height:1.08; margin-bottom:26px;}
+.ix-deck .split .txt .body{max-width:520px;}
 
 /* 3 · Statement */
 .ix-deck .statement .wrap{position:absolute; left:var(--ml); top:120px; right:var(--mr);}
