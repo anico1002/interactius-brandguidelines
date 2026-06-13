@@ -1,11 +1,13 @@
 'use client';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import type { ImageRef } from '@/lib/deck/types';
 import { optimizeImage } from '@/lib/deck/optimizeImage';
+import { ViewerContext } from './viewer';
 
 /* Editable image slot: click → pick a file from disk → downscale/recompress → replace.
-   Optimising on upload keeps the printed PDF light. */
+   In viewer mode (shared presentation) it is a plain, non-editable image. */
 export function ImageSlot({ image, className }: { image?: ImageRef; className?: string }) {
+  const viewer = useContext(ViewerContext);
   const [src, setSrc] = useState<string | undefined>(image?.src);
   const pick = () => {
     const inp = document.createElement('input');
@@ -25,11 +27,11 @@ export function ImageSlot({ image, className }: { image?: ImageRef; className?: 
   return (
     <div
       className={`imgslot ${className ?? ''}`}
-      style={{ backgroundImage: src ? `url('${src}')` : undefined }}
-      onClick={pick}
+      style={{ backgroundImage: src ? `url('${src}')` : undefined, cursor: viewer ? 'default' : 'pointer' }}
+      onClick={viewer ? undefined : pick}
     >
       {!src && <div className="placeholder">{image?.prompt ?? 'Imagen · universo visual'}</div>}
-      <div className="imghint">Clic para reemplazar imagen</div>
+      {!viewer && <div className="imghint">Clic para reemplazar imagen</div>}
     </div>
   );
 }

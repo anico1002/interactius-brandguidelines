@@ -27,6 +27,10 @@
 .ix-deck *{box-sizing:border-box; margin:0; padding:0;
   -webkit-print-color-adjust:exact; print-color-adjust:exact;}
 
+/* Viewer mode (shared client link): hide all site chrome, only the deck shows. */
+body.ix-viewer aside, body.ix-viewer header, body.ix-viewer #menu-overlay{display:none !important;}
+body.ix-viewer main{padding:0 !important; margin:0 !important;}
+
 .ix-deck .slide{position:relative; width:100%; height:calc(720px * var(--s)); display:flex; justify-content:center; align-items:center; scroll-snap-align:center;}
 .ix-deck .fwrap{width:calc(1280px * var(--s)); height:calc(720px * var(--s)); position:relative;}
 /* Horizontal page separator drawn ON TOP, at the top edge of each page (webscroll only). */

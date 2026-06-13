@@ -89,14 +89,16 @@ const seg: React.CSSProperties = {
 };
 const segOn: React.CSSProperties = { background: '#1C1A17', color: '#F5F2ED', borderColor: '#1C1A17' };
 
-// UTF-8 safe base64 for sharing the .md inside the URL hash.
+// UTF-8 safe, URL-safe base64 (base64url) for sharing the .md inside the URL hash.
 function b64encode(str: string): string {
   const bytes = new TextEncoder().encode(str);
   let bin = '';
   for (const b of bytes) bin += String.fromCharCode(b);
-  return btoa(bin);
+  return btoa(bin).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
 }
-function b64decode(b64: string): string {
+function b64decode(s: string): string {
+  let b64 = s.replace(/-/g, '+').replace(/_/g, '/');
+  while (b64.length % 4) b64 += '=';
   const bin = atob(b64);
   return new TextDecoder().decode(Uint8Array.from(bin, (c) => c.charCodeAt(0)));
 }
@@ -106,29 +108,47 @@ export function DeckStudio() {
   const [type, setType] = useState<DeckType>('comercial');
   const [deck, setDeck] = useState(() => compileDeck(SAMPLE, 'comercial'));
   const [copied, setCopied] = useState(false);
+  const [viewer, setViewer] = useState(false);
 
-  // Load a shared deck from the URL hash (#md=...).
+  // Read a shared link from the URL hash: #view=1&md=... loads the deck and,
+  // when "view" is present, renders only the presentation (client-facing).
   useEffect(() => {
-    const m = window.location.hash.match(/[#&]md=([^&]+)/);
-    if (!m) return;
-    try {
-      const decoded = b64decode(decodeURIComponent(m[1]));
-      setMd(decoded);
-      setDeck(compileDeck(decoded, type));
-    } catch { /* ignore malformed link */ }
+    const params = new URLSearchParams(window.location.hash.slice(1));
+    const mdParam = params.get('md');
+    if (mdParam) {
+      try {
+        const decoded = b64decode(mdParam);
+        setMd(decoded);
+        setDeck(compileDeck(decoded, type));
+      } catch { /* ignore malformed link */ }
+    }
+    if (params.has('view')) {
+      setViewer(true);
+      document.body.classList.add('ix-viewer');
+    }
+    return () => document.body.classList.remove('ix-viewer');
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const pickType = (t: DeckType) => { setType(t); setDeck(compileDeck(md, t)); };
 
   const copyUrl = async () => {
-    const url = `${window.location.origin}${window.location.pathname}#md=${encodeURIComponent(b64encode(md))}`;
+    const url = `${window.location.origin}${window.location.pathname}#view=1&md=${b64encode(md)}`;
     try {
       await navigator.clipboard.writeText(url);
       setCopied(true);
       setTimeout(() => setCopied(false), 1600);
     } catch { /* clipboard unavailable */ }
   };
+
+  // Client-facing presentation: only the deck, nothing internal.
+  if (viewer) {
+    return (
+      <div style={{ height: '100vh' }}>
+        <DeckRenderer deck={deck} viewer />
+      </div>
+    );
+  }
 
   return (
     <div style={{ display: 'flex', height: '100vh', background: '#F5F2ED' }}>

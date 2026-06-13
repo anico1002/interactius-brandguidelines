@@ -2,6 +2,7 @@
 import { useEffect, useRef } from 'react';
 import './deck.css';
 import type { Deck, Slide } from '@/lib/deck/types';
+import { ViewerContext } from './viewer';
 import { Cover, Statement, Bullets, Columns, Split, Gantt, Closing, Paragraph, Manifesto, Team, Clients, Budget, Acceptance, Contexto, ElReto, Objetivos, RoadmapPhases } from './layouts';
 
 function renderSlide(slide: Slide, page: number) {
@@ -26,7 +27,7 @@ function renderSlide(slide: Slide, page: number) {
   }
 }
 
-export function DeckRenderer({ deck }: { deck: Deck }) {
+export function DeckRenderer({ deck, viewer = false }: { deck: Deck; viewer?: boolean }) {
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const el = ref.current;
@@ -43,12 +44,14 @@ export function DeckRenderer({ deck }: { deck: Deck }) {
   }, [deck]);
 
   return (
-    <div className="ix-deck" ref={ref}>
-      {deck.slides.map((slide, i) => (
-        <section className="slide" key={i}>
-          <div className="fwrap">{renderSlide(slide, i + 1)}</div>
-        </section>
-      ))}
-    </div>
+    <ViewerContext.Provider value={viewer}>
+      <div className="ix-deck" ref={ref}>
+        {deck.slides.map((slide, i) => (
+          <section className="slide" key={i}>
+            <div className="fwrap">{renderSlide(slide, i + 1)}</div>
+          </section>
+        ))}
+      </div>
+    </ViewerContext.Provider>
   );
 }
