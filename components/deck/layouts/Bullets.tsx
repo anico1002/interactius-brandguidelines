@@ -1,5 +1,6 @@
 import type { Slide } from '@/lib/deck/types';
 import { Chrome } from '../Chrome';
+import { inline } from '../inline';
 
 export function Bullets({ slide, page }: { slide: Extract<Slide, { kind: 'bullets' }>; page: number }) {
   return (
@@ -10,7 +11,7 @@ export function Bullets({ slide, page }: { slide: Extract<Slide, { kind: 'bullet
         {slide.items.map((item, i) => (
           <div className="item" key={i}>
             <div className="dia">◆</div>
-            <div className="body">{item}</div>
+            <div className="body">{inline(item)}</div>
           </div>
         ))}
       </div>

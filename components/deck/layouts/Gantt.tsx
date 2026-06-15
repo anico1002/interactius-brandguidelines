@@ -2,6 +2,17 @@ import { Fragment } from 'react';
 import type { Slide } from '@/lib/deck/types';
 import { Chrome } from '../Chrome';
 
+/* Continuous bar geometry so half-weeks (e.g. 2-3.5, 0.5) draw half a cell.
+   A whole number sits on a cell edge; a .5 cuts that cell at its midpoint.
+   Returns the hosting week column, the left inset within it (0 or .5 of a
+   cell) and the span measured in week-columns. */
+function barGeom(start: number, end: number) {
+  const leftPos = Number.isInteger(start) ? start - 1 : Math.floor(start) - 0.5;
+  const rightPos = Number.isInteger(end) ? end : Math.floor(end) - 0.5;
+  const span = Math.max(rightPos - leftPos, 0);
+  return { span, hostWeek: Math.floor(leftPos) + 1, fracLeft: leftPos - Math.floor(leftPos) };
+}
+
 export function Gantt({ slide, page }: { slide: Extract<Slide, { kind: 'gantt' }>; page: number }) {
   const weeks = Array.from({ length: slide.weeks }, (_, i) => i + 1);
   const cols = `130px repeat(${slide.weeks}, 1fr)`;
@@ -16,26 +27,29 @@ export function Gantt({ slide, page }: { slide: Extract<Slide, { kind: 'gantt' }
           <div className="ghd" key={`h${n}`}>{n}</div>
         ))}
         <div className="sep" />
-        {slide.rows.map((row, ri) => (
-          <Fragment key={`r${ri}`}>
-            <div className="rlabel">{row.label}</div>
-            {weeks.map((n) => (
-              <div className="cell" key={`c${ri}-${n}`}>
-                {n === row.start && (
-                  <div
-                    className="bar"
-                    style={{
-                      background: `var(--${row.accent})`,
-                      left: 6,
-                      width: `calc(${row.end - row.start + 1} * 100% - 12px)`,
-                    }}
-                  />
-                )}
-              </div>
-            ))}
-            <div className="sep" />
-          </Fragment>
-        ))}
+        {slide.rows.map((row, ri) => {
+          const { span, hostWeek, fracLeft } = barGeom(row.start, row.end);
+          return (
+            <Fragment key={`r${ri}`}>
+              <div className="rlabel">{row.label}</div>
+              {weeks.map((n) => (
+                <div className="cell" key={`c${ri}-${n}`}>
+                  {n === hostWeek && span > 0 && (
+                    <div
+                      className="bar"
+                      style={{
+                        background: `var(--${row.accent})`,
+                        left: `calc(${fracLeft} * 100% + 6px)`,
+                        width: `calc(${span} * 100% - 12px)`,
+                      }}
+                    />
+                  )}
+                </div>
+              ))}
+              <div className="sep" />
+            </Fragment>
+          );
+        })}
         <div className="rlabel" style={{ background: 'transparent', fontWeight: 600, color: 'var(--dark)' }}>
           Cliente
         </div>

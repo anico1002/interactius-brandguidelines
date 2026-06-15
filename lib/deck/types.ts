@@ -5,6 +5,7 @@ export type ImageRef = { src?: string; alt?: string; prompt?: string };
 export type GanttRow = { label: string; start: number; end: number; accent: Accent };
 export type Column = { label: string; heading: string; body: string };
 export type Phase = { name: string; body: string; items: string[] };
+export type BudgetItem = { label: string; amount: string };
 
 export type Slide =
   | { kind: 'cover'; theme: Theme; title: string; subtitle?: string; eyebrow?: string; client?: string; image?: ImageRef; footer?: string }
@@ -19,7 +20,7 @@ export type Slide =
   | { kind: 'manifesto'; theme: Theme }
   | { kind: 'team'; theme: Theme }
   | { kind: 'clients'; theme: Theme }
-  | { kind: 'budget'; theme: Theme }
+  | { kind: 'budget'; theme: Theme; items: BudgetItem[]; total: string; conditions: string[] }
   | { kind: 'acceptance'; theme: Theme }
   // Keyword-mapped commercial sections (ref slides 22/29/31/32/35)
   | { kind: 'contexto'; theme: Theme; body: string; long: boolean }

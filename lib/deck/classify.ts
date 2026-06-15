@@ -1,6 +1,6 @@
 import type { Slide, SlideSource, Token, Theme, Column } from './types.ts';
 import { themeFor } from './theme.ts';
-import { parseGantt } from './blocks.ts';
+import { parseGantt, parseBudget } from './blocks.ts';
 
 const find = <T extends Token['t']>(tokens: Token[], t: T) =>
   tokens.find((x) => x.t === t) as Extract<Token, { t: T }> | undefined;
@@ -75,7 +75,7 @@ export function classify(src: SlideSource, position: number, total: number): Sli
     return { kind: 'roadmapPhases', theme: T('roadmapPhases'), title, subtitle: paras[0]?.text, phases: extractPhases(tokens) };
   }
   if (hk === 'PRESUPUESTO') {
-    return { kind: 'budget', theme: 'light' };
+    return { kind: 'budget', theme: 'light', ...parseBudget(tokens) };
   }
 
   // 2. Cover: first slide with an H1 that carries a subtitle/client/image, or simply no caps eyebrow.

@@ -1,6 +1,7 @@
 import type { Slide } from '@/lib/deck/types';
 import { Chrome } from '../Chrome';
 import { ImageSlot } from '../ImageSlot';
+import { inline } from '../inline';
 
 /* Ref slide 22: "Objetivos" title + numbered list (left) + image (right). */
 export function Objetivos({ slide, page }: { slide: Extract<Slide, { kind: 'objetivos' }>; page: number }) {
@@ -12,7 +13,7 @@ export function Objetivos({ slide, page }: { slide: Extract<Slide, { kind: 'obje
         {slide.items.map((it, i) => (
           <li key={i}>
             <span className="n">{i + 1}</span>
-            <span className="body">{it}</span>
+            <span className="body">{inline(it)}</span>
           </li>
         ))}
       </ol>

@@ -29,6 +29,36 @@ test('EL RETO keyword → elreto; CONTEXTO → contexto; OBJETIVOS → objetivos
   assert.equal((one('## Presupuesto') as any).kind, 'budget');
 });
 
+test('budget: line items + total auto-summed from the .md', () => {
+  const s = one('## Presupuesto\n- Análisis: 3.315 €\n- Benchmark: 3.770 €\n- Inmersión: 3.991 €') as any;
+  assert.equal(s.kind, 'budget');
+  assert.deepEqual(s.items, [
+    { label: 'Análisis', amount: '3.315 €' },
+    { label: 'Benchmark', amount: '3.770 €' },
+    { label: 'Inmersión', amount: '3.991 €' },
+  ]);
+  assert.equal(s.total, '11.076 €');
+});
+
+test('budget: explicit Total row wins over auto-sum', () => {
+  const s = one('## Presupuesto\n- Fase 1: 1.000 €\n- Fase 2: 2.000 €\n- Total: 3.500 €') as any;
+  assert.equal(s.items.length, 2);
+  assert.equal(s.total, '3.500 €');
+});
+
+test('budget: conditions overridable via "### Condiciones" list', () => {
+  const s = one('## Presupuesto\n- Fase 1: 1.000 €\n### Condiciones\n- Pago a 30 días.\n- IVA aparte.') as any;
+  assert.deepEqual(s.items, [{ label: 'Fase 1', amount: '1.000 €' }]);
+  assert.deepEqual(s.conditions, ['Pago a 30 días.', 'IVA aparte.']);
+});
+
+test('budget: empty block falls back to the reference example', () => {
+  const s = one('## Presupuesto') as any;
+  assert.equal(s.items.length, 3);
+  assert.equal(s.total, '11.076 €');
+  assert.equal(s.conditions.length, 5);
+});
+
 test('heading + list → bullets', () => {
   const s = one('## Cómo\n- a\n- b') as any;
   assert.equal(s.kind, 'bullets');

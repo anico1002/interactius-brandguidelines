@@ -10,7 +10,7 @@ const mono = IBM_Plex_Mono({
 });
 
 const serif = IBM_Plex_Serif({
-  weight: ['300', '400'],
+  weight: ['300', '400', '600'],
   style: ['normal'],
   subsets: ['latin', 'latin-ext'],
   variable: '--font-ibm-plex-serif',

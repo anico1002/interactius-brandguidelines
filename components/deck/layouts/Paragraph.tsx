@@ -1,5 +1,6 @@
 import type { Slide } from '@/lib/deck/types';
 import { Chrome } from '../Chrome';
+import { inline } from '../inline';
 
 export function Paragraph({ slide, page }: { slide: Extract<Slide, { kind: 'paragraph' }>; page: number }) {
   return (
@@ -7,7 +8,7 @@ export function Paragraph({ slide, page }: { slide: Extract<Slide, { kind: 'para
       <Chrome page={page} />
       <div className="wrap">
         {slide.eyebrow && <div className="eyebrow">{slide.eyebrow}</div>}
-        <p>{slide.body}</p>
+        <p>{inline(slide.body)}</p>
       </div>
     </div>
   );

@@ -1,5 +1,6 @@
 import type { Slide } from '@/lib/deck/types';
 import { Chrome } from '../Chrome';
+import { inline } from '../inline';
 
 export function Columns({ slide, page }: { slide: Extract<Slide, { kind: 'columns' }>; page: number }) {
   return (
@@ -11,7 +12,7 @@ export function Columns({ slide, page }: { slide: Extract<Slide, { kind: 'column
           <div className="col" key={i}>
             <div className="num">{col.label}</div>
             <div className="colhd">{col.heading}</div>
-            <div className="colbody">{col.body}</div>
+            <div className="colbody">{inline(col.body)}</div>
           </div>
         ))}
       </div>

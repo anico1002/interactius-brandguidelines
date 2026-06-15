@@ -13,7 +13,7 @@ Diagnóstico de criterios y arquitectura de decisión para el ecommerce de la ma
 ---
 
 CONTEXTO
-Naturgy tiene la oportunidad de establecer un nuevo estándar digital que unifique su experiencia online y aporte coherencia, escalabilidad y alineación con la marca. Hoy existen inconsistencias en experiencia, diseño y flujos que generan fricción y reducen eficiencia.
+Naturgy tiene la oportunidad de establecer un **nuevo estándar digital** que unifique su experiencia online y aporte coherencia, escalabilidad y alineación con la marca. Hoy existen inconsistencias en experiencia, diseño y flujos que generan fricción y reducen eficiencia.
 
 ---
 
@@ -56,7 +56,7 @@ Definición de la estrategia de marca y la hoja de ruta práctica.
 ## Roadmap
 \`\`\`gantt
 semanas: 8
-Diagnóstico: 1
+Diagnóstico: 1-1.5
 Discovery: 2-3
 Volumetría: 4-8
 hitos cliente: 1, 3, 5, 8
@@ -65,6 +65,15 @@ hitos cliente: 1, 3, 5, 8
 ---
 
 ## Presupuesto
+- Análisis Heurístico: 3.315 €
+- Benchmark Android/Mobile: 3.770 €
+- Inmersión + gestión: 3.991 €
+### Condiciones
+- Emisión de factura inicial por el 60% del total del proyecto una vez recibida la orden de compra al inicio del proyecto.
+- Emisión de factura final por el 40% del total del proyecto una vez realizada la entrega.
+- Al importe se le añadirá el IVA correspondiente de acuerdo con la legislación vigente.
+- Cobro de facturas a 30 días, día de pago habitual del cliente.
+- Esta propuesta económica tiene una validez de tres meses a partir de la fecha de la misma.
 
 ---
 

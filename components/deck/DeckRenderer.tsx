@@ -18,7 +18,7 @@ function renderSlide(slide: Slide, page: number) {
     case 'manifesto': return <Manifesto page={page} />;
     case 'team': return <Team page={page} />;
     case 'clients': return <Clients page={page} />;
-    case 'budget': return <Budget page={page} />;
+    case 'budget': return <Budget page={page} items={slide.items} total={slide.total} conditions={slide.conditions} />;
     case 'acceptance': return <Acceptance page={page} />;
     case 'contexto': return <Contexto slide={slide} page={page} />;
     case 'elreto': return <ElReto slide={slide} page={page} />;

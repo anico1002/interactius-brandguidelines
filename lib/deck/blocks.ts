@@ -1,6 +1,73 @@
-import type { Accent, GanttRow } from './types.ts';
+import type { Accent, BudgetItem, GanttRow, Token } from './types.ts';
 
 const ACCENTS: Accent[] = ['opal', 'bordeaux', 'emerald'];
+
+// Default example (ref p.42): used when `## Presupuesto` is left empty in the .md.
+const DEFAULT_BUDGET_ITEMS: BudgetItem[] = [
+  { label: 'Análisis Heurístico', amount: '3.315 €' },
+  { label: 'Benchmark Android/Mobile', amount: '3.770 €' },
+  { label: 'Inmersión + gestión', amount: '3.991 €' },
+];
+const DEFAULT_CONDICIONES = [
+  'Emisión de factura inicial por el 60% del total del proyecto una vez recibida la orden de compra al inicio del proyecto.',
+  'Emisión de factura final por el 40% del total del proyecto una vez realizada la entrega.',
+  'Al importe se le añadirá el IVA correspondiente de acuerdo con la legislación vigente.',
+  'Cobro de facturas a 30 días, día de pago habitual del cliente.',
+  'Esta propuesta económica tiene una validez de tres meses a partir de la fecha de la misma.',
+];
+
+// Peel a trailing currency amount off a list item; the rest (sans separators) is the label.
+function splitBudgetItem(raw: string): BudgetItem {
+  const m = raw.match(/^(.*?)[\s:—–|\t]+((?:€\s*)?\d[\d.\s]*(?:,\d+)?\s*€?)$/);
+  if (!m) return { label: raw.trim(), amount: '' };
+  return { label: m[1].trim(), amount: m[2].replace(/\s+/g, ' ').trim() };
+}
+
+function amountToNumber(amount: string): number {
+  // Spanish formatting: '.' groups thousands, ',' is the decimal separator.
+  const s = amount.replace(/[^\d.,-]/g, '').replace(/\./g, '').replace(',', '.');
+  const n = parseFloat(s);
+  return isNaN(n) ? 0 : n;
+}
+
+function formatEUR(n: number, decimals: boolean): string {
+  const body = n.toLocaleString('es-ES', {
+    minimumFractionDigits: decimals ? 2 : 0,
+    maximumFractionDigits: decimals ? 2 : 0,
+  });
+  return `${body} €`;
+}
+
+export function parseBudget(tokens: Token[]): { items: BudgetItem[]; total: string; conditions: string[] } {
+  // Conditions: optional list under a "### Condiciones" sub-heading; the first
+  // remaining list holds the line items.
+  let condIdx = -1;
+  for (let i = 0; i < tokens.length; i++) {
+    const t = tokens[i];
+    if (t.t === 'h' && t.level >= 3 && /condicion/i.test(t.text)) { condIdx = i; break; }
+  }
+  const condList = condIdx >= 0
+    ? (tokens.slice(condIdx + 1).find((t) => t.t === 'ul') as Extract<Token, { t: 'ul' }> | undefined)
+    : undefined;
+  const itemList = tokens.find((t, i) =>
+    t.t === 'ul' && (condIdx < 0 || i < condIdx)) as Extract<Token, { t: 'ul' }> | undefined;
+
+  const conditions = condList?.items ?? DEFAULT_CONDICIONES;
+
+  const raw = (itemList?.items ?? []).map(splitBudgetItem);
+  // An explicit "Total" row wins; otherwise we auto-sum the line items.
+  const explicitTotal = raw.find((it) => /^total(es)?$/i.test(it.label.replace(/[:.]$/, '').trim()));
+  const items = raw.filter((it) => it !== explicitTotal);
+
+  if (items.length === 0) {
+    return { items: DEFAULT_BUDGET_ITEMS, total: '11.076 €', conditions };
+  }
+
+  const decimals = items.some((it) => /,/.test(it.amount));
+  const sum = items.reduce((acc, it) => acc + amountToNumber(it.amount), 0);
+  const total = explicitTotal?.amount || formatEUR(sum, decimals);
+  return { items, total, conditions };
+}
 
 export function parseGantt(body: string): { weeks: number; rows: GanttRow[]; milestones: number[] } {
   let weeks = 8;
@@ -29,8 +96,11 @@ function splitOnce(s: string, sep: string): [string, string | undefined] {
 }
 
 function parseRange(v: string): [number, number] {
-  const m = v.match(/(\d+)\s*-\s*(\d+)/);
-  if (m) return [parseInt(m[1], 10), parseInt(m[2], 10)];
-  const n = parseInt(v, 10) || 1;
-  return [n, n];
+  // Endpoints may be halves (e.g. 2-3.5, 4-4.5) to draw half-week bars.
+  const m = v.match(/(\d+(?:\.\d+)?)\s*-\s*(\d+(?:\.\d+)?)/);
+  if (m) return [parseFloat(m[1]), parseFloat(m[2])];
+  const n = parseFloat(v) || 1;
+  // A whole number is a one-week block at that week; a bare fraction (e.g. 0.5)
+  // is a short block starting at week 1.
+  return Number.isInteger(n) ? [n, n] : [1, 1 + n];
 }

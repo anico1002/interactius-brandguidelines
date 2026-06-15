@@ -10,3 +10,10 @@ test('parses weeks, rows with ranges, and milestones', () => {
   assert.deepEqual(g.rows[2], { label: 'Volumetría', start: 4, end: 8, accent: 'emerald' });
   assert.deepEqual(g.milestones, [1, 3, 5, 8]);
 });
+
+test('parses half-week endpoints and a bare fractional value', () => {
+  const g = parseGantt('semanas: 8\nKick Off: 0.5\nDiscovery: 2-3.5\nCierre: 4-4.5');
+  assert.deepEqual(g.rows[0], { label: 'Kick Off', start: 1, end: 1.5, accent: 'opal' });
+  assert.deepEqual(g.rows[1], { label: 'Discovery', start: 2, end: 3.5, accent: 'bordeaux' });
+  assert.deepEqual(g.rows[2], { label: 'Cierre', start: 4, end: 4.5, accent: 'emerald' });
+});
