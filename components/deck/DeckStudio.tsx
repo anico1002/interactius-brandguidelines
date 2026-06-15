@@ -1,9 +1,14 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { compileDeck } from '@/lib/deck';
 import type { DeckType } from '@/lib/deck';
+import type { ClientRecord, DeckListItem, DeckMeta, DeckRecord } from '@/lib/decks/types';
+import { createDeck, getDeck, listClients, updateDeck } from '@/lib/decks/api';
 import { DeckRenderer } from './DeckRenderer';
 import { ToneReport } from './ToneReport';
+import { DeckToolbar } from './studio/DeckToolbar';
+import { DeckMetaModal, type MetaValues } from './studio/DeckMetaModal';
+import { ConfirmModal } from './studio/ConfirmModal';
 
 const SAMPLE = `# Propuesta de colaboración
 Diagnóstico de criterios y arquitectura de decisión para el ecommerce de la marca.
@@ -81,22 +86,10 @@ hitos cliente: 1, 3, 5, 8
 www.interactius.com
 `;
 
-const TYPES: { id: DeckType; label: string }[] = [
-  { id: 'comercial', label: 'Comercial' },
-  { id: 'informe', label: 'Informe' },
-  { id: 'generica', label: 'Genérica' },
-];
-
 const btn: React.CSSProperties = {
   appearance: 'none', border: '1px solid #1C1A17', background: '#1C1A17', color: '#F5F2ED',
   font: '500 11px/1 var(--font-ibm-plex-mono, monospace)', letterSpacing: '.04em', padding: '10px 12px', cursor: 'pointer', flex: 1,
 };
-const btnGhost: React.CSSProperties = { ...btn, background: 'transparent', color: '#1C1A17' };
-const seg: React.CSSProperties = {
-  flex: 1, padding: '7px 6px', border: '1px solid #E0DAD2', background: 'transparent', color: '#75706B',
-  font: '500 10px/1 var(--font-ibm-plex-mono, monospace)', letterSpacing: '.06em', textTransform: 'uppercase', cursor: 'pointer',
-};
-const segOn: React.CSSProperties = { background: '#1C1A17', color: '#F5F2ED', borderColor: '#1C1A17' };
 
 // UTF-8 safe, URL-safe base64 (base64url) for sharing the .md inside the URL hash.
 function b64encode(str: string): string {
@@ -112,15 +105,83 @@ function b64decode(s: string): string {
   return new TextDecoder().decode(Uint8Array.from(bin, (c) => c.charCodeAt(0)));
 }
 
+const EMPTY_META: DeckMeta = {
+  commercial_id: '', client_id: null, contact_emails: [], logo_path: null, budget_url: null, type: 'comercial',
+};
+const snap = (md: string, meta: DeckMeta) => JSON.stringify({ md, meta });
+
+// Resizable editor panel — drag the divider to widen it, up to half the viewport.
+const ASIDE_MIN = 320;
+const ASIDE_DEFAULT = 420;
+const ASIDE_STORAGE_KEY = 'deck.asideW';
+const maxAside = () => (typeof window === 'undefined' ? Infinity : window.innerWidth * 0.5);
+
+type ModalState =
+  | { kind: 'new' | 'duplicate'; initial?: Partial<MetaValues> & { client_name?: string | null }; seedMd: string }
+  | { kind: 'edit'; initial: Partial<MetaValues> & { client_name?: string | null } }
+  | null;
+
 export function DeckStudio() {
   const [md, setMd] = useState(SAMPLE);
-  const [type, setType] = useState<DeckType>('comercial');
+  const [meta, setMeta] = useState<DeckMeta>(EMPTY_META);
+  const [currentDeckId, setCurrentDeckId] = useState<string | null>(null);
   const [deck, setDeck] = useState(() => compileDeck(SAMPLE, 'comercial'));
+  const [savedSnap, setSavedSnap] = useState(() => snap(SAMPLE, EMPTY_META));
+  const [clients, setClients] = useState<ClientRecord[]>([]);
+  const [modal, setModal] = useState<ModalState>(null);
+  const [guard, setGuard] = useState<{ run: () => void; targetName?: string } | null>(null);
+  const [toneOn, setToneOn] = useState(false);
+  const [saving, setSaving] = useState(false);
   const [copied, setCopied] = useState(false);
   const [viewer, setViewer] = useState(false);
+  const [asideW, setAsideW] = useState(ASIDE_DEFAULT);
+  const rowRef = useRef<HTMLDivElement>(null);
+  const draggingRef = useRef(false);
 
-  // Read a shared link from the URL hash: #view=1&md=... loads the deck and,
-  // when "view" is present, renders only the presentation (client-facing).
+  const dirty = useMemo(() => snap(md, meta) !== savedSnap, [md, meta, savedSnap]);
+
+  // Restore the saved editor width, then keep it within [min, 50% of viewport].
+  useEffect(() => {
+    const saved = Number(localStorage.getItem(ASIDE_STORAGE_KEY));
+    if (saved) setAsideW(Math.max(ASIDE_MIN, Math.min(saved, maxAside())));
+    const onResize = () => setAsideW((w) => Math.max(ASIDE_MIN, Math.min(w, maxAside())));
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
+
+  // Drag-to-resize the editor panel.
+  useEffect(() => {
+    const onMove = (e: PointerEvent) => {
+      if (!draggingRef.current) return;
+      const left = rowRef.current?.getBoundingClientRect().left ?? 0;
+      setAsideW(Math.max(ASIDE_MIN, Math.min(e.clientX - left, maxAside())));
+    };
+    const onUp = () => {
+      if (!draggingRef.current) return;
+      draggingRef.current = false;
+      document.body.style.userSelect = '';
+      document.body.style.cursor = '';
+    };
+    window.addEventListener('pointermove', onMove);
+    window.addEventListener('pointerup', onUp);
+    return () => {
+      window.removeEventListener('pointermove', onMove);
+      window.removeEventListener('pointerup', onUp);
+    };
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem(ASIDE_STORAGE_KEY, String(Math.round(asideW)));
+  }, [asideW]);
+
+  const startResize = (e: React.PointerEvent) => {
+    e.preventDefault();
+    draggingRef.current = true;
+    document.body.style.userSelect = 'none';
+    document.body.style.cursor = 'col-resize';
+  };
+
+  // Shared link from URL hash: #view=1&md=... loads + renders only the presentation.
   useEffect(() => {
     const params = new URLSearchParams(window.location.hash.slice(1));
     const mdParam = params.get('md');
@@ -128,26 +189,121 @@ export function DeckStudio() {
       try {
         const decoded = b64decode(mdParam);
         setMd(decoded);
-        setDeck(compileDeck(decoded, type));
+        setDeck(compileDeck(decoded, meta.type));
       } catch { /* ignore malformed link */ }
     }
     if (params.has('view')) {
       setViewer(true);
       document.body.classList.add('ix-viewer');
+    } else {
+      listClients().then(setClients).catch(() => {});
     }
     return () => document.body.classList.remove('ix-viewer');
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const pickType = (t: DeckType) => { setType(t); setDeck(compileDeck(md, t)); };
+  const clientNameFor = (id: string | null) => clients.find((c) => c.id === id)?.name ?? null;
 
-  const copyUrl = async () => {
+  const loadRecord = (rec: DeckRecord) => {
+    const m: DeckMeta = {
+      commercial_id: rec.commercial_id, client_id: rec.client_id, contact_emails: rec.contact_emails,
+      logo_path: rec.logo_path, budget_url: rec.budget_url, type: rec.type,
+    };
+    setCurrentDeckId(rec.id);
+    setMeta(m);
+    setMd(rec.md);
+    setDeck(compileDeck(rec.md, rec.type));
+    setSavedSnap(snap(rec.md, m));
+  };
+
+  const withGuard = (run: () => void, targetName?: string) => {
+    if (dirty) setGuard({ run, targetName });
+    else run();
+  };
+
+  // Toolbar actions
+  const onNew = () => withGuard(() => setModal({ kind: 'new', initial: { type: 'comercial' }, seedMd: SAMPLE }));
+
+  const onSave = async () => {
+    if (!currentDeckId) {
+      // Save-as: capture metadata first, keep current md.
+      setModal({ kind: 'new', initial: { type: meta.type }, seedMd: md });
+      return;
+    }
+    setSaving(true);
+    try {
+      await updateDeck(currentDeckId, { ...meta, md });
+      setSavedSnap(snap(md, meta));
+    } catch (e) {
+      // surface minimally; keep editor state
+      console.error(e);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const onOpenDeck = (item: DeckListItem) =>
+    withGuard(async () => {
+      try {
+        loadRecord(await getDeck(item.id));
+      } catch (e) {
+        console.error(e);
+      }
+    }, item.commercial_id);
+
+  const onDuplicateDeck = async (item: DeckListItem) => {
+    try {
+      const full = await getDeck(item.id);
+      setModal({
+        kind: 'duplicate',
+        seedMd: full.md,
+        initial: {
+          commercial_id: `${full.commercial_id} Copy`,
+          client_id: full.client_id,
+          client_name: clientNameFor(full.client_id),
+          contact_emails: full.contact_emails,
+          logo_path: full.logo_path,
+          budget_url: full.budget_url,
+          type: full.type,
+        },
+      });
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const onEditTitle = () => {
+    if (!currentDeckId) return;
+    setModal({
+      kind: 'edit',
+      initial: { ...meta, client_name: clientNameFor(meta.client_id) },
+    });
+  };
+
+  const onCopyUrl = async () => {
     const url = `${window.location.origin}${window.location.pathname}#view=1&md=${b64encode(md)}`;
     try {
       await navigator.clipboard.writeText(url);
       setCopied(true);
       setTimeout(() => setCopied(false), 1600);
     } catch { /* clipboard unavailable */ }
+  };
+
+  const onSubmitMeta = async (values: MetaValues) => {
+    if (!modal) return;
+    if (modal.kind === 'edit') {
+      if (!currentDeckId) return;
+      await updateDeck(currentDeckId, { ...values });
+      const m: DeckMeta = { ...values };
+      setMeta(m);
+      setDeck(compileDeck(md, m.type));
+      setSavedSnap(snap(md, m));
+    } else {
+      const rec = await createDeck({ ...values, md: modal.seedMd });
+      loadRecord(rec);
+    }
+    setModal(null);
+    listClients().then(setClients).catch(() => {});
   };
 
   // Client-facing presentation: only the deck, nothing internal.
@@ -160,45 +316,86 @@ export function DeckStudio() {
   }
 
   return (
-    <div style={{ display: 'flex', height: '100vh', background: '#F5F2ED' }}>
-      <aside
-        className="studio-controls"
-        style={{ width: 420, flexShrink: 0, padding: 20, borderRight: '1px solid #E0DAD2', display: 'flex', flexDirection: 'column', gap: 12, minHeight: 0 }}
-      >
-        <div style={{ font: '500 11px/1.4 var(--font-ibm-plex-mono, monospace)', letterSpacing: '.14em', textTransform: 'uppercase', color: '#75706B', flexShrink: 0 }}>
-          Presentaciones · contenido
-        </div>
-        <div style={{ display: 'flex', gap: 6, flexShrink: 0 }}>
-          {TYPES.map((t) => (
-            <button key={t.id} onClick={() => pickType(t.id)} style={{ ...seg, ...(type === t.id ? segOn : {}) }}>
-              {t.label}
-            </button>
-          ))}
-        </div>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', background: '#F5F2ED' }}>
+      <DeckToolbar
+        title={meta.commercial_id || null}
+        dirty={dirty}
+        saving={saving}
+        onNew={onNew}
+        onOpenDeck={onOpenDeck}
+        onDuplicateDeck={onDuplicateDeck}
+        onEditTitle={onEditTitle}
+        onSave={onSave}
+        onToggleTone={() => setToneOn((v) => !v)}
+        toneOn={toneOn}
+        onDownloadPdf={() => window.print()}
+        onCopyUrl={onCopyUrl}
+        copied={copied}
+      />
 
-        {/* The .md editor — the heart of the tool. Large and fixed; it never shrinks. */}
-        <textarea
-          value={md}
-          onChange={(e) => setMd(e.target.value)}
-          aria-label="Contenido markdown de la presentación"
-          spellCheck={false}
-          style={{ flex: 1, minHeight: 0, resize: 'none', padding: 12, border: '1px solid #E0DAD2', background: '#fff', font: '400 12px/1.55 var(--font-ibm-plex-mono, monospace)', color: '#1C1A17' }}
+      <div ref={rowRef} style={{ display: 'flex', flex: 1, minHeight: 0 }}>
+        <aside
+          className="studio-controls"
+          style={{ width: asideW, flexShrink: 0, padding: 20, display: 'flex', flexDirection: 'column', gap: 12, minHeight: 0 }}
+        >
+          <div style={{ font: '500 11px/1.4 var(--font-ibm-plex-mono, monospace)', letterSpacing: '.14em', textTransform: 'uppercase', color: '#75706B', flexShrink: 0 }}>
+            Presentaciones · contenido
+          </div>
+
+          <textarea
+            value={md}
+            onChange={(e) => setMd(e.target.value)}
+            aria-label="Contenido markdown de la presentación"
+            spellCheck={false}
+            style={{ flex: 1, minHeight: 0, resize: 'none', padding: 12, border: '1px solid #E0DAD2', background: '#fff', font: '400 12px/1.55 var(--font-ibm-plex-mono, monospace)', color: '#1C1A17' }}
+          />
+
+          <div style={{ display: 'flex', gap: 8, flexShrink: 0 }}>
+            <button style={btn} onClick={() => setDeck(compileDeck(md, meta.type))}>Generar</button>
+          </div>
+
+          {toneOn && (
+            <div style={{ flexShrink: 0, maxHeight: 160, overflowY: 'auto', borderTop: '1px solid #E0DAD2', paddingTop: 4 }}>
+              <ToneReport text={md} />
+            </div>
+          )}
+        </aside>
+
+        {/* Drag handle: resize the editor up to 50% of the viewport. */}
+        <div
+          role="separator"
+          aria-orientation="vertical"
+          aria-label="Ajustar ancho del editor"
+          onPointerDown={startResize}
+          style={{ width: 7, flexShrink: 0, cursor: 'col-resize', borderRight: '1px solid #E0DAD2', background: 'transparent', touchAction: 'none' }}
+          onMouseEnter={(e) => (e.currentTarget.style.background = '#E0DAD2')}
+          onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
         />
 
-        <div style={{ display: 'flex', gap: 8, flexShrink: 0 }}>
-          <button style={btn} onClick={() => setDeck(compileDeck(md, type))}>Generar</button>
-          <button style={btnGhost} onClick={() => window.print()}>Descargar PDF</button>
-          <button style={btnGhost} onClick={copyUrl}>{copied ? 'Copiado ✓' : 'Copiar URL'}</button>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <DeckRenderer deck={deck} />
         </div>
-
-        {/* Tone report in its own capped, scrollable panel so it can't shrink the editor. */}
-        <div style={{ flexShrink: 0, maxHeight: 160, overflowY: 'auto', borderTop: '1px solid #E0DAD2', paddingTop: 4 }}>
-          <ToneReport text={md} />
-        </div>
-      </aside>
-      <div style={{ flex: 1, minWidth: 0 }}>
-        <DeckRenderer deck={deck} />
       </div>
+
+      {modal && (
+        <DeckMetaModal
+          mode={modal.kind}
+          clients={clients}
+          initial={modal.initial}
+          onClose={() => setModal(null)}
+          onSubmit={onSubmitMeta}
+        />
+      )}
+
+      {guard && (
+        <ConfirmModal
+          title="Abrir presentación"
+          message={`${guard.targetName ? guard.targetName + ' · ' : ''}No has guardado cambios. ¿Quieres continuar?`}
+          confirmLabel="Aceptar"
+          onConfirm={() => { const run = guard.run; setGuard(null); run(); }}
+          onClose={() => setGuard(null)}
+        />
+      )}
     </div>
   );
 }
