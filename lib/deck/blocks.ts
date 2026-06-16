@@ -44,7 +44,8 @@ export function parseBudget(tokens: Token[]): { items: BudgetItem[]; total: stri
   let condIdx = -1;
   for (let i = 0; i < tokens.length; i++) {
     const t = tokens[i];
-    if (t.t === 'h' && t.level >= 3 && /condicion/i.test(t.text)) { condIdx = i; break; }
+    // es: condiciones · ca: condicions · en: conditions
+    if (t.t === 'h' && t.level >= 3 && /condicion|condition/i.test(t.text)) { condIdx = i; break; }
   }
   const condList = condIdx >= 0
     ? (tokens.slice(condIdx + 1).find((t) => t.t === 'ul') as Extract<Token, { t: 'ul' }> | undefined)
@@ -70,7 +71,14 @@ export function parseBudget(tokens: Token[]): { items: BudgetItem[]; total: stri
 }
 
 // The axis line sets the column count AND its unit label (the word the user typed).
-const UNIT_KEYS = new Set(['semanas', 'semana', 'meses', 'mes', 'días', 'dias', 'día', 'dia']);
+const UNIT_KEYS = new Set([
+  // es
+  'semanas', 'semana', 'meses', 'mes', 'días', 'dias', 'día', 'dia',
+  // ca
+  'setmanes', 'setmana', 'mesos', 'dies',
+  // en
+  'weeks', 'week', 'months', 'month', 'days', 'day',
+]);
 const capitalize = (w: string) => (w ? w.charAt(0).toUpperCase() + w.slice(1).toLowerCase() : w);
 
 export function parseGantt(body: string): { weeks: number; unit: string; rows: GanttRow[]; milestones: number[] } {

@@ -48,6 +48,15 @@ export function deleteDeck(id: string): Promise<{ ok: boolean }> {
   return fetch(`/api/decks/${id}`, { method: 'DELETE' }).then((r) => json<{ ok: boolean }>(r));
 }
 
+// ---- Translation ----
+export function translateDeck(md: string, target: 'es' | 'ca' | 'en'): Promise<{ md: string }> {
+  return fetch('/api/translate', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ md, target }),
+  }).then((r) => json<{ md: string }>(r));
+}
+
 // ---- Clients ----
 export function listClients(): Promise<ClientRecord[]> {
   return fetch('/api/clients', { cache: 'no-store' }).then((r) => json<ClientRecord[]>(r));

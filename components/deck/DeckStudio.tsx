@@ -4,7 +4,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { compileDeck } from '@/lib/deck';
 import type { DeckType } from '@/lib/deck';
 import type { ClientRecord, DeckListItem, DeckMeta, DeckRecord } from '@/lib/decks/types';
-import { createDeck, getDeck, listClients, updateDeck } from '@/lib/decks/api';
+import { createDeck, getDeck, listClients, translateDeck, updateDeck } from '@/lib/decks/api';
 import { splitSourceBlocks } from '@/lib/deck/source';
 import { DeckRenderer } from './DeckRenderer';
 import { ToneReport } from './ToneReport';
@@ -14,6 +14,8 @@ import { ConfirmModal } from './studio/ConfirmModal';
 import { SlideNavigator } from './studio/SlideNavigator';
 import { IconButton } from './studio/IconButton';
 import { LayoutGallery } from './studio/LayoutGallery';
+import { TranslateMenu } from './studio/TranslateMenu';
+import { TranslatingOverlay } from './studio/TranslatingOverlay';
 import { TEMPLATES } from '@/lib/deck/templates';
 
 const SAMPLE = TEMPLATES.comercial;
@@ -94,6 +96,8 @@ export function DeckStudio() {
   const [asideW, setAsideW] = useState(ASIDE_DEFAULT);
   const [navOpen, setNavOpen] = useState(true);
   const [galleryOpen, setGalleryOpen] = useState(false);
+  const [translating, setTranslating] = useState(false);
+  const [translateError, setTranslateError] = useState<string | null>(null);
   const rowRef = useRef<HTMLDivElement>(null);
   const draggingRef = useRef(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -161,6 +165,21 @@ export function DeckStudio() {
     ta.setSelectionRange(b.start, b.start);
     const ratio = md.length ? b.start / md.length : 0;
     ta.scrollTop = Math.max(0, ratio * ta.scrollHeight - ta.clientHeight / 3);
+  };
+
+  // Translate the deck content (markers/structure preserved server-side) and replace the editor.
+  const onTranslate = async (target: 'es' | 'ca' | 'en') => {
+    setTranslating(true);
+    setTranslateError(null);
+    try {
+      const { md: out } = await translateDeck(md, target);
+      setMd(out);
+      setDeck(compileDeck(out, meta.type));
+    } catch (e) {
+      setTranslateError(e instanceof Error ? e.message : 'No se pudo traducir');
+    } finally {
+      setTranslating(false);
+    }
   };
 
   // Shared link from URL hash: #view=1&md=... loads + renders only the presentation.
@@ -324,9 +343,10 @@ export function DeckStudio() {
         >
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, flexShrink: 0 }}>
             <span style={{ font: '500 11px/1.4 var(--font-ibm-plex-mono, monospace)', letterSpacing: '.14em', textTransform: 'uppercase', color: '#75706B' }}>
-              Presentaciones · contenido
+              CONTENIDO
             </span>
             <div style={{ display: 'flex', gap: 6 }}>
+              <TranslateMenu onPick={onTranslate} />
               <IconButton label="Galería de layouts" onClick={() => setGalleryOpen(true)}>
                 <GalleryIcon />
               </IconButton>
@@ -394,6 +414,10 @@ export function DeckStudio() {
       </div>
 
       {galleryOpen && <LayoutGallery onClose={() => setGalleryOpen(false)} />}
+
+      {(translating || translateError) && (
+        <TranslatingOverlay error={translateError} onClose={() => setTranslateError(null)} />
+      )}
 
       {modal && (
         <DeckMetaModal

@@ -12,6 +12,7 @@
     "build:ai-kit": "node scripts/build-ai-kit.mjs"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.102.0",
     "@mdx-js/loader": "^3.1.0",
     "@mdx-js/react": "^3.1.0",
     "@next/mdx": "^15.1.0",
