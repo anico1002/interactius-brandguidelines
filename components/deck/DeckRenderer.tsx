@@ -5,7 +5,7 @@ import type { Deck, Slide } from '@/lib/deck/types';
 import { ViewerContext } from './viewer';
 import { Cover, Statement, Bullets, Columns, Split, Gantt, Closing, Paragraph, Manifesto, Team, Clients, Budget, Acceptance, Contexto, ElReto, Objetivos, RoadmapPhases } from './layouts';
 
-function renderSlide(slide: Slide, page: number) {
+export function renderSlide(slide: Slide, page: number) {
   switch (slide.kind) {
     case 'cover': return <Cover slide={slide} />;
     case 'statement': return <Statement slide={slide} page={page} />;
@@ -47,7 +47,7 @@ export function DeckRenderer({ deck, viewer = false }: { deck: Deck; viewer?: bo
     <ViewerContext.Provider value={viewer}>
       <div className="ix-deck" ref={ref}>
         {deck.slides.map((slide, i) => (
-          <section className="slide" key={i}>
+          <section className="slide" key={i} id={`ix-slide-${i}`} data-ix-slide={i}>
             <div className="fwrap">{renderSlide(slide, i + 1)}</div>
           </section>
         ))}

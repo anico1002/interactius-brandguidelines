@@ -2,11 +2,11 @@
 import { useState } from 'react';
 import type { DeckListItem } from '@/lib/decks/types';
 import { OpenMenu } from './OpenMenu';
-import { btn, colors, menuPanel, toolbarBtn } from './ui';
+import { btn, colors, toolbarBtn } from './ui';
 
 const MONO = 'var(--font-ibm-plex-mono, monospace)';
 
-/* Top toolbar: Nueva · Abrir ▾ · <título editable> · Guardar · Revisar Tono · Descargar ▾ · Compartir ▾ */
+/* Top toolbar: Nueva · Abrir ▾ · <título editable> · Guardar · Revisar Tono · Descargar PDF · Compartir URL */
 export function DeckToolbar({
   title,
   dirty,
@@ -37,8 +37,6 @@ export function DeckToolbar({
   copied: boolean;
 }) {
   const [openMenu, setOpenMenu] = useState(false);
-  const [downloadMenu, setDownloadMenu] = useState(false);
-  const [shareMenu, setShareMenu] = useState(false);
 
   return (
     <div
@@ -83,35 +81,9 @@ export function DeckToolbar({
         Revisar Tono
       </button>
 
-      <div style={{ position: 'relative' }}>
-        <button style={toolbarBtn} onClick={() => { setDownloadMenu((v) => !v); setShareMenu(false); }}>Descargar ▾</button>
-        {downloadMenu && (
-          <>
-            <div style={{ position: 'fixed', inset: 0, zIndex: 60 }} onMouseDown={() => setDownloadMenu(false)} />
-            <div style={{ ...menuPanel, width: 200, right: 0, left: 'auto' }}>
-              <button style={menuItem} onClick={() => { setDownloadMenu(false); onDownloadPdf(); }}>PDF</button>
-            </div>
-          </>
-        )}
-      </div>
+      <button style={toolbarBtn} onClick={onDownloadPdf}>Descargar PDF</button>
 
-      <div style={{ position: 'relative' }}>
-        <button style={toolbarBtn} onClick={() => { setShareMenu((v) => !v); setDownloadMenu(false); }}>Compartir ▾</button>
-        {shareMenu && (
-          <>
-            <div style={{ position: 'fixed', inset: 0, zIndex: 60 }} onMouseDown={() => setShareMenu(false)} />
-            <div style={{ ...menuPanel, width: 220, right: 0, left: 'auto' }}>
-              <button style={menuItem} onClick={() => { setShareMenu(false); onCopyUrl(); }}>{copied ? 'Copiado ✓' : 'Copiar URL'}</button>
-            </div>
-          </>
-        )}
-      </div>
+      <button style={toolbarBtn} onClick={onCopyUrl}>{copied ? 'Copiado ✓' : 'Compartir URL'}</button>
     </div>
   );
 }
-
-const menuItem: React.CSSProperties = {
-  display: 'block', width: '100%', textAlign: 'left', appearance: 'none', border: 'none',
-  borderBottom: `1px solid ${colors.warmDark}`, background: 'transparent', cursor: 'pointer',
-  font: `500 11px/1 ${MONO}`, color: colors.dark, padding: '11px 12px',
-};

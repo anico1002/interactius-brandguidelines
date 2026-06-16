@@ -1,14 +1,17 @@
 'use client';
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
 import { compileDeck } from '@/lib/deck';
 import type { DeckType } from '@/lib/deck';
 import type { ClientRecord, DeckListItem, DeckMeta, DeckRecord } from '@/lib/decks/types';
 import { createDeck, getDeck, listClients, updateDeck } from '@/lib/decks/api';
+import { splitSourceBlocks } from '@/lib/deck/source';
 import { DeckRenderer } from './DeckRenderer';
 import { ToneReport } from './ToneReport';
 import { DeckToolbar } from './studio/DeckToolbar';
 import { DeckMetaModal, type MetaValues } from './studio/DeckMetaModal';
 import { ConfirmModal } from './studio/ConfirmModal';
+import { SlideNavigator } from './studio/SlideNavigator';
 
 const SAMPLE = `# Propuesta de colaboración
 Diagnóstico de criterios y arquitectura de decisión para el ecommerce de la marca.
@@ -116,6 +119,20 @@ const ASIDE_DEFAULT = 420;
 const ASIDE_STORAGE_KEY = 'deck.asideW';
 const maxAside = () => (typeof window === 'undefined' ? Infinity : window.innerWidth * 0.5);
 
+// Slide navigator strip.
+const NAV_WIDTH = 156;
+const NAV_STORAGE_KEY = 'deck.navOpen';
+
+function NavIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.3" aria-hidden>
+      <rect x="4.5" y="1.5" width="7" height="13" rx="1.2" />
+      <line x1="4.5" y1="6" x2="11.5" y2="6" />
+      <line x1="4.5" y1="10.5" x2="11.5" y2="10.5" />
+    </svg>
+  );
+}
+
 type ModalState =
   | { kind: 'new' | 'duplicate'; initial?: Partial<MetaValues> & { client_name?: string | null }; seedMd: string }
   | { kind: 'edit'; initial: Partial<MetaValues> & { client_name?: string | null } }
@@ -135,8 +152,11 @@ export function DeckStudio() {
   const [copied, setCopied] = useState(false);
   const [viewer, setViewer] = useState(false);
   const [asideW, setAsideW] = useState(ASIDE_DEFAULT);
+  const [navOpen, setNavOpen] = useState(true);
   const rowRef = useRef<HTMLDivElement>(null);
   const draggingRef = useRef(false);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const previewRef = useRef<HTMLDivElement>(null);
 
   const dirty = useMemo(() => snap(md, meta) !== savedSnap, [md, meta, savedSnap]);
 
@@ -179,6 +199,27 @@ export function DeckStudio() {
     draggingRef.current = true;
     document.body.style.userSelect = 'none';
     document.body.style.cursor = 'col-resize';
+  };
+
+  // Slide navigator visibility (persisted).
+  useEffect(() => {
+    const v = localStorage.getItem(NAV_STORAGE_KEY);
+    if (v != null) setNavOpen(v === '1');
+  }, []);
+  useEffect(() => {
+    localStorage.setItem(NAV_STORAGE_KEY, navOpen ? '1' : '0');
+  }, [navOpen]);
+
+  // Move the editor caret to a slide's source block and scroll it roughly into view.
+  const jumpToSource = (blockIndex: number) => {
+    const ta = textareaRef.current;
+    if (!ta) return;
+    const b = splitSourceBlocks(md)[blockIndex];
+    if (!b) return;
+    ta.focus();
+    ta.setSelectionRange(b.start, b.start);
+    const ratio = md.length ? b.start / md.length : 0;
+    ta.scrollTop = Math.max(0, ratio * ta.scrollHeight - ta.clientHeight / 3);
   };
 
   // Shared link from URL hash: #view=1&md=... loads + renders only the presentation.
@@ -333,16 +374,33 @@ export function DeckStudio() {
         copied={copied}
       />
 
-      <div ref={rowRef} style={{ display: 'flex', flex: 1, minHeight: 0 }}>
+      <div ref={rowRef} style={{ display: 'flex', flex: 1, minHeight: 0, overflow: 'hidden' }}>
         <aside
           className="studio-controls"
           style={{ width: asideW, flexShrink: 0, padding: 20, display: 'flex', flexDirection: 'column', gap: 12, minHeight: 0 }}
         >
-          <div style={{ font: '500 11px/1.4 var(--font-ibm-plex-mono, monospace)', letterSpacing: '.14em', textTransform: 'uppercase', color: '#75706B', flexShrink: 0 }}>
-            Presentaciones · contenido
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, flexShrink: 0 }}>
+            <span style={{ font: '500 11px/1.4 var(--font-ibm-plex-mono, monospace)', letterSpacing: '.14em', textTransform: 'uppercase', color: '#75706B' }}>
+              Presentaciones · contenido
+            </span>
+            <button
+              onClick={() => setNavOpen((v) => !v)}
+              aria-pressed={navOpen}
+              aria-label={navOpen ? 'Ocultar navegador de diapositivas' : 'Mostrar navegador de diapositivas'}
+              title={navOpen ? 'Ocultar navegador' : 'Mostrar navegador'}
+              style={{
+                appearance: 'none', border: '1px solid #E0DAD2', cursor: 'pointer', padding: '5px 6px', lineHeight: 0,
+                display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                background: navOpen ? '#1C1A17' : '#fff', color: navOpen ? '#F5F2ED' : '#1C1A17',
+                transition: 'background .25s cubic-bezier(0.16,1,0.3,1), color .25s cubic-bezier(0.16,1,0.3,1)',
+              }}
+            >
+              <NavIcon />
+            </button>
           </div>
 
           <textarea
+            ref={textareaRef}
             value={md}
             onChange={(e) => setMd(e.target.value)}
             aria-label="Contenido markdown de la presentación"
@@ -372,7 +430,23 @@ export function DeckStudio() {
           onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
         />
 
-        <div style={{ flex: 1, minWidth: 0 }}>
+        <AnimatePresence initial={false}>
+          {navOpen && (
+            <motion.div
+              key="nav"
+              initial={{ width: 0, opacity: 0 }}
+              animate={{ width: NAV_WIDTH, opacity: 1 }}
+              exit={{ width: 0, opacity: 0 }}
+              transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
+              // display:flex stretches the strip to the panel height so it scrolls internally.
+              style={{ flexShrink: 0, overflow: 'hidden', display: 'flex' }}
+            >
+              <SlideNavigator deck={deck} width={NAV_WIDTH} previewRef={previewRef} onJumpToSource={jumpToSource} />
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        <div ref={previewRef} className="deck-preview" style={{ flex: 1, minWidth: 0, minHeight: 0 }}>
           <DeckRenderer deck={deck} />
         </div>
       </div>

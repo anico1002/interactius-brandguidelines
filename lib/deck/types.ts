@@ -31,7 +31,9 @@ export type Slide =
 export type DeckType = 'comercial' | 'informe' | 'generica';
 
 export type SlideKind = Slide['kind'];
-export type Deck = { slides: Slide[] };
+/* `provenance[i]` is the source-block index that produced slide i, or null when the
+   slide was injected by compileDeck (manifesto/team/clients/acceptance). */
+export type Deck = { slides: Slide[]; provenance?: (number | null)[] };
 
 // Intermediate produced by parse.ts, consumed by classify.ts
 export type Token =

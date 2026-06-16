@@ -27,6 +27,11 @@
 .ix-deck *{box-sizing:border-box; margin:0; padding:0;
   -webkit-print-color-adjust:exact; print-color-adjust:exact;}
 
+/* In the editor the deck fills its panel (one scroll container) instead of 100vh, so the
+   page never scrolls under the fixed toolbar. The viewer (no .deck-preview) keeps 100vh. */
+.deck-preview{height:100%; min-height:0;}
+.deck-preview .ix-deck{height:100%;}
+
 /* Inline **negrita** from the .md → <strong>. Weight only; colour inherits per theme. */
 .ix-deck strong{font-weight:600;}
 
