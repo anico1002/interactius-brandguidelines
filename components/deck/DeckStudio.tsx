@@ -54,6 +54,8 @@ const maxAside = () => (typeof window === 'undefined' ? Infinity : window.innerW
 const NAV_WIDTH = 156;
 const NAV_STORAGE_KEY = 'deck.navOpen';
 
+const LANG_LABELS: Record<'es' | 'ca' | 'en', string> = { es: 'Castellano', ca: 'Català', en: 'Inglés' };
+
 function NavIcon() {
   return (
     <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.3" aria-hidden>
@@ -98,6 +100,7 @@ export function DeckStudio() {
   const [galleryOpen, setGalleryOpen] = useState(false);
   const [translating, setTranslating] = useState(false);
   const [translateError, setTranslateError] = useState<string | null>(null);
+  const [pendingTranslate, setPendingTranslate] = useState<'es' | 'ca' | 'en' | null>(null);
   const rowRef = useRef<HTMLDivElement>(null);
   const draggingRef = useRef(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -346,7 +349,7 @@ export function DeckStudio() {
               CONTENIDO
             </span>
             <div style={{ display: 'flex', gap: 6 }}>
-              <TranslateMenu onPick={onTranslate} />
+              <TranslateMenu onPick={setPendingTranslate} />
               <IconButton label="Galería de layouts" onClick={() => setGalleryOpen(true)}>
                 <GalleryIcon />
               </IconButton>
@@ -414,6 +417,16 @@ export function DeckStudio() {
       </div>
 
       {galleryOpen && <LayoutGallery onClose={() => setGalleryOpen(false)} />}
+
+      {pendingTranslate && (
+        <ConfirmModal
+          title="Traducir presentación"
+          message={`¿Estás seguro que quieres traducir la presentación al ${LANG_LABELS[pendingTranslate]}? Asegúrate de revisar bien todo, esta acción conlleva un coste por el uso de la API de Anthropic.`}
+          confirmLabel="Traducir"
+          onConfirm={() => { const t = pendingTranslate; setPendingTranslate(null); onTranslate(t); }}
+          onClose={() => setPendingTranslate(null)}
+        />
+      )}
 
       {(translating || translateError) && (
         <TranslatingOverlay error={translateError} onClose={() => setTranslateError(null)} />

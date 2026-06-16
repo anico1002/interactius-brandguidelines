@@ -26,15 +26,15 @@ export function TranslatingOverlay({ error, onClose }: { error?: string | null; 
             <button style={btn} onClick={onClose}>Cerrar</button>
           </>
         ) : (
-          <>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
             <Spinner />
             <div style={{ font: `500 12px/1.4 ${MONO}`, letterSpacing: '.1em', textTransform: 'uppercase', color: colors.dark, marginTop: 16 }}>
               Traduciendo…
             </div>
-            <div style={{ font: `400 11px/1.5 ${MONO}`, color: colors.ash, marginTop: 8 }}>
+            <div style={{ font: `400 11px/1.5 ${MONO}`, color: colors.ash, marginTop: 8, textAlign: 'center' }}>
               No cierres la ventana mientras se traduce el contenido.
             </div>
-          </>
+          </div>
         )}
       </div>
     </div>
