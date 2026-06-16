@@ -15,11 +15,11 @@ export function renderSlide(slide: Slide, page: number) {
     case 'gantt': return <Gantt slide={slide} page={page} />;
     case 'closing': return <Closing slide={slide} />;
     case 'paragraph': return <Paragraph slide={slide} page={page} />;
-    case 'manifesto': return <Manifesto page={page} />;
-    case 'team': return <Team page={page} />;
-    case 'clients': return <Clients page={page} />;
+    case 'manifesto': return <Manifesto slide={slide} page={page} />;
+    case 'team': return <Team slide={slide} page={page} />;
+    case 'clients': return <Clients slide={slide} page={page} />;
     case 'budget': return <Budget page={page} items={slide.items} total={slide.total} conditions={slide.conditions} />;
-    case 'acceptance': return <Acceptance page={page} />;
+    case 'acceptance': return <Acceptance slide={slide} page={page} />;
     case 'contexto': return <Contexto slide={slide} page={page} />;
     case 'elreto': return <ElReto slide={slide} page={page} />;
     case 'objetivos': return <Objetivos slide={slide} page={page} />;

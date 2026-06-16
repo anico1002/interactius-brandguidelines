@@ -5,7 +5,7 @@ import { inline } from '../inline';
 
 export function Split({ slide, page }: { slide: Extract<Slide, { kind: 'split' }>; page: number }) {
   return (
-    <div className={`frame theme-${slide.theme} split`}>
+    <div className={`frame theme-${slide.theme} split${slide.imageSide === 'left' ? ' img-left' : ''}`}>
       <Chrome page={page} />
       <ImageSlot image={slide.image} className="photo" />
       <div className="txt">

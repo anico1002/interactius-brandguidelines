@@ -97,6 +97,9 @@ body.ix-viewer main{padding:0 !important; margin:0 !important;}
 /* 2 · Image + text split — image always on the RIGHT (left stays light for the tab) */
 .ix-deck .split .photo{position:absolute; right:0; top:0; bottom:0; width:548px;}
 .ix-deck .split .txt{position:absolute; left:var(--ml); right:600px; top:150px;}
+/* split-izq: mirror of the default (image on the left, text on the right). */
+.ix-deck .split.img-left .photo{right:auto; left:0;}
+.ix-deck .split.img-left .txt{left:600px; right:var(--mr);}
 .ix-deck .split .eyebrow{margin-bottom:26px;}
 .ix-deck .split h2{font-family:var(--serif); font-weight:400; font-size:44px; line-height:1.08; margin-bottom:26px;}
 .ix-deck .split .txt .body{max-width:520px;}

@@ -12,82 +12,9 @@ import { DeckToolbar } from './studio/DeckToolbar';
 import { DeckMetaModal, type MetaValues } from './studio/DeckMetaModal';
 import { ConfirmModal } from './studio/ConfirmModal';
 import { SlideNavigator } from './studio/SlideNavigator';
+import { TEMPLATES } from '@/lib/deck/templates';
 
-const SAMPLE = `# Propuesta de colaboración
-Diagnóstico de criterios y arquitectura de decisión para el ecommerce de la marca.
-> cliente: Naturgy
-![Portada · universo visual](/universo/universo-02.jpg)
-
----
-
-CONTEXTO
-Naturgy tiene la oportunidad de establecer un **nuevo estándar digital** que unifique su experiencia online y aporte coherencia, escalabilidad y alineación con la marca. Hoy existen inconsistencias en experiencia, diseño y flujos que generan fricción y reducen eficiencia.
-
----
-
-EL RETO
-# Incrementar la conversión en el ecommerce principal de la marca
-![El reto](/universo/universo-01.jpg)
-
----
-
-## Objetivos
-- Establecer una línea base cuantificada del nivel de calidad actual por país, tipología de pedido y modalidad de recogida.
-- Identificar qué dimensiones, mercados o tipologías presentan mayor frecuencia y severidad de incidencias.
-- Comparar el rendimiento entre países para detectar diferencias operativas significativas.
-- Sentar las bases metodológicas y operativas para la Fase 2, en la que los evaluadores serán usuarios reales de la marca.
-![Objetivos](/universo/universo-03.jpg)
-
----
-
-## Roadmap
-Estimamos que la duración del proyecto será de 6 semanas.
-### Diagnóstico
-La fase de inmersión nos permite comprender el contexto actual y las expectativas del proyecto.
-- Kick Off: alineación de objetivos y definición del marco.
-- Inmersión inicial: revisión de fuentes internas y externas.
-### Discovery
-Investigación exhaustiva que combina la inmersión con la experiencia del usuario.
-- Mapa de tendencias y competencia.
-- Entrevistas en profundidad.
-### Ideación
-Fase de síntesis donde los insights se transforman en valor estratégico.
-- Workshop Business Model Canvas.
-- Workshop de Ideación.
-### Activación
-Definición de la estrategia de marca y la hoja de ruta práctica.
-- Análisis de áreas de oportunidad.
-- Roadmap de acciones estratégicas.
-
----
-
-## Roadmap
-\`\`\`gantt
-semanas: 8
-Diagnóstico: 1-1.5
-Discovery: 2-3
-Volumetría: 4-8
-hitos cliente: 1, 3, 5, 8
-\`\`\`
-
----
-
-## Presupuesto
-- Análisis Heurístico: 3.315 €
-- Benchmark Android/Mobile: 3.770 €
-- Inmersión + gestión: 3.991 €
-### Condiciones
-- Emisión de factura inicial por el 60% del total del proyecto una vez recibida la orden de compra al inicio del proyecto.
-- Emisión de factura final por el 40% del total del proyecto una vez realizada la entrega.
-- Al importe se le añadirá el IVA correspondiente de acuerdo con la legislación vigente.
-- Cobro de facturas a 30 días, día de pago habitual del cliente.
-- Esta propuesta económica tiene una validez de tres meses a partir de la fecha de la misma.
-
----
-
-# Gracias
-www.interactius.com
-`;
+const SAMPLE = TEMPLATES.comercial;
 
 const btn: React.CSSProperties = {
   appearance: 'none', border: '1px solid #1C1A17', background: '#1C1A17', color: '#F5F2ED',
@@ -134,7 +61,7 @@ function NavIcon() {
 }
 
 type ModalState =
-  | { kind: 'new' | 'duplicate'; initial?: Partial<MetaValues> & { client_name?: string | null }; seedMd: string }
+  | { kind: 'new' | 'duplicate'; initial?: Partial<MetaValues> & { client_name?: string | null }; seedMd: string; template?: boolean }
   | { kind: 'edit'; initial: Partial<MetaValues> & { client_name?: string | null } }
   | null;
 
@@ -263,7 +190,7 @@ export function DeckStudio() {
   };
 
   // Toolbar actions
-  const onNew = () => withGuard(() => setModal({ kind: 'new', initial: { type: 'comercial' }, seedMd: SAMPLE }));
+  const onNew = () => withGuard(() => setModal({ kind: 'new', initial: { type: 'comercial' }, seedMd: '', template: true }));
 
   const onSave = async () => {
     if (!currentDeckId) {
@@ -340,7 +267,9 @@ export function DeckStudio() {
       setDeck(compileDeck(md, m.type));
       setSavedSnap(snap(md, m));
     } else {
-      const rec = await createDeck({ ...values, md: modal.seedMd });
+      // "Nueva" seeds from the per-type starter template; save-as/duplicate keep their md.
+      const seed = modal.template ? TEMPLATES[values.type] : modal.seedMd;
+      const rec = await createDeck({ ...values, md: seed });
       loadRecord(rec);
     }
     setModal(null);

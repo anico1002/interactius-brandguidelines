@@ -6,22 +6,23 @@ export type GanttRow = { label: string; start: number; end: number; accent: Acce
 export type Column = { label: string; heading: string; body: string };
 export type Phase = { name: string; body: string; items: string[] };
 export type BudgetItem = { label: string; amount: string };
+export type Signer = { name?: string; role?: string; company?: string; nif?: string; address?: string };
 
 export type Slide =
   | { kind: 'cover'; theme: Theme; title: string; subtitle?: string; eyebrow?: string; client?: string; image?: ImageRef; footer?: string }
   | { kind: 'statement'; theme: Theme; eyebrow?: string; title: string }
   | { kind: 'bullets'; theme: Theme; title: string; items: string[] }
   | { kind: 'columns'; theme: Theme; title: string; columns: Column[] }
-  | { kind: 'split'; theme: Theme; eyebrow?: string; title: string; body?: string; image?: ImageRef }
-  | { kind: 'gantt'; theme: Theme; title: string; subtitle?: string; weeks: number; rows: GanttRow[]; milestones: number[]; note?: string }
+  | { kind: 'split'; theme: Theme; eyebrow?: string; title: string; body?: string; image?: ImageRef; imageSide?: 'left' | 'right' }
+  | { kind: 'gantt'; theme: Theme; title: string; subtitle?: string; weeks: number; unit?: string; rows: GanttRow[]; milestones: number[]; note?: string }
   | { kind: 'paragraph'; theme: Theme; eyebrow?: string; body: string }
   | { kind: 'closing'; theme: Theme; title: string; url?: string }
-  // Fixed brand pages (auto-inserted for commercial proposals; content is boilerplate).
-  | { kind: 'manifesto'; theme: Theme }
-  | { kind: 'team'; theme: Theme }
-  | { kind: 'clients'; theme: Theme }
+  // Brand pages: content is editable from the markdown; missing fields fall back to defaults.
+  | { kind: 'manifesto'; theme: Theme; title?: string; subtitle?: string }
+  | { kind: 'team'; theme: Theme; paragraphs?: string[]; image?: ImageRef }
+  | { kind: 'clients'; theme: Theme; image?: ImageRef }
   | { kind: 'budget'; theme: Theme; items: BudgetItem[]; total: string; conditions: string[] }
-  | { kind: 'acceptance'; theme: Theme }
+  | { kind: 'acceptance'; theme: Theme; title?: string; signer?: Signer; note?: string; cta?: string; signatureImage?: ImageRef }
   // Keyword-mapped commercial sections (ref slides 22/29/31/32/35)
   | { kind: 'contexto'; theme: Theme; body: string; long: boolean }
   | { kind: 'elreto'; theme: Theme; title: string; image?: ImageRef }
@@ -43,6 +44,7 @@ export type Token =
   | { t: 'quote'; text: string }
   | { t: 'ul'; items: string[] }
   | { t: 'image'; alt: string; src: string }
-  | { t: 'fence'; lang: string; body: string };
+  | { t: 'fence'; lang: string; body: string }
+  | { t: 'layout'; name: string };
 
 export type SlideSource = { tokens: Token[]; index: number };

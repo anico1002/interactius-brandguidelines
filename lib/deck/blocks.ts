@@ -69,8 +69,13 @@ export function parseBudget(tokens: Token[]): { items: BudgetItem[]; total: stri
   return { items, total, conditions };
 }
 
-export function parseGantt(body: string): { weeks: number; rows: GanttRow[]; milestones: number[] } {
+// The axis line sets the column count AND its unit label (the word the user typed).
+const UNIT_KEYS = new Set(['semanas', 'semana', 'meses', 'mes', 'días', 'dias', 'día', 'dia']);
+const capitalize = (w: string) => (w ? w.charAt(0).toUpperCase() + w.slice(1).toLowerCase() : w);
+
+export function parseGantt(body: string): { weeks: number; unit: string; rows: GanttRow[]; milestones: number[] } {
   let weeks = 8;
+  let unit = 'Semanas';
   const rows: GanttRow[] = [];
   let milestones: number[] = [];
   for (const raw of body.split('\n')) {
@@ -79,7 +84,7 @@ export function parseGantt(body: string): { weeks: number; rows: GanttRow[]; mil
     const [keyPart, valPart] = splitOnce(line, ':');
     const key = keyPart.trim().toLowerCase();
     const val = (valPart ?? '').trim();
-    if (key === 'semanas') { weeks = parseInt(val, 10) || weeks; continue; }
+    if (UNIT_KEYS.has(key)) { weeks = parseInt(val, 10) || weeks; unit = capitalize(keyPart.trim()); continue; }
     if (key.startsWith('hitos')) {
       milestones = val.split(',').map((n) => parseInt(n.trim(), 10)).filter((n) => !isNaN(n));
       continue;
@@ -87,7 +92,7 @@ export function parseGantt(body: string): { weeks: number; rows: GanttRow[]; mil
     const [start, end] = parseRange(val);
     rows.push({ label: keyPart.trim(), start, end, accent: ACCENTS[rows.length % ACCENTS.length] });
   }
-  return { weeks, rows, milestones };
+  return { weeks, unit, rows, milestones };
 }
 
 function splitOnce(s: string, sep: string): [string, string | undefined] {

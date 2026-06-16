@@ -85,6 +85,16 @@ test('gantt fence → gantt', () => {
   assert.equal(s.rows[0].label, 'Diagnóstico');
 });
 
+test('[ly: gantt] reads the spec from plain key:value lines (no fence needed)', () => {
+  const s = one('[ly: gantt]\n## Roadmap\nsemanas: 8\nDiagnóstico: 1-1.5\nDiscovery: 2-3\nhitos cliente: 1, 3') as any;
+  assert.equal(s.kind, 'gantt');
+  assert.equal(s.weeks, 8);
+  assert.equal(s.rows.length, 2);
+  assert.equal(s.rows[0].label, 'Diagnóstico');
+  assert.deepEqual(s.milestones, [1, 3]);
+  assert.equal(s.subtitle, undefined); // spec lines must not leak into the subtitle
+});
+
 test('last slide titled Gracias → closing', () => {
   const s = classify(parse('# Gracias\nwww.interactius.com')[0], 2, 3) as any;
   assert.equal(s.kind, 'closing');
@@ -94,4 +104,35 @@ test('last slide titled Gracias → closing', () => {
 test('unknown shape (heading + paragraph only) → paragraph fallback', () => {
   const s = one('## Notas\nSolo un párrafo suelto.') as any;
   assert.equal(s.kind, 'paragraph');
+});
+
+// --- Explicit layout markers: design no longer depends on the copies ---
+
+test('[ly: lista] forces bullets even with no list in the content', () => {
+  const s = one('[ly: lista]\n## Cómo\nSolo un párrafo, sin viñetas.') as any;
+  assert.equal(s.kind, 'bullets');
+  assert.deepEqual(s.items, []);
+});
+
+test('a marker overrides what inference would pick', () => {
+  // content (heading + list) would infer bullets; the marker forces columns.
+  const s = one('[ly: columnas]\n## Enfoque\n- a\n- b') as any;
+  assert.equal(s.kind, 'columns');
+});
+
+test('split-der (default) image right, split-izq image left', () => {
+  const der = one('[ly: split-der]\n## T\n![a](u.jpg)\nTexto.') as any;
+  const izq = one('[ly: split-izq]\n## T\n![a](u.jpg)\nTexto.') as any;
+  assert.equal(der.kind, 'split');
+  assert.equal(der.imageSide, 'right');
+  assert.equal(izq.imageSide, 'left');
+});
+
+test('[ly: aceptacion] reads signer key:value lines; defaults when absent', () => {
+  const withSigner = one('[ly: aceptacion]\nnombre: Ana Pérez\ncargo: CEO') as any;
+  assert.equal(withSigner.kind, 'acceptance');
+  assert.equal(withSigner.signer.name, 'Ana Pérez');
+  assert.equal(withSigner.signer.role, 'CEO');
+  const bare = one('[ly: aceptacion]') as any;
+  assert.equal(bare.signer, undefined); // component falls back to default block
 });

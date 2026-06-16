@@ -17,19 +17,10 @@ test('splitSourceBlocks yields one block per --- section with correct ranges', (
   for (let i = 1; i < blocks.length; i++) assert.ok(blocks[i].start > blocks[i - 1].end);
 });
 
-test('provenance is 1:1 with source blocks when nothing is injected', () => {
-  const deck = compileDeck(md, 'generica');
-  assert.deepEqual(deck.provenance, [0, 1, 2, 3, 4, 5]);
-});
-
-test('injected slides get null provenance, content slides keep their source index', () => {
+test('provenance is 1:1 with source blocks (no injection, any type)', () => {
+  assert.deepEqual(compileDeck(md, 'generica').provenance, [0, 1, 2, 3, 4, 5]);
+  // commercial no longer injects, so provenance is identical and fully non-null.
   const deck = compileDeck(md, 'comercial');
-  // cover (src 0), then 3 injected (null,null,null), then the rest of the sources
-  assert.equal(deck.provenance?.[0], 0);
-  assert.deepEqual(deck.provenance?.slice(1, 4), [null, null, null]);
-  // every injected slide aligns with a null, every content slide with a number
-  deck.slides.forEach((s, i) => {
-    const injected = ['manifesto', 'team', 'clients', 'acceptance'].includes(s.kind);
-    assert.equal(deck.provenance?.[i] === null, injected, `slide ${i} (${s.kind})`);
-  });
+  assert.deepEqual(deck.provenance, [0, 1, 2, 3, 4, 5]);
+  assert.ok(deck.provenance?.every((p) => p !== null));
 });

@@ -17,6 +17,10 @@ function tokenize(chunk: string): Token[] {
     const trimmed = line.trim();
     if (!trimmed) { i++; continue; }
 
+    // Explicit layout marker: `[ly: nombre]` (declares the slide's layout).
+    const ly = trimmed.match(/^\[ly:?\s+([a-z0-9-]+)\]$/i);
+    if (ly) { tokens.push({ t: 'layout', name: ly[1].toLowerCase() }); i++; continue; }
+
     const fence = trimmed.match(/^```(\w+)?\s*$/);
     if (fence) {
       const lang = fence[1] ?? '';

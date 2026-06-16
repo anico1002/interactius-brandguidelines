@@ -22,7 +22,7 @@ export function Gantt({ slide, page }: { slide: Extract<Slide, { kind: 'gantt' }
       <div className="title">{slide.title}</div>
       {slide.subtitle && <div className="sub">{slide.subtitle}</div>}
       <div className="chart" style={{ gridTemplateColumns: cols }}>
-        <div className="ghd lbl">Semanas</div>
+        <div className="ghd lbl">{slide.unit ?? 'Semanas'}</div>
         {weeks.map((n) => (
           <div className="ghd" key={`h${n}`}>{n}</div>
         ))}

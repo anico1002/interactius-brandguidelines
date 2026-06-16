@@ -11,15 +11,50 @@ hay IA en runtime, todo sale de estas reglas. Pulsa **Generar** para recompilar.
 - **Separar diapositivas**: una línea con `---` (tres guiones o más) sola, con
   una línea en blanco antes y después.
 - Cada bloque entre separadores se convierte en **una** diapositiva.
-- El tipo de diapositiva se **deduce** del contenido (ver §4). No se declara a mano.
+- **Declara el layout** con un marcador `[ly: nombre]` en la primera línea del bloque
+  (ver §1.1). Si no pones marcador, el tipo se **deduce** del contenido (§4), como antes.
 
 ```markdown
+[ly: portada]
 # Primera diapositiva
 
 ---
 
+[ly: lista]
 ## Segunda diapositiva
+- Punto uno
+- Punto dos
 ```
+
+### 1.1 Marcadores de layout (`[ly: …]`)
+
+El marcador **elige el diseño** con independencia de los copies. El contenido del bloque
+solo rellena los huecos de ese layout.
+
+| Marcador | Diseño | Rellena con |
+|---|---|---|
+| `[ly: portada]` | Portada | título (`#`), subtítulo, `> cliente:`, imagen de fondo |
+| `[ly: cierre]` | Cierre | título, url |
+| `[ly: enunciado]` | Antetítulo + título grande | `MAYÚSCULAS` + `#` |
+| `[ly: texto]` | Párrafo | antetítulo + párrafo |
+| `[ly: lista]` | Lista de viñetas | título + `- ítems` |
+| `[ly: columnas]` | Columnas numeradas | título + varios `###` (subtítulo + cuerpo) |
+| `[ly: split-der]` | Texto + imagen a la **derecha** (default) | antetítulo, título, párrafo, imagen |
+| `[ly: split-izq]` | Texto + imagen a la **izquierda** | igual que split-der, espejado |
+| `[ly: contexto]` | Contexto | un párrafo |
+| `[ly: reto]` | El reto (imagen + título) | título + imagen |
+| `[ly: objetivos]` | Objetivos (lista numerada + imagen) | título + `- ítems` + imagen |
+| `[ly: roadmap]` | Roadmap por fases | título + varios `###` (fase + cuerpo + `- tareas`) |
+| `[ly: gantt]` | Diagrama de Gantt | líneas `clave: valor` (o bloque ```` ```gantt ````) — §5 |
+| `[ly: presupuesto]` | Presupuesto | `- Partida: importe` + `### Condiciones` |
+| `[ly: manifiesto]` | Manifiesto de marca | título + subtítulo (*opcional*; default de marca) |
+| `[ly: equipo]` | Equipo | párrafos + imagen (*opcional*; default de marca) |
+| `[ly: clientes]` | Muro de clientes | imagen (*opcional*; default de marca) |
+| `[ly: aceptacion]` | Aprobación / firma | título + `nombre:`/`cargo:`/`empresa:`/`nif:`/`direccion:`/`aviso:`/`cta:` + imagen firma (*todo opcional*; default de marca) |
+
+Las páginas de marca (`manifiesto`, `equipo`, `clientes`, `aceptacion`) **ya no se insertan
+solas**: se declaran como cualquier otra. Sin contenido propio muestran el texto/imagen por
+defecto de la marca; lo que escribas lo sobreescribe.
 
 ---
 
@@ -27,6 +62,7 @@ hay IA en runtime, todo sale de estas reglas. Pulsa **Generar** para recompilar.
 
 | Escribes | Se interpreta como |
 |---|---|
+| `[ly: nombre]` | Marcador de layout (§1.1); en la primera línea del bloque |
 | `# … ######` | Encabezado (el número de `#` marca el nivel) |
 | `TEXTO EN MAYÚSCULAS` | Antetítulo (*eyebrow*) — máx. 48 car., sin `.` `;` `:` |
 | `- texto` o `* texto` | Ítem de lista |
@@ -82,18 +118,21 @@ El generador prueba estas reglas **en orden** y se queda con la primera que enca
 
 ## 5. Diagrama de Gantt
 
+Con el marcador `[ly: gantt]`, escribe la spec como **líneas sueltas** `clave: valor`
+(forma recomendada). También sigue valiendo dentro de un bloque ```` ```gantt ```` (compatibilidad).
+
 ````markdown
+[ly: gantt]
 ## Roadmap
-```gantt
 semanas: 8
 Diagnóstico: 1
 Discovery: 2-3
 Volumetría: 4-8
 hitos cliente: 1, 3, 5, 8
-```
 ````
 
-- `semanas: N` → nº de columnas (por defecto 8).
+- `semanas: N` → nº de columnas (por defecto 8). La **palabra** que uses es la
+  etiqueta del eje: `meses: 6` muestra «Meses», `días: 30` muestra «Días».
 - `Etiqueta: N` → barra de una semana en la semana N. `Etiqueta: inicio-fin` → barra de rango.
 - **Medias semanas**: usa `.5` en cualquier extremo del rango; la barra dibuja
   media celda.
