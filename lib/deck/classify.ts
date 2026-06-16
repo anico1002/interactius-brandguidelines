@@ -1,6 +1,7 @@
 import type { Slide, SlideSource, Token, Theme, Column, Signer } from './types.ts';
 import { themeFor } from './theme.ts';
 import { parseGantt, parseBudget } from './blocks.ts';
+import { LAYOUT_MAP } from './catalog.ts';
 
 const find = <T extends Token['t']>(tokens: Token[], t: T) =>
   tokens.find((x) => x.t === t) as Extract<Token, { t: T }> | undefined;
@@ -48,27 +49,8 @@ function kvLines(tokens: Token[]): Record<string, string> {
   return out;
 }
 
-// Marker name → slide kind. `split-der`/`split-izq` both map to split (image side differs).
-const LAYOUT_MAP: Record<string, Slide['kind']> = {
-  portada: 'cover',
-  cierre: 'closing',
-  enunciado: 'statement',
-  texto: 'paragraph',
-  lista: 'bullets',
-  columnas: 'columns',
-  'split-izq': 'split',
-  'split-der': 'split',
-  contexto: 'contexto',
-  reto: 'elreto',
-  objetivos: 'objetivos',
-  roadmap: 'roadmapPhases',
-  gantt: 'gantt',
-  presupuesto: 'budget',
-  manifiesto: 'manifesto',
-  equipo: 'team',
-  clientes: 'clients',
-  aceptacion: 'acceptance',
-};
+// Marker name → slide kind comes from the layout catalog (single source of truth).
+// `split-der`/`split-izq` both map to split (image side differs, set in buildSlide).
 
 type Ctx = {
   tokens: Token[];

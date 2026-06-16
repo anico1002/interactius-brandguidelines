@@ -12,6 +12,8 @@ import { DeckToolbar } from './studio/DeckToolbar';
 import { DeckMetaModal, type MetaValues } from './studio/DeckMetaModal';
 import { ConfirmModal } from './studio/ConfirmModal';
 import { SlideNavigator } from './studio/SlideNavigator';
+import { IconButton } from './studio/IconButton';
+import { LayoutGallery } from './studio/LayoutGallery';
 import { TEMPLATES } from '@/lib/deck/templates';
 
 const SAMPLE = TEMPLATES.comercial;
@@ -60,6 +62,17 @@ function NavIcon() {
   );
 }
 
+function GalleryIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.3" aria-hidden>
+      <rect x="1.5" y="1.5" width="5.5" height="5.5" rx="1" />
+      <rect x="9" y="1.5" width="5.5" height="5.5" rx="1" />
+      <rect x="1.5" y="9" width="5.5" height="5.5" rx="1" />
+      <rect x="9" y="9" width="5.5" height="5.5" rx="1" />
+    </svg>
+  );
+}
+
 type ModalState =
   | { kind: 'new' | 'duplicate'; initial?: Partial<MetaValues> & { client_name?: string | null }; seedMd: string; template?: boolean }
   | { kind: 'edit'; initial: Partial<MetaValues> & { client_name?: string | null } }
@@ -80,6 +93,7 @@ export function DeckStudio() {
   const [viewer, setViewer] = useState(false);
   const [asideW, setAsideW] = useState(ASIDE_DEFAULT);
   const [navOpen, setNavOpen] = useState(true);
+  const [galleryOpen, setGalleryOpen] = useState(false);
   const rowRef = useRef<HTMLDivElement>(null);
   const draggingRef = useRef(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -312,20 +326,19 @@ export function DeckStudio() {
             <span style={{ font: '500 11px/1.4 var(--font-ibm-plex-mono, monospace)', letterSpacing: '.14em', textTransform: 'uppercase', color: '#75706B' }}>
               Presentaciones · contenido
             </span>
-            <button
-              onClick={() => setNavOpen((v) => !v)}
-              aria-pressed={navOpen}
-              aria-label={navOpen ? 'Ocultar navegador de diapositivas' : 'Mostrar navegador de diapositivas'}
-              title={navOpen ? 'Ocultar navegador' : 'Mostrar navegador'}
-              style={{
-                appearance: 'none', border: '1px solid #E0DAD2', cursor: 'pointer', padding: '5px 6px', lineHeight: 0,
-                display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-                background: navOpen ? '#1C1A17' : '#fff', color: navOpen ? '#F5F2ED' : '#1C1A17',
-                transition: 'background .25s cubic-bezier(0.16,1,0.3,1), color .25s cubic-bezier(0.16,1,0.3,1)',
-              }}
-            >
-              <NavIcon />
-            </button>
+            <div style={{ display: 'flex', gap: 6 }}>
+              <IconButton label="Galería de layouts" onClick={() => setGalleryOpen(true)}>
+                <GalleryIcon />
+              </IconButton>
+              <IconButton
+                label={navOpen ? 'Ocultar navegador' : 'Mostrar navegador'}
+                active={navOpen}
+                ariaPressed={navOpen}
+                onClick={() => setNavOpen((v) => !v)}
+              >
+                <NavIcon />
+              </IconButton>
+            </div>
           </div>
 
           <textarea
@@ -379,6 +392,8 @@ export function DeckStudio() {
           <DeckRenderer deck={deck} />
         </div>
       </div>
+
+      {galleryOpen && <LayoutGallery onClose={() => setGalleryOpen(false)} />}
 
       {modal && (
         <DeckMetaModal
