@@ -19,7 +19,7 @@ export type Slide =
   | { kind: 'closing'; theme: Theme; title: string; url?: string }
   // Brand pages: content is editable from the markdown; missing fields fall back to defaults.
   | { kind: 'manifesto'; theme: Theme; title?: string; subtitle?: string }
-  | { kind: 'team'; theme: Theme; paragraphs?: string[]; image?: ImageRef }
+  | { kind: 'team'; theme: Theme; paragraphs?: string[]; items?: string[]; image?: ImageRef }
   | { kind: 'clients'; theme: Theme; image?: ImageRef }
   | { kind: 'budget'; theme: Theme; title?: string; items: BudgetItem[]; total: string; conditions: string[]; conditionsLabel?: string }
   | { kind: 'acceptance'; theme: Theme; title?: string; signer?: Signer; note?: string; cta?: string; signatureImage?: ImageRef }

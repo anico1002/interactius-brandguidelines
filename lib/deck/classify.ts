@@ -166,7 +166,7 @@ function buildSlide(kind: Slide['kind'], c: Ctx, marker?: string): Slide {
     case 'manifesto':
       return { kind, theme: T('manifesto'), title: title || paras[0]?.text, subtitle: c.h ? paras[0]?.text : paras[1]?.text };
     case 'team':
-      return { kind, theme: T('team'), paragraphs: paras.length ? paras.map((p) => p.text) : undefined, image: imageRef(c) };
+      return { kind, theme: T('team'), paragraphs: paras.length ? paras.map((p) => p.text) : undefined, items: list?.items, image: imageRef(c) };
     case 'clients':
       return { kind, theme: T('clients'), image: imageRef(c) };
     case 'acceptance': {

@@ -66,6 +66,27 @@ test('acceptance signer/aviso/cta come from clave:valor lines', () => {
   assert.equal(s.signatureImage.src, '/presentaciones/sign.png');
 });
 
+test('team renders intro paragraph AND the bullet list (list no longer dropped)', () => {
+  const md = [
+    '[ly: equipo]',
+    'El nostre equip multidisciplinari per a TMB:',
+    '- **Consultoria UX:** Especialistes en auditories.',
+    '- **Research i Estratègia:** Experts en recerca.',
+    '- **Gestió de Projecte:** Coordinació contínua.',
+  ].join('\n');
+  const s = one(md);
+  assert.equal(s.kind, 'team');
+  assert.deepEqual(s.paragraphs, ['El nostre equip multidisciplinari per a TMB:']);
+  assert.equal(s.items.length, 3);
+  assert.equal(s.items[0], '**Consultoria UX:** Especialistes en auditories.');
+});
+
+test('team without a list leaves items undefined (falls back to paragraphs/defaults)', () => {
+  const s = one('[ly: equipo]\nUn solo párrafo.');
+  assert.equal(s.kind, 'team');
+  assert.equal(s.items, undefined);
+});
+
 test('manifesto title keeps the / emphasis / slashes verbatim', () => {
   const s = one('[ly: manifiesto]\n# Ayudamos en momentos de / transformación / con criterio.\nSub.');
   assert.equal(s.kind, 'manifesto');

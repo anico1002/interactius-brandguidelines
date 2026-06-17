@@ -22,6 +22,16 @@ export function Team({ slide, page }: { slide: Extract<Slide, { kind: 'team' }>;
         {paras.map((p, i) => (
           <p key={i}>{inline(p)}</p>
         ))}
+        {slide.items?.length ? (
+          <ul className="list">
+            {slide.items.map((it, i) => (
+              <li key={i}>
+                <span className="dia">◆</span>
+                <span className="body">{inline(it)}</span>
+              </li>
+            ))}
+          </ul>
+        ) : null}
       </div>
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img className="grid" src={slide.image?.src ?? DEFAULT_IMG} alt={slide.image?.alt ?? 'Equipo Interactius'} />
