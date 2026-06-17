@@ -149,16 +149,16 @@ function buildSlide(kind: Slide['kind'], c: Ctx, marker?: string): Slide {
       const spec = fenceBody ?? [...paras.map((p) => p.text), ...(list?.items ?? [])].filter((l) => l.includes(':')).join('\n');
       const g = parseGantt(spec);
       // With a fence the paragraphs are subtitle/note; without, the paragraphs ARE the spec.
-      return { kind, theme: T('gantt'), title: title || 'Roadmap', subtitle: fenceBody ? paras[0]?.text : undefined, weeks: g.weeks, unit: g.unit, rows: g.rows, milestones: g.milestones, note: fenceBody ? paras[1]?.text : undefined };
+      return { kind, theme: T('gantt'), title: title || 'Roadmap', subtitle: fenceBody ? paras[0]?.text : undefined, weeks: g.weeks, unit: g.unit, rows: g.rows, milestones: g.milestones, milestoneLabel: g.milestoneLabel, note: fenceBody ? paras[1]?.text : undefined };
     }
     case 'budget':
-      return { kind, theme: 'light', ...parseBudget(tokens) };
+      return { kind, theme: 'light', title: title || undefined, ...parseBudget(tokens) };
     case 'contexto': {
       const body = paras.map((p) => p.text).join(' ') || quote?.text || '';
-      return { kind, theme: T('contexto'), body, long: body.length >= 150 };
+      return { kind, theme: T('contexto'), eyebrow: caps?.text, body, long: body.length >= 150 };
     }
     case 'elreto':
-      return { kind, theme: T('elreto'), title, image: imageRef(c) };
+      return { kind, theme: T('elreto'), eyebrow: caps?.text, title, image: imageRef(c) };
     case 'objetivos':
       return { kind, theme: T('objetivos'), title, items: list?.items ?? [], image: imageRef(c) };
     case 'roadmapPhases':

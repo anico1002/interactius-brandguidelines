@@ -51,7 +51,7 @@ export function Gantt({ slide, page }: { slide: Extract<Slide, { kind: 'gantt' }
           );
         })}
         <div className="rlabel" style={{ background: 'transparent', fontWeight: 600, color: 'var(--dark)' }}>
-          Cliente
+          {slide.milestoneLabel ?? 'Cliente'}
         </div>
         {weeks.map((n) => (
           <div className="mil" key={`m${n}`}>{slide.milestones.includes(n) ? '◆' : ''}</div>

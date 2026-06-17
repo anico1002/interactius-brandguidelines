@@ -53,8 +53,9 @@ solo rellena los huecos de ese layout.
 | `[ly: aceptacion]` | Aprobación / firma | título + `nombre:`/`cargo:`/`empresa:`/`nif:`/`direccion:`/`aviso:`/`cta:` + imagen firma (*todo opcional*; default de marca) |
 
 Las páginas de marca (`manifiesto`, `equipo`, `clientes`, `aceptacion`) **ya no se insertan
-solas**: se declaran como cualquier otra. Sin contenido propio muestran el texto/imagen por
-defecto de la marca; lo que escribas lo sobreescribe.
+solas**: se declaran como cualquier otra y la plantilla Comercial las trae con su contenido
+escrito en el `.md` (editable y traducible). Si borras ese contenido, vuelve el texto/imagen
+por defecto de la marca (ver §8).
 
 ---
 
@@ -75,6 +76,10 @@ defecto de la marca; lo que escribas lo sobreescribe.
 **Negrita**: envuelve el texto en `**dobles asteriscos**`. Funciona en el cuerpo
 (párrafos, viñetas, objetivos, columnas, fases del roadmap, condiciones del
 presupuesto). **No** se aplica en los títulos grandes (tipografía display).
+
+**Énfasis del manifiesto**: en el título de `[ly: manifiesto]`, envuelve una palabra entre
+barras con espacios — `/ palabra /` — para el realce de marca (p. ej. `/ transformación /`).
+Se conservan las barras y, al traducir, solo cambia la palabra de dentro.
 
 ---
 
@@ -139,7 +144,8 @@ hitos cliente: 1, 3, 5, 8
   - `Discovery: 2-3.5` → semanas 2 y 3 + la primera mitad de la 4.
   - `Cierre: 4-4.5` → solo la primera mitad de la semana 4.
   - `Kick Off: 0.5` → media semana al inicio (un valor suelto con decimal).
-- `hitos …: a, b, c` → semanas con hito.
+- `hitos …: a, b, c` → semanas con hito. La **palabra** tras `hitos` es la etiqueta de la fila
+  de hitos: `hitos cliente: 1, 3` muestra «Cliente» (por defecto «Cliente» si la omites).
 - Los colores de las barras rotan automáticamente (opal · burdeos · esmeralda).
 
 ---
@@ -185,12 +191,17 @@ Texto introductorio de la fase.
 
 ---
 
-## 8. Páginas automáticas (solo tipo «Comercial»)
+## 8. Páginas de marca (manifiesto · equipo · clientes · aceptación)
 
-Con el deck en modo **Comercial** se insertan solas y **no** se escriben en el `.md`:
+**Ya no se insertan solas.** Son diapositivas como cualquier otra: se declaran con su marcador
+(`[ly: manifiesto]`, `[ly: equipo]`, `[ly: clientes]`, `[ly: aceptacion]`) y la plantilla
+**Comercial** las trae con su contenido de marca **escrito en el `.md`**, de modo que es
+editable en el editor y **se traduce** con el resto del deck.
 
-- Tras la portada: **Manifiesto**, **Equipo**, **Clientes**.
-- Tras cada **Presupuesto**: **Aprobación del presupuesto** (firma).
+- Si borras el contenido de un bloque de marca, vuelve a salir el texto/imagen por defecto.
+- Aceptación: el firmante usa líneas `clave: valor` (`nombre:`, `cargo:`, `empresa:`, `nif:`,
+  `direccion:`, `aviso:`, `cta:`) + `![Firma](…)`. Las **claves** se mantienen tal cual al
+  traducir; se traducen los valores de `cargo`/`aviso`/`cta` (los nombres propios no).
 
 ---
 

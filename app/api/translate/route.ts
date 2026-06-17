@@ -18,10 +18,14 @@ Preserve the document EXACTLY otherwise:
 - Keep every line break, blank line and the \`---\` slide separators.
 - Keep all Markdown syntax: #, ##, ###, "- " lists, "> " quotes, **bold**, and fenced \`\`\` blocks.
 - NEVER translate or alter a line that starts with \`[ly:\` — copy it verbatim (it is a layout marker).
-- Keep these tokens verbatim (do not translate them): the literal word \`cliente\` in a \`> cliente: …\` line, and the literal word \`hitos\` in a gantt line.
-- Keep verbatim: URLs, e-mails, file paths, numbers, currency amounts, and proper nouns / brand names (e.g. Interactius) and person/company names.
+- Keep verbatim: URLs, e-mails, file paths, numbers, currency amounts, and proper nouns / brand names (e.g. Interactius), person names, company names, tax IDs and postal addresses.
 
-Translate everything else into ${lang}: titles, eyebrows (UPPERCASE lines), paragraphs, list items, "Label: value" labels, the \`### Condiciones\` heading, and the unit word on a gantt axis line (e.g. \`semanas:\` → its ${lang} equivalent). Keep the translation natural and professional; never add or remove content.`;
+Structural keys — keep the key (the word before the first ":") EXACTLY as written; it identifies a slide field and must not be translated:
+- On a \`> cliente: …\` line, keep the whole line verbatim (the key \`cliente\` and the client name).
+- On a gantt line, keep the word \`hitos\` verbatim; you MAY translate the label that follows it (e.g. \`hitos cliente:\` → \`hitos client:\`).
+- On the acceptance page, keep these keys verbatim: \`nombre:\`, \`cargo:\`, \`empresa:\`, \`nif:\`, \`direccion:\`, \`aviso:\`, \`cta:\`. Translate ONLY the text after the colon — and even then keep proper nouns verbatim: do NOT translate the values of \`nombre\`, \`empresa\`, \`nif\`, \`direccion\` (names/identifiers); DO translate the values of \`cargo\`, \`aviso\`, \`cta\`.
+
+Translate everything else into ${lang}: titles (#, ##, ### — including \`## Presupuesto\` and \`### Condiciones\`), eyebrows (UPPERCASE lines such as CONTEXTO / EL RETO), paragraphs, list items, gantt phase-row labels (the word before ":" on a phase line, keeping the numeric range), and the unit word on a gantt axis line (e.g. \`semanas:\` → its ${lang} equivalent). In a manifesto title, the \` / palabra / \` slash-emphasis stays — keep the two slashes and translate only the word between them. Keep the translation natural and professional; never add or remove content.`;
 }
 
 export async function POST(req: Request) {

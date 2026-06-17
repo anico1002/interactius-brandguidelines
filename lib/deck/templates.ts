@@ -1,8 +1,9 @@
 import type { DeckType } from './types.ts';
 
 /* Starter Markdown per deck type. Each slide declares its layout with a `[ly: …]` marker.
-   Brand pages (manifiesto/equipo/clientes/aceptación) are marker-only here: their content
-   falls back to the canonical defaults, and the user can override it inline. */
+   Brand pages (manifiesto/equipo/clientes/aceptación) ship their canonical copy inline so
+   every word is editable in the editor and reaches the translator. Leaving a brand block
+   empty still falls back to the same copy baked into the component. */
 
 const COMERCIAL = `[ly: portada]
 # Propuesta de colaboración
@@ -13,14 +14,23 @@ Diagnóstico de criterios y arquitectura de decisión para el ecommerce de la ma
 ---
 
 [ly: manifiesto]
+# Ayudamos a las organizaciones en momentos de / transformación / a decidir con criterio.
+Convertimos la estrategia en soluciones que perduran.
 
 ---
 
 [ly: equipo]
+En el centro no pasa nada nuevo. Es previsible, cómodo y hoy, la forma más rápida de volverse irrelevante.
+Por eso decidimos operar en los márgenes, lo ambiguo, lo incierto. Ahí están las verdades humanas. Y ahí decidimos quedarnos.
+Trabajamos desde ese espacio liminal, entre lo que es y lo que está por venir. Lo hacemos cuestionando lo evidente y desplazando el foco, con criterio y perspectiva humana.
+**No encajamos en etiquetas ni vestimos de ellas.**
+Somos un compañero: cercano, implicado y enfocado en lo que realmente importa. Trabajamos con rigor, naturalidad y criterio.
+![Equipo Interactius](/presentaciones/team.png)
 
 ---
 
 [ly: clientes]
+![Clientes de Interactius](/presentaciones/clients.png)
 
 ---
 
@@ -85,6 +95,15 @@ hitos cliente: 1, 3, 5, 8
 ---
 
 [ly: aceptacion]
+# Aprobación del presupuesto
+nombre: CARLOS RUIZ RE
+cargo: co-CEO / Administrador
+empresa: Happy User Experiences S.L.
+nif: B65914848
+direccion: Pau Claris 100, 2ª Planta 08009 Barcelona
+aviso: La firma de esta página acuerda la aceptación total de la propuesta presentada en este documento.
+cta: ¡Una firma y empezamos!
+![Firma](/presentaciones/sign.png)
 
 ---
 
