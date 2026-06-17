@@ -6,9 +6,11 @@ import type {
   DeckCreateInput,
   DeckListItem,
   DeckRecord,
+  DeckSignature,
   DeckUpdateInput,
   ImageCreateInput,
   ImageRecord,
+  SignInput,
 } from './types';
 
 const LOGO_BUCKET = 'deck-assets';
@@ -49,6 +51,15 @@ export function updateDeck(id: string, patch: DeckUpdateInput): Promise<DeckReco
 
 export function deleteDeck(id: string): Promise<{ ok: boolean }> {
   return fetch(`/api/decks/${id}`, { method: 'DELETE' }).then((r) => json<{ ok: boolean }>(r));
+}
+
+// ---- Signatures ----
+export function signDeck(deckId: string, input: SignInput): Promise<DeckSignature> {
+  return fetch('/api/sign', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ deck_id: deckId, ...input }),
+  }).then((r) => json<DeckSignature>(r));
 }
 
 // ---- Translation ----

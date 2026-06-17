@@ -41,6 +41,20 @@ export type DeckCreateInput = Partial<DeckMeta> & { commercial_id: string; md?: 
 export type DeckUpdateInput = Partial<DeckMeta & { md: string }>;
 export type ClientCreateInput = { name: string; default_logo_path?: string | null; default_emails?: string[] | null };
 
+/* A client's signature on a saved deck (Acceptance page). Matches the `signatures` table. */
+export interface DeckSignature {
+  id: string;
+  deck_id: string;
+  signer_name: string;
+  signer_email: string;
+  signature_png: string; // PNG data URL of the drawn signature
+  ip: string | null;
+  user_agent: string | null;
+  signed_at: string;
+}
+
+export type SignInput = { signer_name: string; signer_email: string; signature_png: string };
+
 /* A reusable image in the gallery. `source` distinguishes manual uploads from
    AI-generated ones (future); `prompt` records the style-guide prompt used to generate it. */
 export interface ImageRecord {

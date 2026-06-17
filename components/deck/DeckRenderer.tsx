@@ -2,7 +2,7 @@
 import { useEffect, useRef } from 'react';
 import './deck.css';
 import type { Deck, Slide } from '@/lib/deck/types';
-import { ImageEditContext, ViewerContext } from './viewer';
+import { ImageEditContext, ViewerContext, SignContext, type SignCtx } from './viewer';
 import { Cover, Statement, Bullets, Columns, Split, Gantt, Closing, Paragraph, Manifesto, Team, Clients, Budget, Acceptance, Contexto, ElReto, Objetivos, RoadmapPhases } from './layouts';
 
 export function renderSlide(slide: Slide, page: number) {
@@ -31,10 +31,12 @@ export function DeckRenderer({
   deck,
   viewer = false,
   onPickImage,
+  sign = null,
 }: {
   deck: Deck;
   viewer?: boolean;
   onPickImage?: (slideIndex: number) => void;
+  sign?: SignCtx | null;
 }) {
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -53,15 +55,17 @@ export function DeckRenderer({
 
   return (
     <ViewerContext.Provider value={viewer}>
-      <ImageEditContext.Provider value={viewer ? null : onPickImage ?? null}>
-        <div className="ix-deck" ref={ref}>
-          {deck.slides.map((slide, i) => (
-            <section className="slide" key={i} id={`ix-slide-${i}`} data-ix-slide={i}>
-              <div className="fwrap">{renderSlide(slide, i + 1)}</div>
-            </section>
-          ))}
-        </div>
-      </ImageEditContext.Provider>
+      <SignContext.Provider value={sign}>
+        <ImageEditContext.Provider value={viewer ? null : onPickImage ?? null}>
+          <div className="ix-deck" ref={ref}>
+            {deck.slides.map((slide, i) => (
+              <section className="slide" key={i} id={`ix-slide-${i}`} data-ix-slide={i}>
+                <div className="fwrap">{renderSlide(slide, i + 1)}</div>
+              </section>
+            ))}
+          </div>
+        </ImageEditContext.Provider>
+      </SignContext.Provider>
     </ViewerContext.Provider>
   );
 }

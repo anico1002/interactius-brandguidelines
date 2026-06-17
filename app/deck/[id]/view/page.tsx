@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { supabaseServer } from '@/lib/supabase/server';
-import type { DeckRecord } from '@/lib/decks/types';
+import type { DeckRecord, DeckSignature } from '@/lib/decks/types';
 import { DeckViewerClient } from './DeckViewerClient';
 
 export const dynamic = 'force-dynamic';
@@ -26,6 +26,19 @@ export default async function DeckViewPage({ params, searchParams }: Props) {
   const { data, error } = await sb.from('decks').select('md, type').eq('id', id).single();
   if (error || !data) notFound();
 
+  // If the deck was already signed, render the immutable signed state on the Acceptance page.
+  const { data: sig } = await sb
+    .from('signatures').select('*').eq('deck_id', id)
+    .order('signed_at', { ascending: false }).limit(1).maybeSingle();
+
   const deck = data as Pick<DeckRecord, 'md' | 'type'>;
-  return <DeckViewerClient md={deck.md} type={deck.type} print={print === '1'} />;
+  return (
+    <DeckViewerClient
+      deckId={id}
+      md={deck.md}
+      type={deck.type}
+      print={print === '1'}
+      signature={(sig as DeckSignature | null) ?? null}
+    />
+  );
 }

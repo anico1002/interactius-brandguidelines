@@ -1,8 +1,22 @@
 # Firma del cliente en el generador de presentaciones — opciones y recomendación
 
-> Documento de **análisis de opciones** (no de implementación). El encargo fue: estudiar
-> cómo permitir que el cliente que recibe una presentación pueda **firmarla directamente**,
-> y comparar enfoques antes de decidir. No se programa nada todavía.
+> Documento de **análisis de opciones**. El encargo original fue estudiar cómo permitir que el
+> cliente firme la presentación y comparar enfoques antes de decidir.
+>
+> **Estado (2026-06-17):** **Opción 2 (captura + persistencia)** implementada en la branch
+> `feature/firma-cliente`. El cambio arquitectónico "imprescindible" que pedía este plan (deck
+> persistido con id + ruta `/.../v/<id>`) **ya existía** gracias a la persistencia Supabase y la
+> ruta visor `/deck/[id]/view`. Lo construido en esta fase:
+> - Tabla `signatures` (`deck_id`, `signer_name`, `signer_email`, `signature_png`, `ip`,
+>   `user_agent`, `signed_at`), RLS MVP-abierta.
+> - Pad de firma en `Acceptance.tsx` (canvas + nombre/email), **solo en modo viewer** vía
+>   `SignContext`; en editor/preview se mantienen las líneas de firma en papel.
+> - `POST /api/sign` → persiste la firma y dispara un **aviso por email best-effort vía Resend**
+>   (activo cuando se configuren `RESEND_API_KEY` + `INTERACTIUS_NOTIFY_EMAIL`; sin ellas la firma
+>   igual se guarda).
+> - Al reabrir el enlace, la propuesta firmada muestra el **estado firmado inmutable**.
+>
+> **Pendiente (otra sesión):** panel interno de firmas, y la **Opción 3 eIDAS** como ampliación.
 
 ## Contexto
 

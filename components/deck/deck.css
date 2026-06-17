@@ -191,6 +191,26 @@ body.ix-viewer main{padding:0 !important; margin:0 !important;}
 .ix-deck .accept .note{position:absolute; left:var(--ml); bottom:64px; width:330px; font:400 12px/1.6 var(--mono); color:var(--ash-dark);}
 .ix-deck .accept .cta{position:absolute; right:120px; bottom:62px; font-family:var(--serif); font-weight:400; font-size:30px; color:var(--dark);}
 
+/* Client signature pad (viewer route only): sits in the white half, below the Interactius block. */
+.ix-deck .accept .signpad{position:absolute; left:620px; top:300px; width:360px;}
+.ix-deck .accept .signpad .lab{font:500 9px/1 var(--mono); letter-spacing:.14em; text-transform:uppercase; color:var(--ash); margin-bottom:10px;}
+.ix-deck .accept .signbox{position:relative; width:360px; height:120px; background:var(--white); border:1px solid rgba(28,26,23,.35); touch-action:none;}
+.ix-deck .accept .signbox canvas{display:block; width:100%; height:100%; cursor:crosshair;}
+.ix-deck .accept .signbox .hint{position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font:400 11px/1 var(--mono); color:var(--ash); pointer-events:none;}
+.ix-deck .accept .signbox .clear{position:absolute; top:6px; right:8px; appearance:none; border:none; background:transparent; font:500 9px/1 var(--mono); letter-spacing:.1em; text-transform:uppercase; color:var(--ash); cursor:pointer;}
+.ix-deck .accept .signbox.done{display:flex; align-items:center; justify-content:center;}
+.ix-deck .accept .signbox.done img{max-width:90%; max-height:90%; object-fit:contain;}
+.ix-deck .accept .signpad .fields{display:flex; gap:14px; margin-top:16px;}
+.ix-deck .accept .signpad .fields input{flex:1; min-width:0; appearance:none; border:none; border-bottom:1px solid rgba(28,26,23,.35); background:transparent; font:400 12px/1.4 var(--mono); color:var(--dark); padding:6px 2px;}
+.ix-deck .accept .signpad .fields input::placeholder{color:var(--ash);}
+.ix-deck .accept .signpad .fields input:focus{outline:none; border-bottom-color:var(--dark);}
+.ix-deck .accept .signpad .err{margin-top:10px; font:400 10.5px/1.4 var(--mono); color:var(--bordeaux);}
+.ix-deck .accept .signpad .firmar{margin-top:16px; appearance:none; border:1px solid var(--dark); background:var(--dark); color:var(--warm-light); font:500 11px/1 var(--mono); letter-spacing:.04em; padding:11px 24px; cursor:pointer;}
+.ix-deck .accept .signpad .firmar:disabled{opacity:.5; cursor:default;}
+.ix-deck .accept .signpad.signed .meta{margin-top:14px; display:flex; flex-direction:column; gap:3px;}
+.ix-deck .accept .signpad.signed .meta strong{font:600 12px/1.4 var(--mono); color:var(--dark);}
+.ix-deck .accept .signpad.signed .meta span{font:400 11px/1.4 var(--mono); color:var(--ash);}
+
 /* Contexto (ref p.31 long / p.32 short) */
 .ix-deck .contexto .wrap{position:absolute; left:var(--ml); right:var(--mr); top:64px;}
 .ix-deck .contexto .eyebrow{margin-bottom:24px;}

@@ -1,5 +1,9 @@
+'use client';
+import { useContext } from 'react';
 import type { Slide } from '@/lib/deck/types';
 import { Chrome } from '../Chrome';
+import { SignContext } from '../viewer';
+import { SignatureCapture } from '../SignatureCapture';
 
 const DEFAULT_TITLE = 'Aprobación del presupuesto';
 const DEFAULT_WHO = 'CARLOS RUIZ RE\nco-CEO / Administrador\nHappy User Experiences S.L.\nB65914848\nPau Claris 100, 2ª Planta 08009\nBarcelona';
@@ -14,6 +18,9 @@ export function Acceptance({ slide, page }: { slide: Extract<Slide, { kind: 'acc
   const who = s
     ? [s.name, s.role, s.company, s.nif, s.address].filter(Boolean).join('\n')
     : DEFAULT_WHO;
+  // On the saved-deck viewer route the client can sign digitally; everywhere else (editor
+  // preview, base64 share) we keep the static paper-signature lines.
+  const sign = useContext(SignContext);
   return (
     <div className="frame theme-light accept">
       <div className="whitehalf" />
@@ -26,11 +33,15 @@ export function Acceptance({ slide, page }: { slide: Extract<Slide, { kind: 'acc
         <div className="who">{who}</div>
       </div>
 
-      <div className="lines" aria-hidden>
-        <span />
-        <span />
-        <span />
-      </div>
+      {sign ? (
+        <SignatureCapture deckId={sign.deckId} initial={sign.initial} />
+      ) : (
+        <div className="lines" aria-hidden>
+          <span />
+          <span />
+          <span />
+        </div>
+      )}
 
       <div className="note">{slide.note ?? DEFAULT_NOTE}</div>
       <div className="cta">{slide.cta ?? DEFAULT_CTA}</div>

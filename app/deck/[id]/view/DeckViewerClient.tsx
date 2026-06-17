@@ -2,11 +2,21 @@
 import { useEffect, useMemo } from 'react';
 import { compileDeck } from '@/lib/deck';
 import type { DeckType } from '@/lib/deck';
+import type { DeckSignature } from '@/lib/decks/types';
 import { DeckRenderer } from '@/components/deck/DeckRenderer';
 
 /* Read-only render surface: just the slides, no editor or site chrome.
-   Shared link + print/render target. `?print=1` auto-fires the print dialog. */
-export function DeckViewerClient({ md, type, print }: { md: string; type: DeckType; print?: boolean }) {
+   Shared link + print/render target. `?print=1` auto-fires the print dialog.
+   `deckId` enables client signing on the Acceptance page; `signature` is the existing one. */
+export function DeckViewerClient({
+  deckId, md, type, print, signature = null,
+}: {
+  deckId: string;
+  md: string;
+  type: DeckType;
+  print?: boolean;
+  signature?: DeckSignature | null;
+}) {
   const deck = useMemo(() => compileDeck(md, type), [md, type]);
 
   useEffect(() => {
@@ -27,7 +37,7 @@ export function DeckViewerClient({ md, type, print }: { md: string; type: DeckTy
 
   return (
     <div style={{ height: '100vh' }}>
-      <DeckRenderer deck={deck} viewer />
+      <DeckRenderer deck={deck} viewer sign={{ deckId, initial: signature }} />
     </div>
   );
 }
