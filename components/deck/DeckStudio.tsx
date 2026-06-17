@@ -2,7 +2,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { compileDeck } from '@/lib/deck';
-import type { DeckType } from '@/lib/deck';
 import type { ClientRecord, DeckListItem, DeckMeta, DeckRecord } from '@/lib/decks/types';
 import { createDeck, getDeck, listClients, translateDeck, updateDeck } from '@/lib/decks/api';
 import { splitSourceBlocks } from '@/lib/deck/source';
@@ -284,13 +283,32 @@ export function DeckStudio() {
     });
   };
 
+  // Saved decks share a clean, persistent link (/deck/:id/view) that always reflects the
+  // latest saved content; unsaved decks fall back to the self-contained base64 hash snapshot.
   const onCopyUrl = async () => {
-    const url = `${window.location.origin}${window.location.pathname}#view=1&md=${b64encode(md)}`;
+    let url: string;
+    if (currentDeckId) {
+      if (dirty) await onSave();
+      url = `${window.location.origin}/deck/${currentDeckId}/view`;
+    } else {
+      url = `${window.location.origin}${window.location.pathname}#view=1&md=${b64encode(md)}`;
+    }
     try {
       await navigator.clipboard.writeText(url);
       setCopied(true);
       setTimeout(() => setCopied(false), 1600);
     } catch { /* clipboard unavailable */ }
+  };
+
+  // Saved decks print from the clean viewer surface (?print=1 auto-fires the dialog) so the PDF
+  // is never polluted by the editor chrome; unsaved decks print the current screen as a fallback.
+  const onDownloadPdf = async () => {
+    if (currentDeckId) {
+      if (dirty) await onSave();
+      window.open(`/deck/${currentDeckId}/view?print=1`, '_blank', 'noopener');
+    } else {
+      window.print();
+    }
   };
 
   const onSubmitMeta = async (values: MetaValues) => {
@@ -334,7 +352,7 @@ export function DeckStudio() {
         onSave={onSave}
         onToggleTone={() => setToneOn((v) => !v)}
         toneOn={toneOn}
-        onDownloadPdf={() => window.print()}
+        onDownloadPdf={onDownloadPdf}
         onCopyUrl={onCopyUrl}
         copied={copied}
       />

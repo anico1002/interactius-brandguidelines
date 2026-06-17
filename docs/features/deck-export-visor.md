@@ -1,5 +1,13 @@
 # Exportar slides + visor compartible
 
+> **Estado (2026-06-17):** Fase 1 implementada en la branch `feature/deck-export-visor`.
+> Ruta visor `app/deck/[id]/view/page.tsx` (server) + `DeckViewerClient.tsx` (compila y
+> renderiza sólo las slides, soporta `?print=1`). Botones del Studio reconectados: "Compartir
+> URL" copia `/deck/:id/view` y "Descargar PDF" imprime desde el visor limpio para decks
+> guardados (con fallback base64/`window.print()` para decks sin guardar). CSS de impresión
+> reforzado con `print-color-adjust: exact`. **Fase 2 (export server-side con Puppeteer) sigue
+> pendiente** como upgrade opcional.
+
 ## Contexto
 
 El sistema de decks renderiza presentaciones en un canvas fijo de **1280×720** con CSS puro en `components/deck/deck.css` (namespaced bajo `.ix-deck`). Hoy el "export" es limitado y frágil:

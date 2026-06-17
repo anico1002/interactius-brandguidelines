@@ -228,14 +228,17 @@ body.ix-viewer main{padding:0 !important; margin:0 !important;}
 /* Print: one 16:9 slide per page, deck only (no site chrome). */
 @media print{
   @page{ size: 1280px 720px; margin:0; }
+  /* Force dark backgrounds + gradients (cover/statement/closing) to render in the PDF
+     without the user having to enable "background graphics" in the print dialog. */
+  *{ -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
   /* Hide everything that isn't the deck: site sidebar, mobile header, menu, studio controls. */
   aside, header, #menu-overlay{ display:none !important; }
   main{ padding:0 !important; margin:0 !important; }
   body{ background:#fff; }
   .ix-deck{ height:auto; overflow:visible; scroll-snap-type:none; background:#fff; }
-  .ix-deck .slide{ width:1280px; height:720px; display:block; page-break-after:always; }
+  .ix-deck .slide{ width:1280px; height:720px; display:block; page-break-after:always; break-after:page; }
   .ix-deck .slide + .slide::before{ display:none; }
-  .ix-deck .slide:last-child{ page-break-after:auto; }
+  .ix-deck .slide:last-child{ page-break-after:auto; break-after:auto; }
   .ix-deck .fwrap{ width:1280px; height:720px; border:none; }
   .ix-deck .frame{ transform:none; box-shadow:none; }
 }
