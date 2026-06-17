@@ -27,12 +27,14 @@ export function DeckMetaModal({
   mode,
   clients,
   initial,
+  hint,
   onClose,
   onSubmit,
 }: {
   mode: Mode;
   clients: ClientRecord[];
   initial?: Partial<MetaValues> & { client_name?: string | null };
+  hint?: string;
   onClose: () => void;
   onSubmit: (values: MetaValues) => Promise<void> | void;
 }) {
@@ -102,6 +104,11 @@ export function DeckMetaModal({
 
   return (
     <Modal title={TITLES[mode]} onClose={onClose}>
+      {hint && (
+        <div style={{ font: '400 11px/1.5 var(--font-ibm-plex-mono, monospace)', color: '#46433F', background: '#F5F2ED', border: '1px solid #E0DAD2', padding: '10px 12px', marginBottom: 14 }}>
+          {hint}
+        </div>
+      )}
       <div style={field}>
         <label style={label}>ID Comercial</label>
         <input style={input} value={commercialId} onChange={(e) => setCommercialId(e.target.value)} placeholder="04826-QUALITAHUB-BR" autoFocus />

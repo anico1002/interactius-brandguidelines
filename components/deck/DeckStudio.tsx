@@ -25,13 +25,7 @@ const btn: React.CSSProperties = {
   font: '500 11px/1 var(--font-ibm-plex-mono, monospace)', letterSpacing: '.04em', padding: '10px 12px', cursor: 'pointer', flex: 1,
 };
 
-// UTF-8 safe, URL-safe base64 (base64url) for sharing the .md inside the URL hash.
-function b64encode(str: string): string {
-  const bytes = new TextEncoder().encode(str);
-  let bin = '';
-  for (const b of bytes) bin += String.fromCharCode(b);
-  return btoa(bin).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
-}
+// UTF-8 safe, URL-safe base64 (base64url) — decodes legacy `#view=1&md=…` share links.
 function b64decode(s: string): string {
   let b64 = s.replace(/-/g, '+').replace(/_/g, '/');
   while (b64.length % 4) b64 += '=';
@@ -94,6 +88,9 @@ export function DeckStudio() {
   const [toneOn, setToneOn] = useState(false);
   const [saving, setSaving] = useState(false);
   const [copied, setCopied] = useState(false);
+  // Set when Compartir URL / Descargar PDF is clicked on an unsaved deck: the save dialog opens,
+  // and the action runs automatically once the deck has an id.
+  const [pendingShare, setPendingShare] = useState<'copy' | 'pdf' | null>(null);
   const [viewer, setViewer] = useState(false);
   const [asideW, setAsideW] = useState(ASIDE_DEFAULT);
   const [navOpen, setNavOpen] = useState(true);
@@ -285,36 +282,60 @@ export function DeckStudio() {
     });
   };
 
-  // Saved decks share a clean, persistent link (/deck/:id/view) that always reflects the
-  // latest saved content; unsaved decks fall back to the self-contained base64 hash snapshot.
-  // The clipboard write must run synchronously inside the click gesture (before any await),
-  // otherwise the browser revokes user activation and silently blocks it.
-  const onCopyUrl = async () => {
-    const url = currentDeckId
-      ? `${window.location.origin}/deck/${currentDeckId}/view`
-      : `${window.location.origin}${window.location.pathname}#view=1&md=${b64encode(md)}`;
-    try {
-      await navigator.clipboard.writeText(url);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 1600);
-    } catch { /* clipboard unavailable */ }
-    // Persist latest edits in the background so the shared link reflects current content.
-    if (currentDeckId && dirty) onSave().catch(() => {});
+  // Run a share/PDF action against a saved deck id. The clean /deck/:id/view link is the same
+  // whether or not it's the latest save, so copy works immediately; prompt() is a reliable
+  // fallback when the clipboard or a popup is blocked (e.g. after an awaited save).
+  const shareSaved = async (id: string, action: 'copy' | 'pdf') => {
+    const origin = window.location.origin;
+    if (action === 'copy') {
+      const url = `${origin}/deck/${id}/view`;
+      try {
+        await navigator.clipboard.writeText(url);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 1600);
+      } catch {
+        window.prompt('Copia el enlace compartible:', url);
+      }
+    } else {
+      const url = `${origin}/deck/${id}/view?print=1`;
+      const w = window.open(url, '_blank', 'noopener');
+      if (!w) window.prompt('Abre este enlace para descargar el PDF:', url);
+    }
   };
 
-  // Saved decks print from the clean viewer surface (?print=1 auto-fires the dialog) so the PDF
-  // is never polluted by the editor chrome; unsaved decks print the current screen as a fallback.
-  // The tab is opened synchronously inside the gesture (keeping its handle) so the popup blocker
-  // lets it through even when we await a save first to flush unsaved edits into the viewer.
+  // Compartir URL — a saved deck yields the clean, persistent /deck/:id/view link; an unsaved
+  // deck is sent through the save dialog first (the link needs an id), then copied automatically.
+  const onCopyUrl = async () => {
+    if (!currentDeckId) {
+      setPendingShare('copy');
+      setModal({ kind: 'new', initial: { type: meta.type }, seedMd: md });
+      return;
+    }
+    if (dirty) onSave().catch(() => {}); // flush edits so the shared link reflects them
+    await shareSaved(currentDeckId, 'copy');
+  };
+
+  // Descargar PDF — prints from the clean viewer surface (?print=1 auto-fires the dialog) so the
+  // PDF is never polluted by the editor chrome. Unsaved decks save first; dirty saved decks open a
+  // blank tab inside the gesture and redirect it after the save so the PDF reflects the latest edits.
   const onDownloadPdf = async () => {
-    if (!currentDeckId) { window.print(); return; }
+    if (!currentDeckId) {
+      setPendingShare('pdf');
+      setModal({ kind: 'new', initial: { type: meta.type }, seedMd: md });
+      return;
+    }
+    const url = `${window.location.origin}/deck/${currentDeckId}/view?print=1`;
+    if (!dirty) {
+      const w = window.open(url, '_blank', 'noopener');
+      if (!w) window.prompt('Abre este enlace para descargar el PDF:', url);
+      return;
+    }
     const tab = window.open('', '_blank');
     try {
-      if (dirty) await onSave();
+      await onSave();
     } finally {
-      const url = `/deck/${currentDeckId}/view?print=1`;
       if (tab) { tab.opener = null; tab.location.href = url; }
-      else window.open(url, '_blank', 'noopener'); // popup blocked: best-effort retry
+      else { const w = window.open(url, '_blank', 'noopener'); if (!w) window.prompt('Abre este enlace para descargar el PDF:', url); }
     }
   };
 
@@ -332,6 +353,8 @@ export function DeckStudio() {
       const seed = modal.template ? TEMPLATES[values.type] : modal.seedMd;
       const rec = await createDeck({ ...values, md: seed });
       loadRecord(rec);
+      // If the save was triggered by Compartir URL / Descargar PDF, run that action now.
+      if (pendingShare) { await shareSaved(rec.id, pendingShare); setPendingShare(null); }
     }
     setModal(null);
     listClients().then(setClients).catch(() => {});
@@ -474,7 +497,8 @@ export function DeckStudio() {
           mode={modal.kind}
           clients={clients}
           initial={modal.initial}
-          onClose={() => setModal(null)}
+          hint={pendingShare ? 'Guarda la presentación para obtener su enlace compartible y el PDF de alta fidelidad.' : undefined}
+          onClose={() => { setModal(null); setPendingShare(null); }}
           onSubmit={onSubmitMeta}
         />
       )}
