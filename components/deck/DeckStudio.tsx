@@ -71,6 +71,32 @@ function GalleryIcon() {
   );
 }
 
+function RulesIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.2" aria-hidden>
+      <circle cx="8" cy="8" r="6.2" />
+      <path d="M8 7.3v4" strokeLinecap="round" />
+      <circle cx="8" cy="4.7" r="0.55" fill="currentColor" stroke="none" />
+    </svg>
+  );
+}
+
+// Concise markdown parsing rules shown in the toolbar tooltip (monospace, aligned).
+const MD_RULES = [
+  'REGLAS DEL MARKDOWN',
+  '#               Título grande',
+  '##              Subtítulo',
+  '###             Secciones (columnas · fases)',
+  '-               Lista',
+  '>               Cita',
+  '![alt](url)     Imagen',
+  'TEXTO MAYÚS     Antetítulo',
+  'clave: valor    Datos (cliente, firma…)',
+  '**negrita**  ·  / énfasis /',
+  '[ly: marcador]  Elige el layout',
+  '---             Separa diapositivas',
+].join('\n');
+
 type ModalState =
   | { kind: 'new' | 'duplicate'; initial?: Partial<MetaValues> & { client_name?: string | null }; seedMd: string; template?: boolean }
   | { kind: 'edit'; initial: Partial<MetaValues> & { client_name?: string | null } }
@@ -401,6 +427,9 @@ export function DeckStudio() {
             </span>
             <div style={{ display: 'flex', gap: 6 }}>
               <TranslateMenu onPick={setPendingTranslate} />
+              <IconButton label="Reglas del markdown" tooltip={MD_RULES} onClick={() => {}}>
+                <RulesIcon />
+              </IconButton>
               <IconButton label="Galería de layouts" onClick={() => setGalleryOpen(true)}>
                 <GalleryIcon />
               </IconButton>

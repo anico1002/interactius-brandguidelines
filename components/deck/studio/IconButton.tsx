@@ -10,12 +10,15 @@ export function IconButton({
   active = false,
   ariaPressed,
   children,
+  tooltip,
 }: {
   label: string;
   onClick: () => void;
   active?: boolean;
   ariaPressed?: boolean;
   children: ReactNode;
+  // Optional richer tooltip (multi-line via "\n"); falls back to `label` when absent.
+  tooltip?: string;
 }) {
   const [show, setShow] = useState(false);
   const btn: CSSProperties = {
@@ -45,12 +48,15 @@ export function IconButton({
         <span
           role="tooltip"
           style={{
-            position: 'absolute', top: 'calc(100% + 6px)', left: '50%', transform: 'translateX(-50%)',
-            background: '#1C1A17', color: '#F5F2ED', font: '500 10px/1 var(--font-ibm-plex-mono, monospace)',
-            letterSpacing: '.04em', padding: '5px 7px', whiteSpace: 'nowrap', zIndex: 50, pointerEvents: 'none',
+            position: 'absolute', top: 'calc(100% + 6px)', right: tooltip ? 0 : 'auto', left: tooltip ? 'auto' : '50%',
+            transform: tooltip ? 'none' : 'translateX(-50%)',
+            background: '#1C1A17', color: '#F5F2ED',
+            font: tooltip ? '500 10px/1.7 var(--font-ibm-plex-mono, monospace)' : '500 10px/1 var(--font-ibm-plex-mono, monospace)',
+            letterSpacing: '.04em', padding: tooltip ? '8px 10px' : '5px 7px',
+            whiteSpace: tooltip ? 'pre' : 'nowrap', textAlign: 'left', zIndex: 50, pointerEvents: 'none',
           }}
         >
-          {label}
+          {tooltip ?? label}
         </span>
       )}
     </span>
