@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { compileDeck } from '@/lib/deck';
+import { compileDeck, deckWarnings } from '@/lib/deck';
 import type { ClientRecord, DeckListItem, DeckMeta, DeckRecord } from '@/lib/decks/types';
 import { createDeck, getDeck, listClients, translateDeck, updateDeck } from '@/lib/decks/api';
 import { splitSourceBlocks, setBlockImage } from '@/lib/deck/source';
@@ -360,6 +360,9 @@ export function DeckStudio() {
     listClients().then(setClients).catch(() => {});
   };
 
+  // Advisory: content the chosen layout won't render (recomputed live from the markdown).
+  const warnings = useMemo(() => deckWarnings(md), [md]);
+
   // Client-facing presentation: only the deck, nothing internal.
   if (viewer) {
     return (
@@ -424,6 +427,16 @@ export function DeckStudio() {
           <div style={{ display: 'flex', gap: 8, flexShrink: 0 }}>
             <button style={btn} onClick={() => setDeck(compileDeck(md, meta.type))}>Generar</button>
           </div>
+
+          {warnings.length > 0 && (
+            <div style={{ flexShrink: 0, maxHeight: 120, overflowY: 'auto', border: '1px solid #E0DAD2', background: '#FBF3E7', padding: '8px 10px' }}>
+              {warnings.map((w) => (
+                <div key={w.index} style={{ font: '400 10.5px/1.5 var(--font-ibm-plex-mono, monospace)', color: '#46433F' }}>
+                  <b style={{ fontWeight: 600 }}>⚠ Diapositiva {w.index + 1}</b> ({w.kind}) no muestra: {w.dropped.join(' · ')}
+                </div>
+              ))}
+            </div>
+          )}
 
           {toneOn && (
             <div style={{ flexShrink: 0, maxHeight: 160, overflowY: 'auto', borderTop: '1px solid #E0DAD2', paddingTop: 4 }}>

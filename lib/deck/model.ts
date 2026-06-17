@@ -1,4 +1,4 @@
-import type { ImageRef, Theme, Token } from './types.ts';
+import type { ImageRef, Slide, Theme, Token } from './types.ts';
 
 /* A `###`(+) heading with the body paragraphs and list items that follow it (until the next
    `###`). Drives columns, roadmap phases and the budget "Condiciones" section. */
@@ -138,4 +138,57 @@ export function parseBlock(tokens: Token[], position: number, total: number): Bl
     isFirst: position === 0,
     isLast: position === total - 1,
   };
+}
+
+/* What each layout actually renders, so validateBlock can flag content it would silently drop.
+   `body`: max paragraphs shown (Infinity = all; 'spec'/'url' = consumed specially). */
+type Shows = { subtitle: boolean; eyebrow: boolean; image: number; body: number | 'spec' | 'url'; list: boolean; sections: boolean };
+const SHOWS: Record<Slide['kind'], Shows> = {
+  cover:         { subtitle: true,  eyebrow: true,  image: 1, body: 1,        list: false, sections: false },
+  statement:     { subtitle: false, eyebrow: true,  image: 0, body: 0,        list: false, sections: false },
+  paragraph:     { subtitle: false, eyebrow: true,  image: 0, body: 1,        list: false, sections: false },
+  bullets:       { subtitle: false, eyebrow: false, image: 0, body: 0,        list: true,  sections: false },
+  columns:       { subtitle: false, eyebrow: false, image: 0, body: 0,        list: false, sections: true },
+  split:         { subtitle: false, eyebrow: true,  image: 1, body: 1,        list: false, sections: false },
+  gantt:         { subtitle: true,  eyebrow: false, image: 0, body: 'spec',   list: false, sections: false },
+  closing:       { subtitle: false, eyebrow: false, image: 0, body: 'url',    list: false, sections: false },
+  manifesto:     { subtitle: true,  eyebrow: false, image: 0, body: 2,        list: false, sections: false },
+  team:          { subtitle: false, eyebrow: false, image: 1, body: Infinity, list: true,  sections: false },
+  clients:       { subtitle: false, eyebrow: false, image: 1, body: 0,        list: false, sections: false },
+  budget:        { subtitle: false, eyebrow: false, image: 0, body: 0,        list: true,  sections: true },
+  acceptance:    { subtitle: false, eyebrow: false, image: 1, body: 0,        list: false, sections: false },
+  contexto:      { subtitle: false, eyebrow: true,  image: 0, body: Infinity, list: false, sections: false },
+  elreto:        { subtitle: false, eyebrow: true,  image: 1, body: 0,        list: false, sections: false },
+  objetivos:     { subtitle: false, eyebrow: false, image: 1, body: 0,        list: true,  sections: false },
+  roadmapPhases: { subtitle: true,  eyebrow: false, image: 0, body: 1,        list: false, sections: true },
+};
+
+/* Human-readable warnings about content the chosen layout will NOT render (so nothing is lost
+   silently — the editor surfaces these). The design itself is never altered; this is advisory. */
+export function validateBlock(m: BlockModel, kind: Slide['kind']): string[] {
+  const s = SHOWS[kind];
+  const w: string[] = [];
+
+  // Only "loose" content can be dropped: paragraphs/lists BEFORE the first ### section (section
+  // content is rendered by columns/roadmap/budget) and, for paragraphs, excluding `clave: valor`
+  // lines (consumed as meta by acceptance/gantt/cover).
+  const firstSection = m.tokens.findIndex((t) => t.t === 'h' && t.level >= 3);
+  const cut = firstSection === -1 ? m.tokens.length : firstSection;
+  const loose = m.tokens.slice(0, cut);
+  const looseParas = loose
+    .filter((t): t is Extract<Token, { t: 'p' }> => t.t === 'p')
+    .map((t) => t.text)
+    .filter((t) => !/^[\p{L} ]+:\s*.+$/u.test(t));
+  const looseLists = loose.filter((t) => t.t === 'ul');
+
+  if (m.subtitle && !s.subtitle) w.push('un subtítulo (##)');
+  if (m.eyebrow && !s.eyebrow) w.push('un antetítulo (MAYÚSCULAS)');
+  if (m.images.length > s.image) w.push(`${m.images.length - s.image} imagen(es) de más`);
+  if (looseLists.length > 0 && !s.list && s.body !== 'spec') w.push('una lista (- …)');
+  if (m.sections.length > 0 && !s.sections) w.push(`${m.sections.length} sección(es) (###)`);
+  if (typeof s.body === 'number' && looseParas.length > s.body) w.push(`${looseParas.length - s.body} párrafo(s) de más`);
+  // Only the gantt fence is rendered; any other fenced block is dropped.
+  const extraFences = m.fences.filter((f) => !(kind === 'gantt' && f.lang === 'gantt'));
+  if (extraFences.length > 0) w.push(`${extraFences.length} bloque(s) de código`);
+  return w;
 }

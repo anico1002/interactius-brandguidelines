@@ -90,10 +90,14 @@ function buildSlide(m: BlockModel, kind: Slide['kind'], marker?: string): Slide 
   }
 }
 
+/* The resolved kind for a block: explicit [ly:] marker wins, else inference. */
+export function blockKind(m: BlockModel): Slide['kind'] {
+  return (m.marker && LAYOUT_MAP[m.marker]) || detectKind(m);
+}
+
 export function classify(src: SlideSource, position: number, total: number): Slide {
   const m = parseBlock(src.tokens, position, total);
-  const kind = (m.marker && LAYOUT_MAP[m.marker]) || detectKind(m);
-  return buildSlide(m, kind, m.marker);
+  return buildSlide(m, blockKind(m), m.marker);
 }
 
 export function compile(_md: string, sources: SlideSource[]): Slide[] {
