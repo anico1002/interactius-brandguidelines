@@ -287,29 +287,34 @@ export function DeckStudio() {
 
   // Saved decks share a clean, persistent link (/deck/:id/view) that always reflects the
   // latest saved content; unsaved decks fall back to the self-contained base64 hash snapshot.
+  // The clipboard write must run synchronously inside the click gesture (before any await),
+  // otherwise the browser revokes user activation and silently blocks it.
   const onCopyUrl = async () => {
-    let url: string;
-    if (currentDeckId) {
-      if (dirty) await onSave();
-      url = `${window.location.origin}/deck/${currentDeckId}/view`;
-    } else {
-      url = `${window.location.origin}${window.location.pathname}#view=1&md=${b64encode(md)}`;
-    }
+    const url = currentDeckId
+      ? `${window.location.origin}/deck/${currentDeckId}/view`
+      : `${window.location.origin}${window.location.pathname}#view=1&md=${b64encode(md)}`;
     try {
       await navigator.clipboard.writeText(url);
       setCopied(true);
       setTimeout(() => setCopied(false), 1600);
     } catch { /* clipboard unavailable */ }
+    // Persist latest edits in the background so the shared link reflects current content.
+    if (currentDeckId && dirty) onSave().catch(() => {});
   };
 
   // Saved decks print from the clean viewer surface (?print=1 auto-fires the dialog) so the PDF
   // is never polluted by the editor chrome; unsaved decks print the current screen as a fallback.
+  // The tab is opened synchronously inside the gesture (keeping its handle) so the popup blocker
+  // lets it through even when we await a save first to flush unsaved edits into the viewer.
   const onDownloadPdf = async () => {
-    if (currentDeckId) {
+    if (!currentDeckId) { window.print(); return; }
+    const tab = window.open('', '_blank');
+    try {
       if (dirty) await onSave();
-      window.open(`/deck/${currentDeckId}/view?print=1`, '_blank', 'noopener');
-    } else {
-      window.print();
+    } finally {
+      const url = `/deck/${currentDeckId}/view?print=1`;
+      if (tab) { tab.opener = null; tab.location.href = url; }
+      else window.open(url, '_blank', 'noopener'); // popup blocked: best-effort retry
     }
   };
 
