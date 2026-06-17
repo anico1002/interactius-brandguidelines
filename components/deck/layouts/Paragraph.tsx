@@ -7,7 +7,7 @@ export function Paragraph({ slide, page }: { slide: Extract<Slide, { kind: 'para
     <div className={`frame theme-${slide.theme} paragraph`}>
       <Chrome page={page} />
       <div className="wrap">
-        {slide.eyebrow && <div className="eyebrow">{slide.eyebrow}</div>}
+        {slide.eyebrow && <div className="eyebrow">{inline(slide.eyebrow)}</div>}
         <p>{inline(slide.body)}</p>
       </div>
     </div>

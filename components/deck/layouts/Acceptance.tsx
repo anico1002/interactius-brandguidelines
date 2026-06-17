@@ -2,6 +2,7 @@
 import { useContext } from 'react';
 import type { Slide } from '@/lib/deck/types';
 import { Chrome } from '../Chrome';
+import { inline } from '../inline';
 import { SignContext } from '../viewer';
 import { SignatureCapture } from '../SignatureCapture';
 
@@ -25,7 +26,7 @@ export function Acceptance({ slide, page }: { slide: Extract<Slide, { kind: 'acc
     <div className="frame theme-light accept">
       <div className="whitehalf" />
       <Chrome page={page} />
-      <div className="title">{slide.title ?? DEFAULT_TITLE}</div>
+      <div className="title">{inline(slide.title ?? DEFAULT_TITLE)}</div>
 
       <div className="sign">
         {/* eslint-disable-next-line @next/next/no-img-element */}

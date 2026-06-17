@@ -18,7 +18,7 @@ export function Manifesto({ slide, page }: { slide: Extract<Slide, { kind: 'mani
       <Chrome page={page} />
       <div className="wrap">
         <h2>{slide.title ? inline(slide.title) : empty ? DEFAULT_TITLE : null}</h2>
-        {subtitle && <p className="sub">{subtitle}</p>}
+        {subtitle && <p className="sub">{inline(subtitle)}</p>}
       </div>
     </div>
   );

@@ -9,8 +9,8 @@ export function Split({ slide, page }: { slide: Extract<Slide, { kind: 'split' }
       <Chrome page={page} />
       <ImageSlot image={slide.image} className="photo" slideIndex={page - 1} />
       <div className="txt">
-        {slide.eyebrow && <div className="eyebrow">{slide.eyebrow}</div>}
-        <h2>{slide.title}</h2>
+        {slide.eyebrow && <div className="eyebrow">{inline(slide.eyebrow)}</div>}
+        <h2>{inline(slide.title)}</h2>
         {slide.body && <div className="body">{inline(slide.body)}</div>}
       </div>
     </div>

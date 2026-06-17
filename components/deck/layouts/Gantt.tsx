@@ -1,6 +1,7 @@
 import { Fragment } from 'react';
 import type { Slide } from '@/lib/deck/types';
 import { Chrome } from '../Chrome';
+import { inline } from '../inline';
 
 /* Continuous bar geometry so half-weeks (e.g. 2-3.5, 0.5) draw half a cell.
    A whole number sits on a cell edge; a .5 cuts that cell at its midpoint.
@@ -19,8 +20,8 @@ export function Gantt({ slide, page }: { slide: Extract<Slide, { kind: 'gantt' }
   return (
     <div className={`frame theme-${slide.theme} gantt`}>
       <Chrome page={page} />
-      <div className="title">{slide.title}</div>
-      {slide.subtitle && <div className="sub">{slide.subtitle}</div>}
+      <div className="title">{inline(slide.title)}</div>
+      {slide.subtitle && <div className="sub">{inline(slide.subtitle)}</div>}
       <div className="chart" style={{ gridTemplateColumns: cols }}>
         <div className="ghd lbl">{slide.unit ?? 'Semanas'}</div>
         {weeks.map((n) => (

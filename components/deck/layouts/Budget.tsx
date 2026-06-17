@@ -24,7 +24,7 @@ export function Budget({
     <div className="frame theme-light budget">
       <div className="whitehalf" />
       <Chrome page={page} />
-      <div className="title">{title ?? 'Presupuesto'}</div>
+      <div className="title">{inline(title ?? 'Presupuesto')}</div>
       <div className="table">
         {items.map((it, i) => (
           <div className="row" key={`${it.label}-${i}`}>

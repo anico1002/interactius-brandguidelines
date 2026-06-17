@@ -8,7 +8,7 @@ export function Contexto({ slide, page }: { slide: Extract<Slide, { kind: 'conte
     <div className={`frame theme-${slide.theme} contexto ${slide.long ? 'long' : 'short'}`}>
       <Chrome page={page} />
       <div className="wrap">
-        <div className="eyebrow">{slide.eyebrow ?? 'Contexto'}</div>
+        <div className="eyebrow">{inline(slide.eyebrow ?? 'Contexto')}</div>
         <p>{inline(slide.body)}</p>
       </div>
     </div>

@@ -7,13 +7,13 @@ export function RoadmapPhases({ slide, page }: { slide: Extract<Slide, { kind: '
   return (
     <div className={`frame theme-${slide.theme} roadmapphases`}>
       <Chrome page={page} />
-      <div className="title">{slide.title || 'Roadmap'}</div>
-      {slide.subtitle && <div className="sub">{slide.subtitle}</div>}
+      <div className="title">{inline(slide.title || 'Roadmap')}</div>
+      {slide.subtitle && <div className="sub">{inline(slide.subtitle)}</div>}
       <div className="phases">
         {slide.phases.map((ph, i) => (
           <div className="phase" key={i}>
             <div className="fase">Fase 0{i + 1}</div>
-            <h3>{ph.name}</h3>
+            <h3>{inline(ph.name)}</h3>
             {ph.body && <p className="pbody">{inline(ph.body)}</p>}
             {ph.items.length > 0 && (
               <>

@@ -1,5 +1,6 @@
 import type { Slide } from '@/lib/deck/types';
 import { ImageSlot } from '../ImageSlot';
+import { inline } from '../inline';
 
 export function Cover({ slide, page }: { slide: Extract<Slide, { kind: 'cover' }>; page: number }) {
   return (
@@ -11,8 +12,8 @@ export function Cover({ slide, page }: { slide: Extract<Slide, { kind: 'cover' }
         <img src="/logo/interactius-negativo.svg" alt="interactīus" />
       </div>
       <div className="lockup">
-        <h1>{slide.title}</h1>
-        {slide.subtitle && <div className="sub">{slide.subtitle}</div>}
+        <h1>{inline(slide.title)}</h1>
+        {slide.subtitle && <div className="sub">{inline(slide.subtitle)}</div>}
       </div>
       {(slide.footer || slide.client) && (
         <div className="foot">

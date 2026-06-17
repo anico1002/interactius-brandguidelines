@@ -73,9 +73,9 @@ por defecto de la marca (ver §8).
 | Bloque cercado ```` ```gantt ```` … ```` ``` ```` | Datos del diagrama de Gantt |
 | Cualquier otra línea | Párrafo |
 
-**Negrita**: envuelve el texto en `**dobles asteriscos**`. Funciona en el cuerpo
-(párrafos, viñetas, objetivos, columnas, fases del roadmap, condiciones del
-presupuesto). **No** se aplica en los títulos grandes (tipografía display).
+**Negrita**: envuelve el texto en `**dobles asteriscos**`. Funciona en **todos** los slots de
+texto: títulos, subtítulos, antetítulos, párrafos, viñetas, objetivos, columnas, fases del
+roadmap y condiciones del presupuesto (el formato significa lo mismo en todas partes).
 
 **Énfasis del manifiesto**: en el título de `[ly: manifiesto]`, envuelve una palabra entre
 barras con espacios — `/ palabra /` — para el realce de marca (p. ej. `/ transformación /`).

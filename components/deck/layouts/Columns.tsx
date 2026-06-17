@@ -6,12 +6,12 @@ export function Columns({ slide, page }: { slide: Extract<Slide, { kind: 'column
   return (
     <div className={`frame theme-${slide.theme} cols`}>
       <Chrome page={page} />
-      <div className="title">{slide.title}</div>
+      <div className="title">{inline(slide.title)}</div>
       <div className="grid">
         {slide.columns.map((col, i) => (
           <div className="col" key={i}>
             <div className="num">{col.label}</div>
-            <div className="colhd">{col.heading}</div>
+            <div className="colhd">{inline(col.heading)}</div>
             <div className="colbody">{inline(col.body)}</div>
           </div>
         ))}
