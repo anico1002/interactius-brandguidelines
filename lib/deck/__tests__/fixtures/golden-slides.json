@@ -1,0 +1,844 @@
+{
+  "tpl-comercial": {
+    "slides": [
+      {
+        "kind": "cover",
+        "theme": "dark",
+        "title": "Propuesta de colaboración",
+        "subtitle": "Diagnóstico de criterios y arquitectura de decisión para el ecommerce de la marca.",
+        "client": "Naturgy",
+        "image": {
+          "src": "/universo/universo-02.jpg",
+          "alt": "Portada · universo visual"
+        }
+      },
+      {
+        "kind": "manifesto",
+        "theme": "light",
+        "title": "Ayudamos a las organizaciones en momentos de / transformación / a decidir con criterio.",
+        "subtitle": "Convertimos la estrategia en soluciones que perduran."
+      },
+      {
+        "kind": "team",
+        "theme": "light",
+        "paragraphs": [
+          "En el centro no pasa nada nuevo. Es previsible, cómodo y hoy, la forma más rápida de volverse irrelevante.",
+          "Por eso decidimos operar en los márgenes, lo ambiguo, lo incierto. Ahí están las verdades humanas. Y ahí decidimos quedarnos.",
+          "Trabajamos desde ese espacio liminal, entre lo que es y lo que está por venir. Lo hacemos cuestionando lo evidente y desplazando el foco, con criterio y perspectiva humana.",
+          "**No encajamos en etiquetas ni vestimos de ellas.**",
+          "Somos un compañero: cercano, implicado y enfocado en lo que realmente importa. Trabajamos con rigor, naturalidad y criterio."
+        ],
+        "image": {
+          "src": "/presentaciones/team.png",
+          "alt": "Equipo Interactius"
+        }
+      },
+      {
+        "kind": "clients",
+        "theme": "light",
+        "image": {
+          "src": "/presentaciones/clients.png",
+          "alt": "Clientes de Interactius"
+        }
+      },
+      {
+        "kind": "contexto",
+        "theme": "light",
+        "eyebrow": "CONTEXTO",
+        "body": "Naturgy tiene la oportunidad de establecer un **nuevo estándar digital** que unifique su experiencia online y aporte coherencia, escalabilidad y alineación con la marca. Hoy existen inconsistencias en experiencia, diseño y flujos que generan fricción y reducen eficiencia.",
+        "long": true
+      },
+      {
+        "kind": "elreto",
+        "theme": "light",
+        "eyebrow": "EL RETO",
+        "title": "Incrementar la conversión en el ecommerce principal de la marca",
+        "image": {
+          "src": "/universo/universo-01.jpg",
+          "alt": "El reto"
+        }
+      },
+      {
+        "kind": "objetivos",
+        "theme": "light",
+        "title": "Objetivos",
+        "items": [
+          "Establecer una línea base cuantificada del nivel de calidad actual por país, tipología de pedido y modalidad de recogida.",
+          "Identificar qué dimensiones, mercados o tipologías presentan mayor frecuencia y severidad de incidencias.",
+          "Comparar el rendimiento entre países para detectar diferencias operativas significativas."
+        ],
+        "image": {
+          "src": "/universo/universo-03.jpg",
+          "alt": "Objetivos"
+        }
+      },
+      {
+        "kind": "roadmapPhases",
+        "theme": "light",
+        "title": "Roadmap",
+        "subtitle": "Estimamos que la duración del proyecto será de 6 semanas.",
+        "phases": [
+          {
+            "name": "Diagnóstico",
+            "body": "La fase de inmersión nos permite comprender el contexto actual y las expectativas del proyecto.",
+            "items": [
+              "Kick Off: alineación de objetivos y definición del marco.",
+              "Inmersión inicial: revisión de fuentes internas y externas."
+            ]
+          },
+          {
+            "name": "Discovery",
+            "body": "Investigación exhaustiva que combina la inmersión con la experiencia del usuario.",
+            "items": [
+              "Mapa de tendencias y competencia.",
+              "Entrevistas en profundidad."
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "gantt",
+        "theme": "light",
+        "title": "Roadmap",
+        "weeks": 8,
+        "unit": "Semanas",
+        "rows": [
+          {
+            "label": "Diagnóstico",
+            "start": 1,
+            "end": 1.5,
+            "accent": "opal"
+          },
+          {
+            "label": "Discovery",
+            "start": 2,
+            "end": 3,
+            "accent": "bordeaux"
+          },
+          {
+            "label": "Volumetría",
+            "start": 4,
+            "end": 8,
+            "accent": "emerald"
+          }
+        ],
+        "milestones": [
+          1,
+          3,
+          5,
+          8
+        ],
+        "milestoneLabel": "Cliente"
+      },
+      {
+        "kind": "budget",
+        "theme": "light",
+        "title": "Presupuesto",
+        "items": [
+          {
+            "label": "Análisis Heurístico",
+            "amount": "3.315 €"
+          },
+          {
+            "label": "Benchmark Android/Mobile",
+            "amount": "3.770 €"
+          },
+          {
+            "label": "Inmersión + gestión",
+            "amount": "3.991 €"
+          }
+        ],
+        "total": "11.076 €",
+        "conditions": [
+          "Emisión de factura inicial por el 60% del total del proyecto una vez recibida la orden de compra al inicio del proyecto.",
+          "Emisión de factura final por el 40% del total del proyecto una vez realizada la entrega.",
+          "Al importe se le añadirá el IVA correspondiente de acuerdo con la legislación vigente.",
+          "Cobro de facturas a 30 días, día de pago habitual del cliente.",
+          "Esta propuesta económica tiene una validez de tres meses a partir de la fecha de la misma."
+        ],
+        "conditionsLabel": "Condiciones"
+      },
+      {
+        "kind": "acceptance",
+        "theme": "light",
+        "title": "Aprobación del presupuesto",
+        "signer": {
+          "name": "CARLOS RUIZ RE",
+          "role": "co-CEO / Administrador",
+          "company": "Happy User Experiences S.L.",
+          "nif": "B65914848",
+          "address": "Pau Claris 100, 2ª Planta 08009 Barcelona"
+        },
+        "note": "La firma de esta página acuerda la aceptación total de la propuesta presentada en este documento.",
+        "cta": "¡Una firma y empezamos!",
+        "signatureImage": {
+          "src": "/presentaciones/sign.png",
+          "alt": "Firma"
+        }
+      },
+      {
+        "kind": "closing",
+        "theme": "dark",
+        "title": "Gracias",
+        "url": "www.interactius.com"
+      }
+    ],
+    "provenance": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11
+    ]
+  },
+  "tpl-informe": {
+    "slides": [
+      {
+        "kind": "cover",
+        "theme": "dark",
+        "title": "Informe de resultados",
+        "subtitle": "Resumen ejecutivo del proyecto.",
+        "client": "Cliente",
+        "image": {
+          "src": "/universo/universo-02.jpg",
+          "alt": "Portada"
+        }
+      },
+      {
+        "kind": "contexto",
+        "theme": "light",
+        "eyebrow": "CONTEXTO",
+        "body": "Describe aquí el contexto del informe en un párrafo claro y directo de entre quince y veintidós palabras por frase.",
+        "long": false
+      },
+      {
+        "kind": "objetivos",
+        "theme": "light",
+        "title": "Objetivos",
+        "items": [
+          "Primer objetivo del informe.",
+          "Segundo objetivo del informe."
+        ],
+        "image": {
+          "src": "/universo/universo-03.jpg",
+          "alt": "Objetivos"
+        }
+      },
+      {
+        "kind": "roadmapPhases",
+        "theme": "light",
+        "title": "Roadmap",
+        "subtitle": "Descripción de la fase.",
+        "phases": [
+          {
+            "name": "Fase 1",
+            "body": "Descripción de la fase.",
+            "items": [
+              "Tarea uno.",
+              "Tarea dos."
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "closing",
+        "theme": "dark",
+        "title": "Gracias",
+        "url": "www.interactius.com"
+      }
+    ],
+    "provenance": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ]
+  },
+  "tpl-generica": {
+    "slides": [
+      {
+        "kind": "cover",
+        "theme": "dark",
+        "title": "Título de la presentación",
+        "subtitle": "Subtítulo descriptivo de la propuesta.",
+        "image": {
+          "src": "/universo/universo-02.jpg",
+          "alt": "Portada"
+        }
+      },
+      {
+        "kind": "statement",
+        "theme": "dark",
+        "eyebrow": "NUESTRA MIRADA",
+        "title": "Una afirmación breve y contundente"
+      },
+      {
+        "kind": "paragraph",
+        "theme": "light",
+        "body": "Un párrafo de cuerpo con la idea principal, escrito con frases directas de entre quince y veintidós palabras."
+      },
+      {
+        "kind": "bullets",
+        "theme": "light",
+        "title": "Puntos clave",
+        "items": [
+          "Primer punto.",
+          "Segundo punto.",
+          "Tercer punto."
+        ]
+      },
+      {
+        "kind": "closing",
+        "theme": "dark",
+        "title": "Gracias",
+        "url": "www.interactius.com"
+      }
+    ],
+    "provenance": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ]
+  },
+  "saved-tmb": {
+    "slides": [
+      {
+        "kind": "cover",
+        "theme": "dark",
+        "title": "Auditoria d'experiència i diagnòstic d'arquitectura de decisió per a la TMB App",
+        "client": "TMB",
+        "image": {
+          "src": "/universo/universo-02.jpg",
+          "alt": "Portada · universo visual"
+        }
+      },
+      {
+        "kind": "contexto",
+        "theme": "light",
+        "eyebrow": "CONTEXT",
+        "body": "TMB té l'oportunitat d'evolucionar el seu ecosistema digital després de la integració de la T-mobilitat. Després de tres generacions d'aplicacions, el repte actual rau a mitigar la fricció detectada en processos crítics i alinear l'experiència de l'App amb les expectatives d'una audiència massiva i diversa.",
+        "long": true
+      },
+      {
+        "kind": "elreto",
+        "theme": "light",
+        "eyebrow": "EL REPTE",
+        "title": "Entendre la relació dels usuaris amb l'App, detectar barreres d'adopció i optimitzar la percepció del servei oficial.",
+        "image": {
+          "src": "https://gcvzzpggpsnlwqnotfqv.supabase.co/storage/v1/object/public/deck-images/images/1781697803353-Gemini_Generated_Image_fpupncfpupncfpup.jpg",
+          "alt": "El reto"
+        }
+      },
+      {
+        "kind": "objetivos",
+        "theme": "light",
+        "title": "Objectius",
+        "items": [
+          "Determinar les necessitats i punts de dolor reals dels usuaris en el seu dia a dia amb el transport públic.",
+          "Identificar barreres d'entrada i abandonament en processos clau com l'on-boarding de T-mobilitat.",
+          "Detectar gaps funcionals i tècnics classificant-los per la seva severitat (Crític, Seriós, Menor).",
+          "Establir les bases metodològiques per a un futur estudi quantitatiu de gran escala."
+        ],
+        "image": {
+          "src": "/universo/universo-03.jpg",
+          "alt": "Objetivos"
+        }
+      },
+      {
+        "kind": "roadmapPhases",
+        "theme": "light",
+        "title": "Roadmap",
+        "subtitle": "Estimem una durada total de 8 setmanes, assegurant el lliurament abans de la data límit del 31/10/2026.",
+        "phases": [
+          {
+            "name": "Anàlisi Preliminar i Immersió",
+            "body": "Immersió total en l'ecosistema de TMB per alinear objectius de negoci i definir les hipòtesis que es validaran amb els usuaris.",
+            "items": [
+              "**Anàlisi de dades i context:** Estudi de mètriques d'ús, feedback de les stores i incidències d'atenció al client.",
+              "**Auditoria Heurística:** Avaluació experta basada en els 10 principis de Nielsen per identificar friccions evidents.",
+              "**Inception Lab:** Taller col·laboratiu per alinear objectius i definir hipòtesis de validació."
+            ]
+          },
+          {
+            "name": "Investigació Qualitativa",
+            "body": "Exploració de la dimensió emocional i contextual mitjançant entrevistes en profunditat per entendre les motivacions i la relació de confiança amb l'App.",
+            "items": [
+              "**Expectatives i Motivacions:** Investigació sobre la percepció de la TMB App com a \"aplicació oficial\".",
+              "**Grau de coneixement:** Anàlisi de la proposta de valor (T-mobilitat i multimodalitat) més enllà de l'ús bàsic."
+            ]
+          },
+          {
+            "name": "Test d'Usabilitat (Task-Oriented)",
+            "body": "Avaluació de l'eficàcia de l'app en escenaris reals mitjançant l'observació directa amb usuaris.",
+            "items": [
+              "**Execució de 6 tests:** Sessions individuals (50% iOS / 50% Android) amb usuaris reals.",
+              "**Casos d'ús crítics:** Validació de processos com registre a T-mobilitat, recàrrega de targetes i planificació de rutes.",
+              "**Inclusió i Accessibilitat:** Participació de perfils amb necessitats específiques (invidents i PMR)."
+            ]
+          },
+          {
+            "name": "Anàlisi de Resultats i Pla de Millora",
+            "body": "Consolidació de totes les troballes en un informe executiu que permeti traçar el pla d'accions evolutives.",
+            "items": [
+              "**Classificació per Gravetat:** Categorització segons la nomenclatura de TMB (Crític, Seriós i Menor).",
+              "**Matriu d'Impacte/Esforç:** Elaboració d'un backlog prioritzat per a la presa de decisions.",
+              "**Definició de bases per a l'estudi quantitatiu:** Establiment de KPIs i punts de monitoratge futurs."
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "gantt",
+        "theme": "light",
+        "title": "Calendari",
+        "weeks": 8,
+        "unit": "Semanas",
+        "rows": [
+          {
+            "label": "Anàlisi Preliminar i Immersió",
+            "start": 1,
+            "end": 2,
+            "accent": "opal"
+          },
+          {
+            "label": "Investigació Qualitativa",
+            "start": 2,
+            "end": 4,
+            "accent": "bordeaux"
+          },
+          {
+            "label": "Test d'Usabilitat",
+            "start": 4,
+            "end": 6,
+            "accent": "emerald"
+          },
+          {
+            "label": "Anàlisi de Resultats i Pla de Millora",
+            "start": 7,
+            "end": 8,
+            "accent": "opal"
+          }
+        ],
+        "milestones": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ],
+        "milestoneLabel": "Client"
+      },
+      {
+        "kind": "closing",
+        "theme": "dark",
+        "title": "Gràcies",
+        "url": "www.interactius.com"
+      }
+    ],
+    "provenance": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+    ]
+  },
+  "saved-qualitahub": {
+    "slides": [
+      {
+        "kind": "cover",
+        "theme": "dark",
+        "title": "El SaaS de Gestió de Flotes d'Última Generació",
+        "client": "Qualitahub",
+        "image": {
+          "src": "/universo/universo-02.jpg",
+          "alt": "Portada · universo visual"
+        }
+      },
+      {
+        "kind": "manifesto",
+        "theme": "light",
+        "title": "Ajudem les organitzacions en moments de/transformació/da decidir amb criteri.",
+        "subtitle": "Convertim l'estratègia en solucions que perduren."
+      },
+      {
+        "kind": "team",
+        "theme": "light",
+        "paragraphs": [
+          "Al centre no passa res de nou. És previsible, còmode i avui, la manera més ràpida de tornar-se irrellevant.",
+          "Per això vam decidir operar als marges, allò ambigu, allò incert. Aquí hi ha les veritats humanes. I aquí decidim quedar-nos.",
+          "Treballem des d'aquest **espai liminal**, entre el que és i el que ha de venir. Ho fem qüestionant allò evident i desplaçant el focus, amb criteri i perspectiva humana.",
+          "No encaixem en etiquetes ni en vestim.",
+          "Som un company: proper, implicat i enfocat en allò que realment importa. Treballem amb rigor, naturalitat i criteri."
+        ]
+      },
+      {
+        "kind": "clients",
+        "theme": "light"
+      },
+      {
+        "kind": "split",
+        "theme": "light",
+        "eyebrow": "CONTEXT",
+        "title": "D'on partim",
+        "body": "Es tracta d'una empresa especialitzada en la instal·lació de dispositius de telemetria que, després d'anys subcontractant programari extern, ha decidit desenvolupar la seva pròpia solució SaaS per optimitzar la gestió de flotes i oferir-la a altres distribuïdors. Actualment, el mercat està dominat per eines amb una experiència d'usuari (UX) deficient i un disseny visual tradicional. QualitaHub busca trencar aquesta dinàmica amb un producte que destaqui per la seva facilitat d'ús i una imatge moderna, similar a la d'un banc digital, llest per a SEO.",
+        "imageSide": "right"
+      },
+      {
+        "kind": "split",
+        "theme": "light",
+        "eyebrow": "EL REPTE",
+        "title": "Dissenyar una nova identitat de marca i una landing d’alt impacte que transformi la percepció de la gestió de flotes en un ecosistema tecnològic àgil amb la sofisticació visual d’un neobanc.",
+        "image": {
+          "src": "/universo/universo-01.jpg",
+          "alt": "El reto"
+        },
+        "imageSide": "left"
+      },
+      {
+        "kind": "objetivos",
+        "theme": "light",
+        "title": "Objectius",
+        "items": [
+          "**Definir el posicionament estratègic**: Establir els valors i la personalitat de la marca QualitaHub.",
+          "**Crear una identitat visual disruptiva**: Dissenyar un univers visual fresc que s'allunyi dels estàndards del sector de transports.",
+          "**Dissenyar una Landing Page d'alt impacte**: Desenvolupar una interfície optimitzada per a la conversió i l'explicació clara del producte SaaS.",
+          "**Garantir l'escalabilitat**: Proporcionar un UI Kit complet que permeti aplicar la nova marca a les futures fases de desenvolupament del producte.",
+          "**Optimització SEO**: Assegurar que la nova plataforma estigui tècnicament preparada per posicionar-se en els cercadors des del llançament."
+        ],
+        "image": {
+          "src": "/universo/universo-03.jpg",
+          "alt": "Objetivos"
+        }
+      },
+      {
+        "kind": "roadmapPhases",
+        "theme": "light",
+        "title": "Roadmap",
+        "subtitle": "Estimem que la durada del projecte serà de **10 setmanes**.",
+        "phases": [
+          {
+            "name": "Discovery & Immersió Inicial",
+            "body": "Aquesta fase serveix per alinear les expectatives i absorbir tot el coneixement del negoci i el producte.",
+            "items": [
+              "Aquesta fase serveix per alinear les expectatives i absorbir tot el coneixement del negoci i el producte.",
+              "Kickoff i lectura de documentació: Sessió inicial per marcar els objectius del projecte amb el client",
+              "Research i Estratègia: Estudi exhaustiu del mercat de gestió de flotes i anàlisi de la competència",
+              "Preparació i immersió: Preparació de l'equip de consultoria per a l'execució del projecte."
+            ]
+          },
+          {
+            "name": "Estratègia de Marca - Branding",
+            "body": "Es defineix la base conceptual sobre la qual es construirà tot l'univers visual.",
+            "items": [
+              "Anàlisi i Posicionament: Estudi per trobar el lloc únic de QualitaHub al mercat",
+              "Definició de marca: Establiment de la missió, visió i personalitat de marca",
+              "Documentació: Volcat de tota l'estratègia al gestor de projectes Campamento Base."
+            ]
+          },
+          {
+            "name": "Identitat Visual i UI Kit",
+            "body": "La fase més extensa, on es materialitza la marca i es prepara la seva aplicació al sistema digital.",
+            "items": [
+              "Plataforma de marca: Establiment dels fonaments visuals.",
+              "Concepte creatiu: Desenvolupament de la idea visual \"wow\" i disruptiva.",
+              "Disseny de la identitat visual: Creació del logotip, tipografies i paleta de colors.",
+              "Brand Book i UI Kit: Documentació de les guies d'estil i creació dels components UI per al producte."
+            ]
+          },
+          {
+            "name": "Landing Page i SEO",
+            "body": "Disseny final de la web de captació i preparació per al seu posicionament orgànic.",
+            "items": [
+              "Arquitectura i Disseny Visual: Definició de l'estructura de continguts i disseny d'alta fidelitat de la landing page",
+              "Testing i Validació: Proves de fluxos i experiència d'usuari",
+              "Llançament i SEO Tècnic: Configuració final i auditoria SEO completa (auditoria tècnica, paraules clau i metadades)",
+              "Estratègia SEO Mensual: Acompanyament recurrent per potenciar la visibilitat (Estratègia integral SEO/GEO)."
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "gantt",
+        "theme": "light",
+        "title": "Calendari",
+        "weeks": 10,
+        "unit": "Setmanes",
+        "rows": [
+          {
+            "label": "Discovery & Immersió Inicial",
+            "start": 1,
+            "end": 1,
+            "accent": "opal"
+          },
+          {
+            "label": "Estratègia de Marca - Branding",
+            "start": 1,
+            "end": 1,
+            "accent": "bordeaux"
+          },
+          {
+            "label": "Identitat Visual i UI Kit",
+            "start": 2,
+            "end": 5,
+            "accent": "emerald"
+          },
+          {
+            "label": "Landing Page i SEO",
+            "start": 6,
+            "end": 10,
+            "accent": "opal"
+          }
+        ],
+        "milestones": [
+          1,
+          2,
+          5,
+          7,
+          10
+        ],
+        "milestoneLabel": "Client"
+      },
+      {
+        "kind": "budget",
+        "theme": "light",
+        "title": "Pressupost",
+        "items": [
+          {
+            "label": "Discovery & Immersió Inicial",
+            "amount": "845 €"
+          },
+          {
+            "label": "Estratègia de Marca - Branding",
+            "amount": "1.170 €"
+          },
+          {
+            "label": "Identitat Visual i UI Kit",
+            "amount": "10.730 €"
+          },
+          {
+            "label": "Landing Page i SEO",
+            "amount": "19.658 €"
+          }
+        ],
+        "total": "32.403 €",
+        "conditions": [
+          "Emissió de factura inicial pel 60% del total del projecte un cop rebuda l'ordre de compra a l'inici del projecte.",
+          "Emissió de factura final pel 40% del total del projecte un cop realitzada l'entrega.",
+          "A l'import s'hi afegirà l'IVA corresponent d'acord amb la legislació vigent.",
+          "Cobrament de factures a 30 dies, dia de pagament habitual del client.",
+          "Aquesta proposta econòmica té una validesa de tres mesos a partir de la seva data."
+        ],
+        "conditionsLabel": "Condicions"
+      },
+      {
+        "kind": "acceptance",
+        "theme": "light",
+        "title": "Aprovació del pressupost"
+      },
+      {
+        "kind": "closing",
+        "theme": "dark",
+        "title": "Gràcies",
+        "url": "www.interactius.com"
+      }
+    ],
+    "provenance": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11
+    ]
+  },
+  "saved-catala": {
+    "slides": [
+      {
+        "kind": "cover",
+        "theme": "dark",
+        "title": "Proposta de col·laboració",
+        "subtitle": "Diagnòstic de criteris i arquitectura de decisió per a l'ecommerce de la marca.",
+        "client": "Naturgy",
+        "image": {
+          "src": "/universo/universo-02.jpg",
+          "alt": "Portada · univers visual"
+        }
+      },
+      {
+        "kind": "manifesto",
+        "theme": "light"
+      },
+      {
+        "kind": "team",
+        "theme": "light"
+      },
+      {
+        "kind": "clients",
+        "theme": "light"
+      },
+      {
+        "kind": "contexto",
+        "theme": "light",
+        "eyebrow": "CONTEXT",
+        "body": "Naturgy té l'oportunitat d'establir un **nou estàndard digital** que unifiqui la seva experiència online i aporti coherència, escalabilitat i alineació amb la marca. Avui existeixen inconsistències en experiència, disseny i fluxos que generen fricció i redueixen eficiència.",
+        "long": true
+      },
+      {
+        "kind": "elreto",
+        "theme": "light",
+        "eyebrow": "EL REPTE",
+        "title": "Incrementar la conversió en l'ecommerce principal de la marca",
+        "image": {
+          "src": "https://gcvzzpggpsnlwqnotfqv.supabase.co/storage/v1/object/public/deck-images/images/1781684676766-universo-04.jpg",
+          "alt": "El repte"
+        }
+      },
+      {
+        "kind": "objetivos",
+        "theme": "light",
+        "title": "Objectius",
+        "items": [
+          "Establir una línia base quantificada del nivell de qualitat actual per país, tipologia de comanda i modalitat de recollida.",
+          "Identificar quines dimensions, mercats o tipologies presenten major freqüència i severitat d'incidències.",
+          "Comparar el rendiment entre països per detectar diferències operatives significatives."
+        ],
+        "image": {
+          "src": "/universo/universo-03.jpg",
+          "alt": "Objectius"
+        }
+      },
+      {
+        "kind": "roadmapPhases",
+        "theme": "light",
+        "title": "Roadmap",
+        "subtitle": "Estimem que la durada del projecte serà de 6 setmanes.",
+        "phases": [
+          {
+            "name": "Diagnòstic",
+            "body": "La fase d'immersió ens permet comprendre el context actual i les expectatives del projecte.",
+            "items": [
+              "Kick Off: alineació d'objectius i definició del marc.",
+              "Immersió inicial: revisió de fonts internes i externes."
+            ]
+          },
+          {
+            "name": "Discovery",
+            "body": "Investigació exhaustiva que combina la immersió amb l'experiència de l'usuari.",
+            "items": [
+              "Mapa de tendències i competència.",
+              "Entrevistes en profunditat."
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "gantt",
+        "theme": "light",
+        "title": "Roadmap",
+        "weeks": 8,
+        "unit": "Setmanes",
+        "rows": [
+          {
+            "label": "Diagnòstic",
+            "start": 1,
+            "end": 1.5,
+            "accent": "opal"
+          },
+          {
+            "label": "Discovery",
+            "start": 2,
+            "end": 3,
+            "accent": "bordeaux"
+          },
+          {
+            "label": "Volumetria",
+            "start": 4,
+            "end": 8,
+            "accent": "emerald"
+          }
+        ],
+        "milestones": [
+          1,
+          3,
+          5,
+          8
+        ],
+        "milestoneLabel": "Client"
+      },
+      {
+        "kind": "budget",
+        "theme": "light",
+        "title": "Pressupost",
+        "items": [
+          {
+            "label": "Anàlisi Heurística",
+            "amount": "3.315 €"
+          },
+          {
+            "label": "Benchmark Android/Mobile",
+            "amount": "3.770 €"
+          },
+          {
+            "label": "Immersió + gestió",
+            "amount": "3.991 €"
+          }
+        ],
+        "total": "11.076 €",
+        "conditions": [
+          "Emissió de factura inicial pel 60% del total del projecte un cop rebuda l'ordre de compra a l'inici del projecte.",
+          "Emissió de factura final pel 40% del total del projecte un cop realitzada l'entrega.",
+          "A l'import s'hi afegirà l'IVA corresponent d'acord amb la legislació vigent.",
+          "Cobrament de factures a 30 dies, dia de pagament habitual del client.",
+          "Aquesta proposta econòmica té una validesa de tres mesos a partir de la data de la mateixa."
+        ],
+        "conditionsLabel": "Condiciones"
+      },
+      {
+        "kind": "acceptance",
+        "theme": "light"
+      },
+      {
+        "kind": "closing",
+        "theme": "dark",
+        "title": "Gràcies",
+        "url": "www.interactius.com"
+      }
+    ],
+    "provenance": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11
+    ]
+  }
+}
