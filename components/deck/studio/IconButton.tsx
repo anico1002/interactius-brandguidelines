@@ -48,7 +48,7 @@ export function IconButton({
         <span
           role="tooltip"
           style={{
-            position: 'absolute', top: 'calc(100% + 6px)', right: tooltip ? 0 : 'auto', left: tooltip ? 'auto' : '50%',
+            position: 'absolute', top: 'calc(100% + 6px)', left: tooltip ? 0 : '50%', right: 'auto',
             transform: tooltip ? 'none' : 'translateX(-50%)',
             background: '#1C1A17', color: '#F5F2ED',
             font: tooltip ? '500 10px/1.7 var(--font-ibm-plex-mono, monospace)' : '500 10px/1 var(--font-ibm-plex-mono, monospace)',
