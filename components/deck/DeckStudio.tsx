@@ -426,10 +426,10 @@ export function DeckStudio() {
               CONTENIDO
             </span>
             <div style={{ display: 'flex', gap: 6 }}>
-              <TranslateMenu onPick={setPendingTranslate} />
               <IconButton label="Reglas del markdown" tooltip={MD_RULES} onClick={() => {}}>
                 <RulesIcon />
               </IconButton>
+              <TranslateMenu onPick={setPendingTranslate} />
               <IconButton label="Galería de layouts" onClick={() => setGalleryOpen(true)}>
                 <GalleryIcon />
               </IconButton>
