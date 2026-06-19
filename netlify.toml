@@ -2,5 +2,11 @@
   command = "next build"
   publish = ".next"
 
+[build.environment]
+  # These are public by design (NEXT_PUBLIC_*): they ship in the client bundle and appear in
+  # test fixtures (saved-deck image URLs). Exclude them from secrets scanning — the only real
+  # secret, ANTHROPIC_API_KEY (server-only), stays scanned.
+  SECRETS_SCAN_OMIT_KEYS = "NEXT_PUBLIC_SUPABASE_URL,NEXT_PUBLIC_SUPABASE_ANON_KEY"
+
 [[plugins]]
   package = "@netlify/plugin-nextjs"
