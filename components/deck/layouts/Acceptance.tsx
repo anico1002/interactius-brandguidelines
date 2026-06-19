@@ -45,7 +45,6 @@ export function Acceptance({ slide, page }: { slide: Extract<Slide, { kind: 'acc
       )}
 
       <div className="note">{slide.note ?? DEFAULT_NOTE}</div>
-      <div className="cta">{slide.cta ?? DEFAULT_CTA}</div>
     </div>
   );
 }

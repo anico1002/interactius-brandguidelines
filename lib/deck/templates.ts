@@ -20,11 +20,11 @@ Convertimos la estrategia en soluciones que perduran.
 ---
 
 [ly: equipo]
-En el centro no pasa nada nuevo. Es previsible, cómodo y hoy, la forma más rápida de volverse irrelevante.
+**En el centro no pasa nada nuevo.** Es previsible, cómodo y hoy, la forma más rápida de volverse irrelevante.
 Por eso decidimos operar en los márgenes, lo ambiguo, lo incierto. Ahí están las verdades humanas. Y ahí decidimos quedarnos.
-Trabajamos desde ese espacio liminal, entre lo que es y lo que está por venir. Lo hacemos cuestionando lo evidente y desplazando el foco, con criterio y perspectiva humana.
+Trabajamos desde ese **espacio liminal**, entre lo que es y lo que está por venir. Lo hacemos cuestionando lo evidente y desplazando el foco, con criterio y perspectiva humana.
 **No encajamos en etiquetas ni vestimos de ellas.**
-Somos un compañero: cercano, implicado y enfocado en lo que realmente importa. Trabajamos con rigor, naturalidad y criterio.
+Somos un **compañero**: cercano, implicado y enfocado en lo que realmente importa. Trabajamos con rigor, naturalidad y criterio.
 ![Equipo Interactius](/presentaciones/team.png)
 
 ---
