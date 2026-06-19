@@ -164,6 +164,9 @@ body.ix-viewer main{padding:0 !important; margin:0 !important;}
 .ix-deck .team .txt .list{list-style:none; margin-top:2px;}
 .ix-deck .team .txt .list li{display:grid; grid-template-columns:16px 1fr; gap:8px; margin-bottom:12px; font:400 11.5px/1.6 var(--mono); color:var(--ash-dark);}
 .ix-deck .team .txt .list .dia{font-size:9px; line-height:2; color:var(--dark);}
+.ix-deck .team .txt .eyebrow{margin:0 0 10px;}
+.ix-deck .team .txt h3.th{font-family:var(--serif); font-weight:400; font-size:17px; line-height:1.2; color:var(--dark); margin:2px 0 10px;}
+.ix-deck .team .txt blockquote.quote{margin:0 0 13px; padding-left:12px; border-left:2px solid var(--warm-dark); font:400 11.5px/1.6 var(--mono); color:var(--dark);}
 .ix-deck .team .grid{position:absolute; right:40px; top:48px; width:720px; height:auto;}
 
 /* Fixed page · Clients (ref p.41) — image carries its own category labels; contained, not full-bleed */

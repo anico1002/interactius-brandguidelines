@@ -21,12 +21,27 @@
       {
         "kind": "team",
         "theme": "light",
-        "paragraphs": [
-          "En el centro no pasa nada nuevo. Es previsible, cómodo y hoy, la forma más rápida de volverse irrelevante.",
-          "Por eso decidimos operar en los márgenes, lo ambiguo, lo incierto. Ahí están las verdades humanas. Y ahí decidimos quedarnos.",
-          "Trabajamos desde ese espacio liminal, entre lo que es y lo que está por venir. Lo hacemos cuestionando lo evidente y desplazando el foco, con criterio y perspectiva humana.",
-          "**No encajamos en etiquetas ni vestimos de ellas.**",
-          "Somos un compañero: cercano, implicado y enfocado en lo que realmente importa. Trabajamos con rigor, naturalidad y criterio."
+        "content": [
+          {
+            "t": "p",
+            "text": "En el centro no pasa nada nuevo. Es previsible, cómodo y hoy, la forma más rápida de volverse irrelevante."
+          },
+          {
+            "t": "p",
+            "text": "Por eso decidimos operar en los márgenes, lo ambiguo, lo incierto. Ahí están las verdades humanas. Y ahí decidimos quedarnos."
+          },
+          {
+            "t": "p",
+            "text": "Trabajamos desde ese espacio liminal, entre lo que es y lo que está por venir. Lo hacemos cuestionando lo evidente y desplazando el foco, con criterio y perspectiva humana."
+          },
+          {
+            "t": "p",
+            "text": "**No encajamos en etiquetas ni vestimos de ellas.**"
+          },
+          {
+            "t": "p",
+            "text": "Somos un compañero: cercano, implicado y enfocado en lo que realmente importa. Trabajamos con rigor, naturalidad y criterio."
+          }
         ],
         "image": {
           "src": "/presentaciones/team.png",
@@ -479,12 +494,27 @@
       {
         "kind": "team",
         "theme": "light",
-        "paragraphs": [
-          "Al centre no passa res de nou. És previsible, còmode i avui, la manera més ràpida de tornar-se irrellevant.",
-          "Per això vam decidir operar als marges, allò ambigu, allò incert. Aquí hi ha les veritats humanes. I aquí decidim quedar-nos.",
-          "Treballem des d'aquest **espai liminal**, entre el que és i el que ha de venir. Ho fem qüestionant allò evident i desplaçant el focus, amb criteri i perspectiva humana.",
-          "No encaixem en etiquetes ni en vestim.",
-          "Som un company: proper, implicat i enfocat en allò que realment importa. Treballem amb rigor, naturalitat i criteri."
+        "content": [
+          {
+            "t": "p",
+            "text": "Al centre no passa res de nou. És previsible, còmode i avui, la manera més ràpida de tornar-se irrellevant."
+          },
+          {
+            "t": "p",
+            "text": "Per això vam decidir operar als marges, allò ambigu, allò incert. Aquí hi ha les veritats humanes. I aquí decidim quedar-nos."
+          },
+          {
+            "t": "p",
+            "text": "Treballem des d'aquest **espai liminal**, entre el que és i el que ha de venir. Ho fem qüestionant allò evident i desplaçant el focus, amb criteri i perspectiva humana."
+          },
+          {
+            "t": "p",
+            "text": "No encaixem en etiquetes ni en vestim."
+          },
+          {
+            "t": "p",
+            "text": "Som un company: proper, implicat i enfocat en allò que realment importa. Treballem amb rigor, naturalitat i criteri."
+          }
         ]
       },
       {

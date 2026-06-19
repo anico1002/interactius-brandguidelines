@@ -1,4 +1,4 @@
-import type { Slide, SlideSource, Column, Signer } from './types.ts';
+import type { Slide, SlideSource, Column, Signer, RichNode } from './types.ts';
 import { themeFor } from './theme.ts';
 import { parseGantt, parseBudget } from './blocks.ts';
 import { LAYOUT_MAP } from './catalog.ts';
@@ -71,8 +71,19 @@ function buildSlide(m: BlockModel, kind: Slide['kind'], marker?: string): Slide 
       return { kind, theme: T('roadmapPhases'), title: m.title, subtitle: m.subtitle ?? m.body[0], phases: m.sections.map((s) => ({ name: s.heading, body: s.body[0] ?? '', items: s.items })) };
     case 'manifesto':
       return { kind, theme: T('manifesto'), title: m.title || m.body[0], subtitle: m.subtitle ?? (m.hasHeading ? m.body[0] : m.body[1]) };
-    case 'team':
-      return { kind, theme: T('team'), paragraphs: m.body.length ? m.body : undefined, items: m.items, image: m.image };
+    case 'team': {
+      // The team text column renders a free-form flow (paragraphs/lists/quotes/sub-headings/
+      // eyebrows) in document order, so every formatting element is supported.
+      const content: RichNode[] = m.tokens.flatMap((tk): RichNode[] => {
+        if (tk.t === 'p') return [{ t: 'p', text: tk.text }];
+        if (tk.t === 'ul') return [{ t: 'ul', items: tk.items }];
+        if (tk.t === 'quote') return [{ t: 'quote', text: tk.text }];
+        if (tk.t === 'h') return [{ t: 'h', level: tk.level, text: tk.text }];
+        if (tk.t === 'caps') return [{ t: 'caps', text: tk.text }];
+        return [];
+      });
+      return { kind, theme: T('team'), content: content.length ? content : undefined, image: m.image };
+    }
     case 'clients':
       return { kind, theme: T('clients'), image: m.image };
     case 'acceptance': {

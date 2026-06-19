@@ -8,6 +8,16 @@ export type Phase = { name: string; body: string; items: string[] };
 export type BudgetItem = { label: string; amount: string };
 export type Signer = { name?: string; role?: string; company?: string; nif?: string; address?: string };
 
+/* An ordered rich-text flow: paragraphs, lists, quotes, sub-headings and eyebrows kept in
+   document order, each supporting inline formatting. Used where a layout renders free-form
+   markdown (the team text column). */
+export type RichNode =
+  | { t: 'p'; text: string }
+  | { t: 'ul'; items: string[] }
+  | { t: 'quote'; text: string }
+  | { t: 'h'; level: number; text: string }
+  | { t: 'caps'; text: string };
+
 export type Slide =
   | { kind: 'cover'; theme: Theme; title: string; subtitle?: string; eyebrow?: string; client?: string; image?: ImageRef; footer?: string }
   | { kind: 'statement'; theme: Theme; eyebrow?: string; title: string }
@@ -19,7 +29,7 @@ export type Slide =
   | { kind: 'closing'; theme: Theme; title: string; url?: string }
   // Brand pages: content is editable from the markdown; missing fields fall back to defaults.
   | { kind: 'manifesto'; theme: Theme; title?: string; subtitle?: string }
-  | { kind: 'team'; theme: Theme; paragraphs?: string[]; items?: string[]; image?: ImageRef }
+  | { kind: 'team'; theme: Theme; content?: RichNode[]; image?: ImageRef }
   | { kind: 'clients'; theme: Theme; image?: ImageRef }
   | { kind: 'budget'; theme: Theme; title?: string; items: BudgetItem[]; total: string; conditions: string[]; conditionsLabel?: string }
   | { kind: 'acceptance'; theme: Theme; title?: string; signer?: Signer; note?: string; cta?: string; signatureImage?: ImageRef }

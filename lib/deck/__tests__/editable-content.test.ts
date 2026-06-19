@@ -66,25 +66,28 @@ test('acceptance signer/aviso/cta come from clave:valor lines', () => {
   assert.equal(s.signatureImage.src, '/presentaciones/sign.png');
 });
 
-test('team renders intro paragraph AND the bullet list (list no longer dropped)', () => {
+test('team renders a rich flow (paragraph + list + quote + subheading) in document order', () => {
   const md = [
     '[ly: equipo]',
+    '### Nuestro equipo',
     'El nostre equip multidisciplinari per a TMB:',
     '- **Consultoria UX:** Especialistes en auditories.',
     '- **Research i Estratègia:** Experts en recerca.',
-    '- **Gestió de Projecte:** Coordinació contínua.',
+    '> Cita de cierre.',
   ].join('\n');
   const s = one(md);
   assert.equal(s.kind, 'team');
-  assert.deepEqual(s.paragraphs, ['El nostre equip multidisciplinari per a TMB:']);
-  assert.equal(s.items.length, 3);
-  assert.equal(s.items[0], '**Consultoria UX:** Especialistes en auditories.');
+  assert.deepEqual(s.content.map((n: any) => n.t), ['h', 'p', 'ul', 'quote']);
+  assert.equal(s.content[0].text, 'Nuestro equipo');
+  assert.equal(s.content[1].text, 'El nostre equip multidisciplinari per a TMB:');
+  assert.equal(s.content[2].items.length, 2);
+  assert.equal(s.content[3].text, 'Cita de cierre.');
 });
 
-test('team without a list leaves items undefined (falls back to paragraphs/defaults)', () => {
-  const s = one('[ly: equipo]\nUn solo párrafo.');
+test('team without content leaves it undefined (falls back to brand defaults)', () => {
+  const s = one('[ly: equipo]');
   assert.equal(s.kind, 'team');
-  assert.equal(s.items, undefined);
+  assert.equal(s.content, undefined);
 });
 
 test('manifesto title keeps the / emphasis / slashes verbatim', () => {
@@ -102,7 +105,7 @@ test('COMERCIAL template ships all brand-page content inline (editable/translata
   assert.ok(manifesto.title?.includes('transformación'), 'manifesto title inline');
 
   const team = byKind('team');
-  assert.equal(team.paragraphs.length, 5);
+  assert.equal(team.content.filter((n: any) => n.t === 'p').length, 5);
 
   const clients = byKind('clients');
   assert.ok(clients.image?.src?.includes('clients'));
