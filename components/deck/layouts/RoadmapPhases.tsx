@@ -17,7 +17,7 @@ export function RoadmapPhases({ slide, page }: { slide: Extract<Slide, { kind: '
             {ph.body && <p className="pbody">{inline(ph.body)}</p>}
             {ph.items.length > 0 && (
               <>
-                <div className="qh">¿Qué hacemos?</div>
+                {ph.itemsHeader && <div className="qh">{inline(ph.itemsHeader)}</div>}
                 <ul>
                   {ph.items.map((it, k) => (
                     <li key={k}><span className="dia">◆</span><span>{inline(it)}</span></li>

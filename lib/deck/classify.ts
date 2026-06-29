@@ -68,7 +68,9 @@ function buildSlide(m: BlockModel, kind: Slide['kind'], marker?: string): Slide 
     case 'objetivos':
       return { kind, theme: T('objetivos'), title: m.title, items: m.items ?? [], image: m.image };
     case 'roadmapPhases':
-      return { kind, theme: T('roadmapPhases'), title: m.title, subtitle: m.subtitle ?? m.body[0], phases: m.sections.map((s) => ({ name: s.heading, body: s.body[0] ?? '', items: s.items })) };
+      // Per phase: first paragraph = body, a second paragraph = the tasks header (e.g. "¿Qué
+      // hacemos?"), so the header is authored in the markdown and translates.
+      return { kind, theme: T('roadmapPhases'), title: m.title, subtitle: m.subtitle ?? m.body[0], phases: m.sections.map((s) => ({ name: s.heading, body: s.body[0] ?? '', itemsHeader: s.body[1], items: s.items })) };
     case 'manifesto':
       return { kind, theme: T('manifesto'), title: m.title || m.body[0], subtitle: m.subtitle ?? (m.hasHeading ? m.body[0] : m.body[1]) };
     case 'team': {
@@ -93,7 +95,9 @@ function buildSlide(m: BlockModel, kind: Slide['kind'], marker?: string): Slide 
         kind, theme: 'light',
         title: m.title || undefined,
         signer: hasSigner ? signer : undefined,
-        note: m.meta['aviso'],
+        // The note is the `aviso:` line or, failing that, the first free paragraph — so a note
+        // written as plain text (not a key:value) is captured and translated.
+        note: m.meta['aviso'] ?? m.body[0],
         cta: m.meta['cta'],
         signatureImage: m.image,
       };

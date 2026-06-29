@@ -61,10 +61,12 @@ EL RETO
 Estimamos que la duración del proyecto será de 6 semanas.
 ### Diagnóstico
 La fase de inmersión nos permite comprender el contexto actual y las expectativas del proyecto.
+¿Qué hacemos?
 - Kick Off: alineación de objetivos y definición del marco.
 - Inmersión inicial: revisión de fuentes internas y externas.
 ### Discovery
 Investigación exhaustiva que combina la inmersión con la experiencia del usuario.
+¿Qué hacemos?
 - Mapa de tendencias y competencia.
 - Entrevistas en profundidad.
 
@@ -138,6 +140,7 @@ Describe aquí el contexto del informe en un párrafo claro y directo de entre q
 ## Roadmap
 ### Fase 1
 Descripción de la fase.
+¿Qué hacemos?
 - Tarea uno.
 - Tarea dos.
 

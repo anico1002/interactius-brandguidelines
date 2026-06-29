@@ -4,7 +4,7 @@ export type Accent = 'opal' | 'bordeaux' | 'emerald';
 export type ImageRef = { src?: string; alt?: string; prompt?: string };
 export type GanttRow = { label: string; start: number; end: number; accent: Accent };
 export type Column = { label: string; heading: string; body: string };
-export type Phase = { name: string; body: string; items: string[] };
+export type Phase = { name: string; body: string; itemsHeader?: string; items: string[] };
 export type BudgetItem = { label: string; amount: string };
 export type Signer = { name?: string; role?: string; company?: string; nif?: string; address?: string };
 

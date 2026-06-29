@@ -96,6 +96,7 @@
           {
             "name": "Diagnóstico",
             "body": "La fase de inmersión nos permite comprender el contexto actual y las expectativas del proyecto.",
+            "itemsHeader": "¿Qué hacemos?",
             "items": [
               "Kick Off: alineación de objetivos y definición del marco.",
               "Inmersión inicial: revisión de fuentes internas y externas."
@@ -104,6 +105,7 @@
           {
             "name": "Discovery",
             "body": "Investigación exhaustiva que combina la inmersión con la experiencia del usuario.",
+            "itemsHeader": "¿Qué hacemos?",
             "items": [
               "Mapa de tendencias y competencia.",
               "Entrevistas en profundidad."
@@ -255,6 +257,7 @@
           {
             "name": "Fase 1",
             "body": "Descripción de la fase.",
+            "itemsHeader": "¿Qué hacemos?",
             "items": [
               "Tarea uno.",
               "Tarea dos."
@@ -565,6 +568,7 @@
           {
             "name": "Discovery & Immersió Inicial",
             "body": "Aquesta fase serveix per alinear les expectatives i absorbir tot el coneixement del negoci i el producte.",
+            "itemsHeader": "Què farem?",
             "items": [
               "Aquesta fase serveix per alinear les expectatives i absorbir tot el coneixement del negoci i el producte.",
               "Kickoff i lectura de documentació: Sessió inicial per marcar els objectius del projecte amb el client",
@@ -679,7 +683,8 @@
       {
         "kind": "acceptance",
         "theme": "light",
-        "title": "Aprovació del pressupost"
+        "title": "Aprovació del pressupost",
+        "note": "La signatura d'aquesta pàgina acorda l'acceptació total de la proposta presentada en aquest document."
       },
       {
         "kind": "closing",

@@ -90,6 +90,31 @@ test('team without content leaves it undefined (falls back to brand defaults)', 
   assert.equal(s.content, undefined);
 });
 
+test('roadmap phase tasks-header comes from the 2nd paragraph (editable/translatable)', () => {
+  const s = one('[ly: roadmap]\n## Roadmap\n### Diagnóstico\nDescripción de la fase.\nQuè farem?\n- Tarea uno.\n- Tarea dos.');
+  assert.equal(s.kind, 'roadmapPhases');
+  assert.equal(s.phases[0].body, 'Descripción de la fase.');
+  assert.equal(s.phases[0].itemsHeader, 'Què farem?');
+  assert.deepEqual(s.phases[0].items, ['Tarea uno.', 'Tarea dos.']);
+});
+
+test('roadmap phase with no 2nd paragraph has no tasks-header (nothing hardcoded)', () => {
+  const s = one('[ly: roadmap]\n## Roadmap\n### Fase\nSolo cuerpo.\n- Tarea.');
+  assert.equal(s.phases[0].itemsHeader, undefined);
+});
+
+test('acceptance note falls back to a plain paragraph when there is no aviso:', () => {
+  const s = one('[ly: aceptacion]\n## Aprovació del pressupost\nLa signatura acorda l’acceptació total.');
+  assert.equal(s.kind, 'acceptance');
+  assert.equal(s.title, 'Aprovació del pressupost');
+  assert.equal(s.note, 'La signatura acorda l’acceptació total.');
+});
+
+test('acceptance note still prefers an explicit aviso: line', () => {
+  const s = one('[ly: aceptacion]\naviso: Texto del aviso.\nUn párrafo cualquiera.');
+  assert.equal(s.note, 'Texto del aviso.');
+});
+
 test('manifesto title keeps the / emphasis / slashes verbatim', () => {
   const s = one('[ly: manifiesto]\n# Ayudamos en momentos de / transformación / con criterio.\nSub.');
   assert.equal(s.kind, 'manifesto');
