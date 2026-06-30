@@ -23,7 +23,7 @@ export function Gantt({ slide, page }: { slide: Extract<Slide, { kind: 'gantt' }
       <div className="title">{inline(slide.title)}</div>
       {slide.subtitle && <div className="sub">{inline(slide.subtitle)}</div>}
       <div className="chart" style={{ gridTemplateColumns: cols }}>
-        <div className="ghd lbl">{slide.unit ?? 'Semanas'}</div>
+        <div className="ghd lbl">{inline(slide.unit ?? 'Semanas')}</div>
         {weeks.map((n) => (
           <div className="ghd" key={`h${n}`}>{n}</div>
         ))}
@@ -32,7 +32,7 @@ export function Gantt({ slide, page }: { slide: Extract<Slide, { kind: 'gantt' }
           const { span, hostWeek, fracLeft } = barGeom(row.start, row.end);
           return (
             <Fragment key={`r${ri}`}>
-              <div className="rlabel">{row.label}</div>
+              <div className="rlabel">{inline(row.label)}</div>
               {weeks.map((n) => (
                 <div className="cell" key={`c${ri}-${n}`}>
                   {n === hostWeek && span > 0 && (
@@ -52,13 +52,13 @@ export function Gantt({ slide, page }: { slide: Extract<Slide, { kind: 'gantt' }
           );
         })}
         <div className="rlabel" style={{ background: 'transparent', fontWeight: 600, color: 'var(--dark)' }}>
-          {slide.milestoneLabel ?? 'Cliente'}
+          {inline(slide.milestoneLabel ?? 'Cliente')}
         </div>
         {weeks.map((n) => (
           <div className="mil" key={`m${n}`}>{slide.milestones.includes(n) ? '◆' : ''}</div>
         ))}
       </div>
-      {slide.note && <div className="note">{slide.note}</div>}
+      {slide.note && <div className="note">{inline(slide.note)}</div>}
     </div>
   );
 }

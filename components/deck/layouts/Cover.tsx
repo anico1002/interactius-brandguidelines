@@ -17,9 +17,9 @@ export function Cover({ slide, page }: { slide: Extract<Slide, { kind: 'cover' }
       </div>
       {(slide.footer || slide.client) && (
         <div className="foot">
-          {slide.footer}
+          {slide.footer && inline(slide.footer)}
           {slide.footer && slide.client && ' · '}
-          {slide.client && <b>{slide.client}</b>}
+          {slide.client && <b>{inline(slide.client)}</b>}
         </div>
       )}
     </div>
