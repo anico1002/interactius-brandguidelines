@@ -301,7 +301,9 @@
       {
         "kind": "paragraph",
         "theme": "light",
-        "body": "Un párrafo de cuerpo con la idea principal, escrito con frases directas de entre quince y veintidós palabras."
+        "body": [
+          "Un párrafo de cuerpo con la idea principal, escrito con frases directas de entre quince y veintidós palabras."
+        ]
       },
       {
         "kind": "bullets",
@@ -529,7 +531,9 @@
         "theme": "light",
         "eyebrow": "CONTEXT",
         "title": "D'on partim",
-        "body": "Es tracta d'una empresa especialitzada en la instal·lació de dispositius de telemetria que, després d'anys subcontractant programari extern, ha decidit desenvolupar la seva pròpia solució SaaS per optimitzar la gestió de flotes i oferir-la a altres distribuïdors. Actualment, el mercat està dominat per eines amb una experiència d'usuari (UX) deficient i un disseny visual tradicional. QualitaHub busca trencar aquesta dinàmica amb un producte que destaqui per la seva facilitat d'ús i una imatge moderna, similar a la d'un banc digital, llest per a SEO.",
+        "body": [
+          "Es tracta d'una empresa especialitzada en la instal·lació de dispositius de telemetria que, després d'anys subcontractant programari extern, ha decidit desenvolupar la seva pròpia solució SaaS per optimitzar la gestió de flotes i oferir-la a altres distribuïdors. Actualment, el mercat està dominat per eines amb una experiència d'usuari (UX) deficient i un disseny visual tradicional. QualitaHub busca trencar aquesta dinàmica amb un producte que destaqui per la seva facilitat d'ús i una imatge moderna, similar a la d'un banc digital, llest per a SEO."
+        ],
         "imageSide": "right"
       },
       {

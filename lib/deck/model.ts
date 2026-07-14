@@ -146,10 +146,10 @@ type Shows = { subtitle: boolean; eyebrow: boolean; image: number; body: number 
 const SHOWS: Record<Slide['kind'], Shows> = {
   cover:         { subtitle: true,  eyebrow: true,  image: 1, body: 1,        list: false, sections: false },
   statement:     { subtitle: false, eyebrow: true,  image: 0, body: 0,        list: false, sections: false },
-  paragraph:     { subtitle: false, eyebrow: true,  image: 0, body: 1,        list: false, sections: false },
+  paragraph:     { subtitle: false, eyebrow: true,  image: 0, body: Infinity, list: false, sections: false },
   bullets:       { subtitle: false, eyebrow: false, image: 0, body: 0,        list: true,  sections: false },
   columns:       { subtitle: false, eyebrow: false, image: 0, body: 0,        list: false, sections: true },
-  split:         { subtitle: false, eyebrow: true,  image: 1, body: 1,        list: false, sections: false },
+  split:         { subtitle: false, eyebrow: true,  image: 1, body: Infinity, list: false, sections: false },
   gantt:         { subtitle: true,  eyebrow: false, image: 0, body: 'spec',   list: false, sections: false },
   closing:       { subtitle: false, eyebrow: false, image: 0, body: 'url',    list: false, sections: false },
   manifesto:     { subtitle: true,  eyebrow: false, image: 0, body: 2,        list: false, sections: false },

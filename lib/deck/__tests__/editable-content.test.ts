@@ -103,6 +103,32 @@ test('roadmap phase with no 2nd paragraph has no tasks-header (nothing hardcoded
   assert.equal(s.phases[0].itemsHeader, undefined);
 });
 
+test('paragraph keeps every paragraph (multi-paragraph body)', () => {
+  const s = one('[ly: texto]\nPrimer párrafo.\nSegundo párrafo.\n\nTercero.');
+  assert.equal(s.kind, 'paragraph');
+  assert.deepEqual(s.body, ['Primer párrafo.', 'Segundo párrafo.', 'Tercero.']);
+});
+
+test('split renders several paragraphs beside the image', () => {
+  const s = one('## Contexto\n![a](u.jpg)\nUno.\nDos.');
+  assert.equal(s.kind, 'split');
+  assert.deepEqual(s.body, ['Uno.', 'Dos.']);
+});
+
+test('gantt takes normal text below the title from the non-spec paragraph', () => {
+  const s = one('[ly: gantt]\n## Roadmap\nDuración estimada de 8 semanas.\nsemanas: 8\nDiagnóstico: 1-1.5\nhitos cliente: 1, 3');
+  assert.equal(s.kind, 'gantt');
+  assert.equal(s.subtitle, 'Duración estimada de 8 semanas.');
+  assert.equal(s.rows.length, 1); // the prose line is not parsed as a bar
+});
+
+test('roadmap "Fase" label is editable via a fase: line (kept out of the subtitle)', () => {
+  const s = one('[ly: roadmap]\n## Roadmap\nfase: Etapa\nDuración de 6 semanas.\n### Diagnóstico\nCuerpo.');
+  assert.equal(s.kind, 'roadmapPhases');
+  assert.equal(s.faseLabel, 'Etapa');
+  assert.equal(s.subtitle, 'Duración de 6 semanas.');
+});
+
 test('acceptance note falls back to a plain paragraph when there is no aviso:', () => {
   const s = one('[ly: aceptacion]\n## Aprovació del pressupost\nLa signatura acorda l’acceptació total.');
   assert.equal(s.kind, 'acceptance');

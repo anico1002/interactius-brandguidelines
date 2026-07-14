@@ -8,7 +8,9 @@ export function Paragraph({ slide, page }: { slide: Extract<Slide, { kind: 'para
       <Chrome page={page} />
       <div className="wrap">
         {slide.eyebrow && <div className="eyebrow">{inline(slide.eyebrow)}</div>}
-        <p>{inline(slide.body)}</p>
+        {slide.body.map((p, i) => (
+          <p key={i}>{inline(p)}</p>
+        ))}
       </div>
     </div>
   );

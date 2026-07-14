@@ -12,7 +12,7 @@ export function RoadmapPhases({ slide, page }: { slide: Extract<Slide, { kind: '
       <div className="phases">
         {slide.phases.map((ph, i) => (
           <div className="phase" key={i}>
-            <div className="fase">Fase 0{i + 1}</div>
+            <div className="fase">{inline(slide.faseLabel || 'Fase')} 0{i + 1}</div>
             <h3>{inline(ph.name)}</h3>
             {ph.body && <p className="pbody">{inline(ph.body)}</p>}
             {ph.items.length > 0 && (

@@ -103,6 +103,7 @@ body.ix-viewer main{padding:0 !important; margin:0 !important;}
 .ix-deck .split .eyebrow{margin-bottom:26px;}
 .ix-deck .split h2{font-family:var(--serif); font-weight:400; font-size:44px; line-height:1.08; margin-bottom:26px;}
 .ix-deck .split .txt .body{max-width:520px;}
+.ix-deck .split .txt .body p + p{margin-top:14px;}
 
 /* 3 · Statement */
 .ix-deck .statement .wrap{position:absolute; left:var(--ml); top:120px; right:var(--mr);}
@@ -149,6 +150,7 @@ body.ix-viewer main{padding:0 !important; margin:0 !important;}
 .ix-deck .paragraph .wrap{position:absolute; left:var(--ml); right:var(--mr); top:140px;}
 .ix-deck .paragraph .eyebrow{margin-bottom:26px;}
 .ix-deck .paragraph p{font-family:var(--serif); font-weight:400; font-size:34px; line-height:1.28; max-width:880px;}
+.ix-deck .paragraph p + p{margin-top:.7em;}
 .ix-deck .theme-dark.paragraph p{color:var(--warm-light);}
 
 /* Fixed page · Manifesto (ref p.10) */

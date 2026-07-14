@@ -11,7 +11,13 @@ export function Split({ slide, page }: { slide: Extract<Slide, { kind: 'split' }
       <div className="txt">
         {slide.eyebrow && <div className="eyebrow">{inline(slide.eyebrow)}</div>}
         <h2>{inline(slide.title)}</h2>
-        {slide.body && <div className="body">{inline(slide.body)}</div>}
+        {slide.body && slide.body.length > 0 && (
+          <div className="body">
+            {slide.body.map((p, i) => (
+              <p key={i}>{inline(p)}</p>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

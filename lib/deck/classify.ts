@@ -40,7 +40,9 @@ function buildSlide(m: BlockModel, kind: Slide['kind'], marker?: string): Slide 
     case 'statement':
       return { kind, theme: T('statement'), eyebrow: m.eyebrow, title: m.title };
     case 'paragraph':
-      return { kind, theme: T('paragraph'), eyebrow: m.eyebrow, body: m.quotes[0] ?? m.body[0] ?? m.title };
+      // Every paragraph/quote is kept so the slide can render several paragraphs (blank line or
+      // line break between them in the markdown), falling back to the title when empty.
+      return { kind, theme: T('paragraph'), eyebrow: m.eyebrow, body: m.quotes.length ? m.quotes : (m.body.length ? m.body : [m.title]) };
     case 'bullets':
       return { kind, theme: T('bullets'), title: m.title, items: m.items ?? [] };
     case 'columns': {
@@ -48,14 +50,19 @@ function buildSlide(m: BlockModel, kind: Slide['kind'], marker?: string): Slide 
       return { kind, theme: T('columns'), title: m.title, columns };
     }
     case 'split':
-      // Default (and split-der) keeps the image-right layout; split-izq mirrors it.
-      return { kind, theme: T('split'), eyebrow: m.eyebrow, title: m.title, body: m.body[0], image: m.image, imageSide: marker === 'split-izq' ? 'left' : 'right' };
+      // Default (and split-der) keeps the image-right layout; split-izq mirrors it. The text
+      // column renders every paragraph, so a split can carry several paragraphs beside the image.
+      return { kind, theme: T('split'), eyebrow: m.eyebrow, title: m.title, body: m.body.length ? m.body : undefined, image: m.image, imageSide: marker === 'split-izq' ? 'left' : 'right' };
     case 'gantt': {
       // The spec can live in a ```gantt fence``` OR as plain `clave: valor` lines in the block.
       const spec = m.fence?.body ?? [...m.body, ...(m.items ?? [])].filter((l) => l.includes(':')).join('\n');
       const g = parseGantt(spec);
-      // With a fence the paragraphs are subtitle/note; without, they ARE the spec.
-      return { kind, theme: T('gantt'), title: m.title || 'Roadmap', subtitle: m.fence ? m.body[0] : undefined, weeks: g.weeks, unit: g.unit, rows: g.rows, milestones: g.milestones, milestoneLabel: g.milestoneLabel, note: m.fence ? m.body[1] : undefined };
+      // Prose vs spec: with a fence, every paragraph is prose (the spec lives in the fence);
+      // without one, the spec lines carry a `clave: valor` colon, so the paragraphs WITHOUT a
+      // colon are free prose — the first is the subtitle (normal text below the title), the
+      // second the bottom-right note.
+      const prose = m.fence ? m.body : m.body.filter((l) => !l.includes(':'));
+      return { kind, theme: T('gantt'), title: m.title || 'Roadmap', subtitle: prose[0], weeks: g.weeks, unit: g.unit, rows: g.rows, milestones: g.milestones, milestoneLabel: g.milestoneLabel, note: prose[1] };
     }
     case 'budget':
       return { kind, theme: 'light', title: m.title || undefined, ...parseBudget(m.tokens) };
@@ -67,10 +74,14 @@ function buildSlide(m: BlockModel, kind: Slide['kind'], marker?: string): Slide 
       return { kind, theme: T('elreto'), eyebrow: m.eyebrow, title: m.title, image: m.image };
     case 'objetivos':
       return { kind, theme: T('objetivos'), title: m.title, items: m.items ?? [], image: m.image };
-    case 'roadmapPhases':
+    case 'roadmapPhases': {
       // Per phase: first paragraph = body, a second paragraph = the tasks header (e.g. "¿Qué
-      // hacemos?"), so the header is authored in the markdown and translates.
-      return { kind, theme: T('roadmapPhases'), title: m.title, subtitle: m.subtitle ?? m.body[0], phases: m.sections.map((s) => ({ name: s.heading, body: s.body[0] ?? '', itemsHeader: s.body[1], items: s.items })) };
+      // hacemos?"), so the header is authored in the markdown and translates. The "Fase" label
+      // above each phase is authored via a `fase: …` line (defaults to "Fase" in the component),
+      // so it can be changed/translated; that meta line is kept out of the subtitle.
+      const subtitle = m.subtitle ?? m.body.find((p) => !/^[\p{L} ]+:\s*.+$/u.test(p));
+      return { kind, theme: T('roadmapPhases'), title: m.title, subtitle, faseLabel: m.meta['fase'], phases: m.sections.map((s) => ({ name: s.heading, body: s.body[0] ?? '', itemsHeader: s.body[1], items: s.items })) };
+    }
     case 'manifesto':
       return { kind, theme: T('manifesto'), title: m.title || m.body[0], subtitle: m.subtitle ?? (m.hasHeading ? m.body[0] : m.body[1]) };
     case 'team': {
