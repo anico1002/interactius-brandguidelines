@@ -60,7 +60,12 @@
         "kind": "contexto",
         "theme": "light",
         "eyebrow": "CONTEXTO",
-        "body": "Naturgy tiene la oportunidad de establecer un **nuevo estándar digital** que unifique su experiencia online y aporte coherencia, escalabilidad y alineación con la marca. Hoy existen inconsistencias en experiencia, diseño y flujos que generan fricción y reducen eficiencia.",
+        "body": [
+          {
+            "t": "p",
+            "text": "Naturgy tiene la oportunidad de establecer un **nuevo estándar digital** que unifique su experiencia online y aporte coherencia, escalabilidad y alineación con la marca. Hoy existen inconsistencias en experiencia, diseño y flujos que generan fricción y reducen eficiencia."
+          }
+        ],
         "long": true
       },
       {
@@ -232,7 +237,12 @@
         "kind": "contexto",
         "theme": "light",
         "eyebrow": "CONTEXTO",
-        "body": "Describe aquí el contexto del informe en un párrafo claro y directo de entre quince y veintidós palabras por frase.",
+        "body": [
+          {
+            "t": "p",
+            "text": "Describe aquí el contexto del informe en un párrafo claro y directo de entre quince y veintidós palabras por frase."
+          }
+        ],
         "long": false
       },
       {
@@ -302,7 +312,10 @@
         "kind": "paragraph",
         "theme": "light",
         "body": [
-          "Un párrafo de cuerpo con la idea principal, escrito con frases directas de entre quince y veintidós palabras."
+          {
+            "t": "p",
+            "text": "Un párrafo de cuerpo con la idea principal, escrito con frases directas de entre quince y veintidós palabras."
+          }
         ]
       },
       {
@@ -346,7 +359,12 @@
         "kind": "contexto",
         "theme": "light",
         "eyebrow": "CONTEXT",
-        "body": "TMB té l'oportunitat d'evolucionar el seu ecosistema digital després de la integració de la T-mobilitat. Després de tres generacions d'aplicacions, el repte actual rau a mitigar la fricció detectada en processos crítics i alinear l'experiència de l'App amb les expectatives d'una audiència massiva i diversa.",
+        "body": [
+          {
+            "t": "p",
+            "text": "TMB té l'oportunitat d'evolucionar el seu ecosistema digital després de la integració de la T-mobilitat. Després de tres generacions d'aplicacions, el repte actual rau a mitigar la fricció detectada en processos crítics i alinear l'experiència de l'App amb les expectatives d'una audiència massiva i diversa."
+          }
+        ],
         "long": true
       },
       {
@@ -532,7 +550,10 @@
         "eyebrow": "CONTEXT",
         "title": "D'on partim",
         "body": [
-          "Es tracta d'una empresa especialitzada en la instal·lació de dispositius de telemetria que, després d'anys subcontractant programari extern, ha decidit desenvolupar la seva pròpia solució SaaS per optimitzar la gestió de flotes i oferir-la a altres distribuïdors. Actualment, el mercat està dominat per eines amb una experiència d'usuari (UX) deficient i un disseny visual tradicional. QualitaHub busca trencar aquesta dinàmica amb un producte que destaqui per la seva facilitat d'ús i una imatge moderna, similar a la d'un banc digital, llest per a SEO."
+          {
+            "t": "p",
+            "text": "Es tracta d'una empresa especialitzada en la instal·lació de dispositius de telemetria que, després d'anys subcontractant programari extern, ha decidit desenvolupar la seva pròpia solució SaaS per optimitzar la gestió de flotes i oferir-la a altres distribuïdors. Actualment, el mercat està dominat per eines amb una experiència d'usuari (UX) deficient i un disseny visual tradicional. QualitaHub busca trencar aquesta dinàmica amb un producte que destaqui per la seva facilitat d'ús i una imatge moderna, similar a la d'un banc digital, llest per a SEO."
+          }
         ],
         "imageSide": "right"
       },
@@ -741,7 +762,12 @@
         "kind": "contexto",
         "theme": "light",
         "eyebrow": "CONTEXT",
-        "body": "Naturgy té l'oportunitat d'establir un **nou estàndard digital** que unifiqui la seva experiència online i aporti coherència, escalabilitat i alineació amb la marca. Avui existeixen inconsistències en experiència, disseny i fluxos que generen fricció i redueixen eficiència.",
+        "body": [
+          {
+            "t": "p",
+            "text": "Naturgy té l'oportunitat d'establir un **nou estàndard digital** que unifiqui la seva experiència online i aporti coherència, escalabilitat i alineació amb la marca. Avui existeixen inconsistències en experiència, disseny i fluxos que generen fricció i redueixen eficiència."
+          }
+        ],
         "long": true
       },
       {

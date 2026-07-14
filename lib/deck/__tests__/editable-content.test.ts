@@ -106,13 +106,35 @@ test('roadmap phase with no 2nd paragraph has no tasks-header (nothing hardcoded
 test('paragraph keeps every paragraph (multi-paragraph body)', () => {
   const s = one('[ly: texto]\nPrimer párrafo.\nSegundo párrafo.\n\nTercero.');
   assert.equal(s.kind, 'paragraph');
-  assert.deepEqual(s.body, ['Primer párrafo.', 'Segundo párrafo.', 'Tercero.']);
+  assert.deepEqual(s.body, [
+    { t: 'p', text: 'Primer párrafo.' },
+    { t: 'p', text: 'Segundo párrafo.' },
+    { t: 'p', text: 'Tercero.' },
+  ]);
 });
 
 test('split renders several paragraphs beside the image', () => {
   const s = one('## Contexto\n![a](u.jpg)\nUno.\nDos.');
   assert.equal(s.kind, 'split');
-  assert.deepEqual(s.body, ['Uno.', 'Dos.']);
+  assert.deepEqual(s.body, [{ t: 'p', text: 'Uno.' }, { t: 'p', text: 'Dos.' }]);
+});
+
+test('text layouts render a `-` list interleaved with paragraphs (in document order)', () => {
+  const p = one('[ly: texto]\nIntro.\n- Uno.\n- Dos.\nCierre.');
+  assert.equal(p.kind, 'paragraph');
+  assert.deepEqual(p.body, [
+    { t: 'p', text: 'Intro.' },
+    { t: 'ul', items: ['Uno.', 'Dos.'] },
+    { t: 'p', text: 'Cierre.' },
+  ]);
+
+  const sp = one('[ly: split-der]\n## Título\n![a](u.jpg)\nIntro.\n- Uno.\n- Dos.');
+  assert.equal(sp.kind, 'split');
+  assert.deepEqual(sp.body, [{ t: 'p', text: 'Intro.' }, { t: 'ul', items: ['Uno.', 'Dos.'] }]);
+
+  const cx = one('[ly: contexto]\nCONTEXTO\nIntro.\n- Uno.\n- Dos.');
+  assert.equal(cx.kind, 'contexto');
+  assert.deepEqual(cx.body, [{ t: 'p', text: 'Intro.' }, { t: 'ul', items: ['Uno.', 'Dos.'] }]);
 });
 
 test('gantt takes normal text below the title from the non-spec paragraph', () => {

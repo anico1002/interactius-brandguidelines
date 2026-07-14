@@ -69,6 +69,15 @@ body.ix-viewer main{padding:0 !important; margin:0 !important;}
 .ix-deck .body{font:400 13px/1.6 var(--mono);}
 .ix-deck .theme-light .body{color:var(--ash-dark);} .ix-deck .theme-dark .body{color:var(--warm-light); opacity:.8;}
 
+/* Body flow list (`- …` inside paragraph/split/contexto text) — diamond bullet, mono, theme-aware.
+   Each layout tunes the type size below; sits inline with the surrounding paragraphs. */
+.ix-deck .flowlist{list-style:none; margin:.7em 0;}
+.ix-deck .flowlist li{display:grid; grid-template-columns:16px 1fr; gap:8px; margin-bottom:9px; font:400 15px/1.5 var(--mono);}
+.ix-deck .flowlist li:last-child{margin-bottom:0;}
+.ix-deck .flowlist .dia{font-size:9px; line-height:1.9;}
+.ix-deck .theme-light .flowlist li{color:var(--ash-dark);} .ix-deck .theme-light .flowlist .dia{color:var(--dark);}
+.ix-deck .theme-dark .flowlist li{color:var(--warm-light); opacity:.85;} .ix-deck .theme-dark .flowlist .dia{color:var(--warm-light);}
+
 /* Editable image slot */
 .ix-deck .imgslot{background-size:cover; background-position:center; cursor:pointer;}
 .ix-deck .imgslot .placeholder{position:absolute; left:14px; bottom:40px; right:14px;
@@ -104,6 +113,7 @@ body.ix-viewer main{padding:0 !important; margin:0 !important;}
 .ix-deck .split h2{font-family:var(--serif); font-weight:400; font-size:44px; line-height:1.08; margin-bottom:26px;}
 .ix-deck .split .txt .body{max-width:520px;}
 .ix-deck .split .txt .body p + p{margin-top:14px;}
+.ix-deck .split .flowlist li{font-size:13px;}
 
 /* 3 · Statement */
 .ix-deck .statement .wrap{position:absolute; left:var(--ml); top:120px; right:var(--mr);}
@@ -151,6 +161,8 @@ body.ix-viewer main{padding:0 !important; margin:0 !important;}
 .ix-deck .paragraph .eyebrow{margin-bottom:26px;}
 .ix-deck .paragraph p{font-family:var(--serif); font-weight:400; font-size:34px; line-height:1.28; max-width:880px;}
 .ix-deck .paragraph p + p{margin-top:.7em;}
+.ix-deck .paragraph .flowlist{max-width:880px;}
+.ix-deck .paragraph .flowlist li{font-size:19px; line-height:1.4;}
 .ix-deck .theme-dark.paragraph p{color:var(--warm-light);}
 
 /* Fixed page · Manifesto (ref p.10) */
@@ -225,6 +237,8 @@ body.ix-viewer main{padding:0 !important; margin:0 !important;}
 .ix-deck .contexto p{font-family:var(--serif); font-weight:400; color:var(--dark);}
 .ix-deck .contexto.long p{font-size:26px; line-height:1.4; max-width:660px;}
 .ix-deck .contexto.short p{font-size:var(--title-section); line-height:1.25; max-width:560px;}
+.ix-deck .contexto .flowlist{max-width:660px;}
+.ix-deck .contexto .flowlist li{font-size:16px; line-height:1.5;}
 
 /* El reto (ref p.29) — image left, eyebrow + serif title right */
 .ix-deck .elreto .photo{position:absolute; left:64px; top:0; bottom:0; width:420px;}

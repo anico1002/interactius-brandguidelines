@@ -1,4 +1,4 @@
-import type { Slide, SlideSource, Column, Signer, RichNode } from './types.ts';
+import type { Slide, SlideSource, Column, Signer, RichNode, Token } from './types.ts';
 import { themeFor } from './theme.ts';
 import { parseGantt, parseBudget } from './blocks.ts';
 import { LAYOUT_MAP } from './catalog.ts';
@@ -28,6 +28,23 @@ function detectKind(m: BlockModel): Slide['kind'] {
   return 'paragraph';
 }
 
+// Ordered body flow for the free-text layouts (paragraph/split/contexto): paragraphs and bullet
+// lists (`- …`) kept in document order, so a `-` list can sit between paragraphs. Quotes are
+// folded into paragraphs (kept as plain body text, as before); headings/eyebrows are consumed as
+// title/eyebrow elsewhere and excluded here.
+function bodyFlow(tokens: Token[]): RichNode[] {
+  const out: RichNode[] = [];
+  for (const tk of tokens) {
+    if (tk.t === 'p' || tk.t === 'quote') out.push({ t: 'p', text: tk.text });
+    else if (tk.t === 'ul') out.push({ t: 'ul', items: tk.items });
+  }
+  return out;
+}
+
+// Plain-text length of a body flow (paragraphs + list items) — used for contexto's long/short size.
+const flowText = (nodes: RichNode[]): string =>
+  nodes.map((n) => (n.t === 'ul' ? n.items.join(' ') : n.t === 'p' || n.t === 'quote' || n.t === 'h' || n.t === 'caps' ? n.text : '')).join(' ');
+
 // Construct the typed slide for a kind by mapping the canonical model into the layout's slots.
 // Robust to missing roles (explicit markers may not match the content).
 function buildSlide(m: BlockModel, kind: Slide['kind'], marker?: string): Slide {
@@ -39,20 +56,24 @@ function buildSlide(m: BlockModel, kind: Slide['kind'], marker?: string): Slide 
       return { kind, theme: T('closing'), title: m.title || 'Gracias', url: m.body.find((p) => /www\.|https?:/i.test(p)) };
     case 'statement':
       return { kind, theme: T('statement'), eyebrow: m.eyebrow, title: m.title };
-    case 'paragraph':
-      // Every paragraph/quote is kept so the slide can render several paragraphs (blank line or
-      // line break between them in the markdown), falling back to the title when empty.
-      return { kind, theme: T('paragraph'), eyebrow: m.eyebrow, body: m.quotes.length ? m.quotes : (m.body.length ? m.body : [m.title]) };
+    case 'paragraph': {
+      // Body is an ordered flow of paragraphs and `-` lists (in document order), falling back to
+      // the title when empty.
+      const flow = bodyFlow(m.tokens);
+      return { kind, theme: T('paragraph'), eyebrow: m.eyebrow, body: flow.length ? flow : [{ t: 'p', text: m.title }] };
+    }
     case 'bullets':
       return { kind, theme: T('bullets'), title: m.title, items: m.items ?? [] };
     case 'columns': {
       const columns: Column[] = m.sections.map((s, i) => ({ label: String(i + 1).padStart(2, '0'), heading: s.heading, body: s.body[0] ?? '' }));
       return { kind, theme: T('columns'), title: m.title, columns };
     }
-    case 'split':
+    case 'split': {
       // Default (and split-der) keeps the image-right layout; split-izq mirrors it. The text
-      // column renders every paragraph, so a split can carry several paragraphs beside the image.
-      return { kind, theme: T('split'), eyebrow: m.eyebrow, title: m.title, body: m.body.length ? m.body : undefined, image: m.image, imageSide: marker === 'split-izq' ? 'left' : 'right' };
+      // column renders an ordered flow of paragraphs and `-` lists beside the image.
+      const flow = bodyFlow(m.tokens);
+      return { kind, theme: T('split'), eyebrow: m.eyebrow, title: m.title, body: flow.length ? flow : undefined, image: m.image, imageSide: marker === 'split-izq' ? 'left' : 'right' };
+    }
     case 'gantt': {
       // The spec can live in a ```gantt fence``` OR as plain `clave: valor` lines in the block.
       const spec = m.fence?.body ?? [...m.body, ...(m.items ?? [])].filter((l) => l.includes(':')).join('\n');
@@ -67,8 +88,9 @@ function buildSlide(m: BlockModel, kind: Slide['kind'], marker?: string): Slide 
     case 'budget':
       return { kind, theme: 'light', title: m.title || undefined, ...parseBudget(m.tokens) };
     case 'contexto': {
-      const body = m.body.join(' ') || m.quotes[0] || '';
-      return { kind, theme: T('contexto'), eyebrow: m.eyebrow, body, long: body.length >= 150 };
+      // Ordered flow of paragraphs and `-` lists; long/short sizing keys off the total text length.
+      const flow = bodyFlow(m.tokens);
+      return { kind, theme: T('contexto'), eyebrow: m.eyebrow, body: flow, long: flowText(flow).length >= 150 };
     }
     case 'elreto':
       return { kind, theme: T('elreto'), eyebrow: m.eyebrow, title: m.title, image: m.image };

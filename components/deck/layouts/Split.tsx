@@ -2,6 +2,7 @@ import type { Slide } from '@/lib/deck/types';
 import { Chrome } from '../Chrome';
 import { ImageSlot } from '../ImageSlot';
 import { inline } from '../inline';
+import { Flow } from '../Flow';
 
 export function Split({ slide, page }: { slide: Extract<Slide, { kind: 'split' }>; page: number }) {
   return (
@@ -12,11 +13,7 @@ export function Split({ slide, page }: { slide: Extract<Slide, { kind: 'split' }
         {slide.eyebrow && <div className="eyebrow">{inline(slide.eyebrow)}</div>}
         <h2>{inline(slide.title)}</h2>
         {slide.body && slide.body.length > 0 && (
-          <div className="body">
-            {slide.body.map((p, i) => (
-              <p key={i}>{inline(p)}</p>
-            ))}
-          </div>
+          <div className="body"><Flow nodes={slide.body} /></div>
         )}
       </div>
     </div>
