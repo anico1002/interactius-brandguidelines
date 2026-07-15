@@ -47,19 +47,48 @@ export async function POST(req: Request) {
   if (!lang) return NextResponse.json({ error: 'target inválido (es|ca|en)' }, { status: 400 });
 
   const client = new Anthropic({ apiKey });
+
+  // Stream the translation as plain-text deltas. Streaming keeps the serverless function
+  // actively responding (first bytes arrive in ~1–2s), which avoids the Netlify gateway
+  // timing out the whole request with a 504 on long translations of full decks.
   try {
-    const msg = await client.messages.create({
-      model: 'claude-opus-4-8',
+    // Errors before the first byte (auth/validation/connection) surface here → real status code.
+    const stream = await client.messages.create({
+      // Haiku 4.5: fast enough to keep even the largest decks under the Netlify function
+      // timeout (~20s worst case) while streaming; quality is strong for structure-preserving
+      // translation. Opus was too slow for large decks and triggered 504s.
+      model: 'claude-haiku-4-5-20251001',
       max_tokens: 16000,
       system: systemPrompt(lang),
       messages: [{ role: 'user', content: md }],
+      stream: true,
     });
-    const text = msg.content
-      .filter((b): b is Anthropic.TextBlock => b.type === 'text')
-      .map((b) => b.text)
-      .join('');
-    if (!text.trim()) return NextResponse.json({ error: 'Traducción vacía' }, { status: 502 });
-    return NextResponse.json({ md: text }, { headers: { 'Cache-Control': 'no-store' } });
+
+    const encoder = new TextEncoder();
+    const body = new ReadableStream<Uint8Array>({
+      async start(controller) {
+        try {
+          for await (const event of stream) {
+            if (event.type === 'content_block_delta' && event.delta.type === 'text_delta') {
+              controller.enqueue(encoder.encode(event.delta.text));
+            }
+          }
+          controller.close();
+        } catch (e) {
+          // Mid-stream failure: bytes may already be sent, so the status can't change.
+          // Abort the stream; the client treats an empty/partial result as an error.
+          controller.error(e);
+        }
+      },
+    });
+
+    return new Response(body, {
+      headers: {
+        'Content-Type': 'text/plain; charset=utf-8',
+        'Cache-Control': 'no-store',
+        'X-Accel-Buffering': 'no', // hint proxies not to buffer the stream
+      },
+    });
   } catch (e) {
     if (e instanceof Anthropic.APIError) {
       return NextResponse.json({ error: `Claude API: ${e.message}` }, { status: e.status ?? 502 });

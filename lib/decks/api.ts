@@ -63,12 +63,30 @@ export function signDeck(deckId: string, input: SignInput): Promise<DeckSignatur
 }
 
 // ---- Translation ----
-export function translateDeck(md: string, target: 'es' | 'ca' | 'en'): Promise<{ md: string }> {
-  return fetch('/api/translate', {
+/* The endpoint streams the translated markdown as plain-text chunks (to avoid gateway
+   timeouts on long decks); accumulate them and return the full result. */
+export async function translateDeck(md: string, target: 'es' | 'ca' | 'en'): Promise<{ md: string }> {
+  const res = await fetch('/api/translate', {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
     body: JSON.stringify({ md, target }),
-  }).then((r) => json<{ md: string }>(r));
+  });
+  if (!res.ok || !res.body) {
+    // Errors before streaming (bad key, invalid input) come back as JSON.
+    const msg = await res.json().catch(() => ({}));
+    throw new Error((msg as { error?: string }).error ?? `Request failed (${res.status})`);
+  }
+  const reader = res.body.getReader();
+  const decoder = new TextDecoder();
+  let out = '';
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    out += decoder.decode(value, { stream: true });
+  }
+  out += decoder.decode();
+  if (!out.trim()) throw new Error('La traducción falló o se interrumpió. Inténtalo de nuevo.');
+  return { md: out };
 }
 
 // ---- Clients ----
