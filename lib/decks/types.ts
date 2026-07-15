@@ -8,6 +8,7 @@ export interface DeckMeta {
   logo_path: string | null;
   budget_url: string | null;
   type: DeckType;
+  tags: string[];
 }
 
 /* A full deck row (metadata + content). */
@@ -18,12 +19,16 @@ export interface DeckRecord extends DeckMeta {
   updated_at: string;
 }
 
-/* Compact row for the "Abrir" history list. May include the joined client name. */
+/* Compact row for the "Abrir" history list and the gallery grid. Includes the joined
+   client name plus `tags`, and `md`/`type` so the gallery can render a cover thumbnail. */
 export interface DeckListItem {
   id: string;
   commercial_id: string;
   client_id: string | null;
   client_name: string | null;
+  tags: string[];
+  md: string;
+  type: DeckType;
   created_at: string;
   updated_at: string;
 }

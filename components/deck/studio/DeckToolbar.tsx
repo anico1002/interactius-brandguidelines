@@ -1,19 +1,16 @@
 'use client';
 import { useState } from 'react';
-import type { DeckListItem } from '@/lib/decks/types';
-import { OpenMenu } from './OpenMenu';
 import { btn, colors, toolbarBtn } from './ui';
 
 const MONO = 'var(--font-ibm-plex-mono, monospace)';
 
-/* Top toolbar: Nueva · Abrir ▾ · <título editable> · Guardar · Revisar Tono · Descargar PDF · Compartir URL */
+/* Top toolbar: ← Galería · <título editable> · Guardar · Revisar Tono · Descargar PDF · Compartir URL.
+   (Crear/Abrir viven ahora en la galería; sus handlers siguen disponibles en DeckStudio.) */
 export function DeckToolbar({
   title,
   dirty,
   saving,
-  onNew,
-  onOpenDeck,
-  onDuplicateDeck,
+  onHome,
   onEditTitle,
   onSave,
   onToggleTone,
@@ -25,9 +22,7 @@ export function DeckToolbar({
   title: string | null;
   dirty: boolean;
   saving: boolean;
-  onNew: () => void;
-  onOpenDeck: (item: DeckListItem) => void;
-  onDuplicateDeck: (item: DeckListItem) => void;
+  onHome: () => void;
   onEditTitle: () => void;
   onSave: () => void;
   onToggleTone: () => void;
@@ -36,8 +31,8 @@ export function DeckToolbar({
   onCopyUrl: () => void;
   copied: boolean;
 }) {
-  const [openMenu, setOpenMenu] = useState(false);
-
+  const [titleHover, setTitleHover] = useState(false);
+  const showTip = titleHover && !!title;
   return (
     <div
       style={{
@@ -45,33 +40,44 @@ export function DeckToolbar({
         borderBottom: `1px solid ${colors.warmDark}`, background: colors.warmLight, flexShrink: 0,
       }}
     >
-      <button style={btn} onClick={onNew}>Nueva</button>
+      <button style={toolbarBtn} onClick={onHome} title="Volver a la galería" aria-label="Volver a la galería">← Galería</button>
 
-      <div style={{ position: 'relative' }}>
-        <button style={toolbarBtn} onClick={() => setOpenMenu((v) => !v)} aria-expanded={openMenu}>Abrir ▾</button>
-        {openMenu && (
-          <OpenMenu
-            onOpen={(it) => { setOpenMenu(false); onOpenDeck(it); }}
-            onDuplicate={(it) => { setOpenMenu(false); onDuplicateDeck(it); }}
-            onClose={() => setOpenMenu(false)}
-          />
-        )}
-      </div>
-
-      {/* Editable title (commercial_id). Click to edit metadata. */}
-      <button
-        onClick={onEditTitle}
-        disabled={!title}
-        title={title ? 'Editar presentación' : undefined}
-        style={{
-          flex: 1, minWidth: 0, textAlign: 'left', appearance: 'none', border: 'none', background: 'transparent',
-          cursor: title ? 'pointer' : 'default', padding: '0 8px',
-          font: `500 15px/1.2 ${MONO}`, letterSpacing: '.02em', color: title ? colors.dark : colors.ash,
-          overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-        }}
+      {/* Editable title (commercial_id). Hover shows a box + "Editar" tooltip; click edits metadata. */}
+      <span
+        style={{ position: 'relative', flex: 1, minWidth: 0, display: 'flex', alignItems: 'center' }}
+        onMouseEnter={() => setTitleHover(true)}
+        onMouseLeave={() => setTitleHover(false)}
       >
-        {title ?? 'Sin guardar'}{dirty && title ? ' •' : ''}
-      </button>
+        <button
+          onClick={onEditTitle}
+          disabled={!title}
+          aria-label={title ? 'Editar presentación' : undefined}
+          style={{
+            maxWidth: '100%', textAlign: 'left', appearance: 'none',
+            border: `1px solid ${showTip ? colors.warmDark : 'transparent'}`,
+            background: showTip ? colors.white : 'transparent',
+            cursor: title ? 'pointer' : 'default', padding: '7px 10px',
+            font: `500 15px/1 ${MONO}`, letterSpacing: '.02em', color: title ? colors.dark : colors.ash,
+            overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+            transition: 'background .15s, border-color .15s',
+          }}
+        >
+          {title ?? 'Sin guardar'}{dirty && title ? ' •' : ''}
+        </button>
+        {showTip && (
+          <span
+            role="tooltip"
+            style={{
+              position: 'absolute', top: 'calc(100% + 6px)', left: 0,
+              background: colors.dark, color: colors.warmLight,
+              font: `500 10px/1 ${MONO}`, letterSpacing: '.04em', padding: '5px 7px',
+              whiteSpace: 'nowrap', zIndex: 50, pointerEvents: 'none',
+            }}
+          >
+            Editar
+          </span>
+        )}
+      </span>
 
       <button style={{ ...btn, opacity: saving ? 0.6 : 1 }} onClick={onSave} disabled={saving}>
         {saving ? 'Guardando…' : 'Guardar'}

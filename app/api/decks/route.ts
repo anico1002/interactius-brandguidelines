@@ -9,7 +9,7 @@ export async function GET() {
   const sb = supabaseServer();
   const { data, error } = await sb
     .from('decks')
-    .select('id, commercial_id, client_id, created_at, updated_at, clients(name)')
+    .select('id, commercial_id, client_id, tags, md, type, created_at, updated_at, clients(name)')
     .order('updated_at', { ascending: false });
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
@@ -19,6 +19,9 @@ export async function GET() {
     commercial_id: d.commercial_id,
     client_id: d.client_id,
     client_name: (d.clients as { name?: string } | null)?.name ?? null,
+    tags: (d.tags as string[] | null) ?? [],
+    md: d.md ?? '',
+    type: d.type ?? 'comercial',
     created_at: d.created_at,
     updated_at: d.updated_at,
   }));
@@ -47,6 +50,7 @@ export async function POST(req: Request) {
       logo_path: body.logo_path ?? null,
       budget_url: body.budget_url ?? null,
       type: body.type ?? 'comercial',
+      tags: body.tags ?? [],
       md: body.md ?? '',
     })
     .select()

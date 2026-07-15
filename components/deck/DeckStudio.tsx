@@ -1,9 +1,10 @@
 'use client';
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { AnimatePresence, motion } from 'framer-motion';
 import { compileDeck, deckWarnings } from '@/lib/deck';
 import type { ClientRecord, DeckListItem, DeckMeta, DeckRecord } from '@/lib/decks/types';
-import { createDeck, getDeck, listClients, translateDeck, updateDeck } from '@/lib/decks/api';
+import { createDeck, getDeck, listClients, listDecks, translateDeck, updateDeck } from '@/lib/decks/api';
 import { splitSourceBlocks, setBlockImage } from '@/lib/deck/source';
 import { DeckRenderer } from './DeckRenderer';
 import { ToneReport } from './ToneReport';
@@ -34,7 +35,7 @@ function b64decode(s: string): string {
 }
 
 const EMPTY_META: DeckMeta = {
-  commercial_id: '', client_id: null, contact_emails: [], logo_path: null, budget_url: null, type: 'comercial',
+  commercial_id: '', client_id: null, contact_emails: [], logo_path: null, budget_url: null, type: 'comercial', tags: [],
 };
 const snap = (md: string, meta: DeckMeta) => JSON.stringify({ md, meta });
 
@@ -102,13 +103,18 @@ type ModalState =
   | { kind: 'edit'; initial: Partial<MetaValues> & { client_name?: string | null } }
   | null;
 
-export function DeckStudio() {
-  const [md, setMd] = useState(SAMPLE);
+export function DeckStudio({ deckId }: { deckId?: string } = {}) {
+  const router = useRouter();
+  // When addressed by /deck/[id] we load that deck on mount; start blank to avoid a
+  // flash of the sample template. Standalone (no id) still seeds the sample.
+  const initialMd = deckId ? '' : SAMPLE;
+  const [md, setMd] = useState(initialMd);
   const [meta, setMeta] = useState<DeckMeta>(EMPTY_META);
   const [currentDeckId, setCurrentDeckId] = useState<string | null>(null);
-  const [deck, setDeck] = useState(() => compileDeck(SAMPLE, 'comercial'));
-  const [savedSnap, setSavedSnap] = useState(() => snap(SAMPLE, EMPTY_META));
+  const [deck, setDeck] = useState(() => compileDeck(initialMd, 'comercial'));
+  const [savedSnap, setSavedSnap] = useState(() => snap(initialMd, EMPTY_META));
   const [clients, setClients] = useState<ClientRecord[]>([]);
+  const [allTags, setAllTags] = useState<string[]>([]);
   const [modal, setModal] = useState<ModalState>(null);
   const [guard, setGuard] = useState<{ run: () => void; targetName?: string } | null>(null);
   const [toneOn, setToneOn] = useState(false);
@@ -232,10 +238,28 @@ export function DeckStudio() {
 
   const clientNameFor = (id: string | null) => clients.find((c) => c.id === id)?.name ?? null;
 
+  // Load the deck addressed by the route.
+  useEffect(() => {
+    if (!deckId) return;
+    getDeck(deckId).then(loadRecord).catch((e) => console.error(e));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [deckId]);
+
+  // Tag suggestions for the edit modal's autocomplete (derived from all decks).
+  useEffect(() => {
+    listDecks()
+      .then((items) => {
+        const set = new Set<string>();
+        items.forEach((it) => (it.tags ?? []).forEach((t) => set.add(t)));
+        setAllTags([...set].sort());
+      })
+      .catch(() => {});
+  }, []);
+
   const loadRecord = (rec: DeckRecord) => {
     const m: DeckMeta = {
       commercial_id: rec.commercial_id, client_id: rec.client_id, contact_emails: rec.contact_emails,
-      logo_path: rec.logo_path, budget_url: rec.budget_url, type: rec.type,
+      logo_path: rec.logo_path, budget_url: rec.budget_url, type: rec.type, tags: rec.tags ?? [],
     };
     setCurrentDeckId(rec.id);
     setMeta(m);
@@ -271,13 +295,10 @@ export function DeckStudio() {
   };
 
   const onOpenDeck = (item: DeckListItem) =>
-    withGuard(async () => {
-      try {
-        loadRecord(await getDeck(item.id));
-      } catch (e) {
-        console.error(e);
-      }
-    }, item.commercial_id);
+    withGuard(() => router.push(`/deck/${item.id}`), item.commercial_id);
+
+  // Back to the gallery (respecting unsaved changes).
+  const onHome = () => withGuard(() => router.push('/deck'));
 
   const onDuplicateDeck = async (item: DeckListItem) => {
     try {
@@ -381,6 +402,8 @@ export function DeckStudio() {
       loadRecord(rec);
       // If the save was triggered by Compartir URL / Descargar PDF, run that action now.
       if (pendingShare) { await shareSaved(rec.id, pendingShare); setPendingShare(null); }
+      // Sync the URL to the freshly created deck so refresh/back behave.
+      if (rec.id !== deckId) router.push(`/deck/${rec.id}`);
     }
     setModal(null);
     listClients().then(setClients).catch(() => {});
@@ -404,9 +427,7 @@ export function DeckStudio() {
         title={meta.commercial_id || null}
         dirty={dirty}
         saving={saving}
-        onNew={onNew}
-        onOpenDeck={onOpenDeck}
-        onDuplicateDeck={onDuplicateDeck}
+        onHome={onHome}
         onEditTitle={onEditTitle}
         onSave={onSave}
         onToggleTone={() => setToneOn((v) => !v)}
@@ -539,6 +560,7 @@ export function DeckStudio() {
           mode={modal.kind}
           clients={clients}
           initial={modal.initial}
+          allTags={allTags}
           hint={pendingShare ? 'Guarda la presentación para obtener su enlace compartible y el PDF de alta fidelidad.' : undefined}
           onClose={() => { setModal(null); setPendingShare(null); }}
           onSubmit={onSubmitMeta}

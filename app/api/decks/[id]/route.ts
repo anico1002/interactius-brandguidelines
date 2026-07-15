@@ -26,7 +26,7 @@ export async function PATCH(req: Request, { params }: Ctx) {
   }
 
   // Only forward known, present fields.
-  const allowed: (keyof DeckUpdateInput)[] = ['commercial_id', 'client_id', 'contact_emails', 'logo_path', 'budget_url', 'type', 'md'];
+  const allowed: (keyof DeckUpdateInput)[] = ['commercial_id', 'client_id', 'contact_emails', 'logo_path', 'budget_url', 'type', 'tags', 'md'];
   const patch: Record<string, unknown> = {};
   for (const k of allowed) if (k in body) patch[k] = body[k];
   if (Object.keys(patch).length === 0) {
