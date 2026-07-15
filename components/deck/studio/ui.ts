@@ -13,6 +13,7 @@ export const colors = {
   warmDark: '#E0DAD2',
   ash: '#75706B',
   white: '#fff',
+  brick: '#C24B36',
 } as const;
 
 export const btn: CSSProperties = {

@@ -1,8 +1,48 @@
 import createMiddleware from 'next-intl/middleware';
+import { NextResponse, type NextRequest } from 'next/server';
 import { routing } from './lib/i18n/routing';
+import { updateSession } from './lib/supabase/middleware';
 
-export default createMiddleware(routing);
+const intl = createMiddleware(routing);
+
+/* Editor-only APIs that require a team session. Public APIs (/api/sign, /api/brand.json)
+   are intentionally left open — the client-facing deck viewer depends on them. */
+const EDITOR_API = ['/api/decks', '/api/clients', '/api/images', '/api/translate', '/api/eval'];
+const isEditorApi = (p: string) => EDITOR_API.some((base) => p === base || p.startsWith(base + '/'));
+
+/* Public /deck routes reachable without a session. */
+const isAuthPage = (p: string) =>
+  p === '/deck/login' || p === '/deck/forgot' || p === '/deck/reset';
+const isPublicViewer = (p: string) => /^\/deck\/[^/]+\/view(\/|$)/.test(p);
+
+export default async function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+
+  // 1) API routes: gate the editor ones, pass the public ones straight through.
+  if (pathname.startsWith('/api')) {
+    if (!isEditorApi(pathname)) return NextResponse.next();
+    const { response, user } = await updateSession(request);
+    if (!user) return NextResponse.json({ error: 'No autenticado' }, { status: 401 });
+    return response;
+  }
+
+  // 2) Deck Maker: require a team session, except the auth pages and the public viewer.
+  if (pathname.startsWith('/deck')) {
+    const { response, user } = await updateSession(request);
+    if (isAuthPage(pathname) || isPublicViewer(pathname)) return response;
+    if (!user) {
+      const url = request.nextUrl.clone();
+      url.pathname = '/deck/login';
+      url.search = `?next=${encodeURIComponent(pathname)}`;
+      return NextResponse.redirect(url);
+    }
+    return response;
+  }
+
+  // 3) Everything else (localized brand-guidelines site): next-intl, as before.
+  return intl(request);
+}
 
 export const config = {
-  matcher: ['/((?!api|deck|llms.txt|_next|_vercel|.*\\..*).*)'],
+  matcher: ['/((?!_next|_vercel|.*\\..*).*)'],
 };
