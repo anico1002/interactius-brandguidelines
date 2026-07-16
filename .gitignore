@@ -8,3 +8,10 @@ tsconfig.tsbuildinfo
 
 # Local Netlify folder
 .netlify
+node_modules/
+dist/
+build/
+.env
+.env.*
+.vite/
+coverage/
