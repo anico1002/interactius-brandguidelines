@@ -21,6 +21,30 @@ const BRAND_PAGES = new Set(['manifiesto', 'clientes', 'aceptacion']);
    median headline is 54 characters and runs three. Rank the title-led layouts by their title. */
 const TITLE_LED = new Set(['portada', 'enunciado', 'reto', 'split-izq', 'split-der', 'cierre']);
 
+/* Nobody has ever written an `enunciado` or a `columnas` in nine decks, so there is no real copy to
+   show — and a blank slide can't be tuned. Borrow from the sibling that shares its shape rather
+   than invent lorem: `enunciado` is eyebrow + big headline, which is what `reto` already is;
+   `columnas` is a title over headed columns, which is what `roadmap`'s phases already are. Real
+   words, right shape. */
+const BORROW: Record<string, { from: string; reshape: (body: string) => string }> = {
+  /* Drop the image: a statement is the words alone. */
+  enunciado: { from: 'reto', reshape: (b) => b.replace(/^!\[.*$/gm, '').trim() },
+  /* Keep the title and the first three phase headings with their prose; columns take no bullets. */
+  columnas: {
+    from: 'roadmap',
+    reshape: (b) => {
+      const [head, ...phases] = b.split(/^###\s+/m);
+      const title = head.split('\n').find((l) => l.startsWith('##')) ?? '## Enfoque';
+      const cols = phases.slice(0, 3).map((p) => {
+        const [name, ...rest] = p.split('\n');
+        const prose = rest.find((l) => l.trim() && !l.startsWith('-')) ?? '';
+        return `### ${name.trim()}\n${prose.trim()}`;
+      });
+      return [title, ...cols].join('\n\n');
+    },
+  },
+};
+
 const weigh = (marker: string, body: string): number =>
   TITLE_LED.has(marker) ? (body.match(/^#{1,2}\s+(.+)$/m)?.[1]?.length ?? 0) : body.length;
 
@@ -49,16 +73,33 @@ export async function loadRealMix(): Promise<RealMix> {
       sources[marker] = 'contenido de marca';
       continue;
     }
-    const found = (blocks[marker] ?? []).sort((a, b) => weigh(marker, a.body) - weigh(marker, b.body));
-    if (!found.length) {
-      md.push(`[ly: ${marker}]`);
-      sources[marker] = 'nadie lo usa';
+    const pick = (key: string) => {
+      const xs = (blocks[key] ?? []).sort((a, b) => weigh(key, a.body) - weigh(key, b.body));
+      return xs.length ? xs[Math.floor(xs.length / 2)] : null;
+    };
+
+    /* Nobody has ever written this layout: borrow real copy from the sibling that shares its shape,
+       so there is something true to tune against instead of a blank slide. */
+    const lend = BORROW[marker];
+    if (lend && !(blocks[marker] ?? []).length) {
+      const donor = pick(lend.from);
+      if (donor) {
+        md.push(`[ly: ${marker}]\n\n${lend.reshape(donor.body).replace(/\[ly:[^\]]*\]\s*/, '')}`);
+        sources[marker] = `SIN USO REAL · texto de ${lend.from} (${donor.client})`;
+        continue;
+      }
+    }
+
+    const median = pick(marker);
+    if (!median) {
+      const entry = LAYOUT_CATALOG.find((e) => e.marker === marker);
+      md.push(entry?.skeleton ? `[ly: ${marker}]\n\n${entry.skeleton}` : `[ly: ${marker}]`);
+      sources[marker] = 'SIN USO REAL · plantilla';
       continue;
     }
-    const median = found[Math.floor(found.length / 2)];
     /* Remote images resolve over the network; keep them, they are the real ones. */
     md.push(median.body);
-    sources[marker] = `${median.client} · mediana de ${found.length}`;
+    sources[marker] = `${median.client} · mediana de ${(blocks[marker] ?? []).length}`;
   }
   return { md: md.join('\n\n---\n\n') + '\n', sources };
 }

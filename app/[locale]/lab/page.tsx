@@ -44,6 +44,12 @@ export default function Lab() {
         <button onClick={() => setOpen(true)} style={{ font: '500 12px/1 monospace', padding: '8px 12px', cursor: 'pointer' }}>Galería</button>
         {err && <span style={{ font: '400 11px monospace', color: '#99335F' }}>Supabase: {err}</span>}
         {!mix && !err && <span style={{ font: '400 11px monospace', color: '#75706B' }}>cargando decks reales…</span>}
+        {mix && (
+          /* Which layouts nobody has ever written: they render their skeleton, not real copy. */
+          <span style={{ font: '400 11px/1.4 monospace', color: '#99335F' }}>
+            sin uso real: {Object.entries(mix.sources).filter(([, s]) => s.startsWith('SIN USO')).map(([m]) => m).join(', ') || '—'}
+          </span>
+        )}
       </header>
       <div style={{ minHeight: 0 }}>
         <DeckRenderer deck={deck} clientLogo={logo} />
