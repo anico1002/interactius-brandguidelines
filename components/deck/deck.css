@@ -98,7 +98,9 @@ body.ix-viewer main{padding:0 !important; margin:0 !important;}
 .ix-deck .cover .logo{position:absolute; left:var(--ml); top:56px; z-index:4;}
 .ix-deck .cover .logo img{height:28px; display:block;}
 .ix-deck .cover .lockup{position:absolute; left:var(--ml); bottom:108px; max-width:700px; z-index:4;}
-.ix-deck .cover h1{font-family:var(--serif); font-weight:400; font-size:60px; line-height:1.04; color:var(--warm-light);}
+/* Title of a primary slide: same step as .statement h2 — the type scale calls this `title`. Was a
+   hand-set 60px, which is on no step of the scale. */
+.ix-deck .cover h1{font-family:var(--serif); font-weight:400; font-size:var(--t-title); line-height:1.06; letter-spacing:-.01em; color:var(--warm-light);}
 .ix-deck .cover .sub{margin-top:24px; font:400 12.5px/1.6 var(--mono); color:var(--warm-light); opacity:.72; max-width:440px;}
 .ix-deck .cover .foot{position:absolute; left:var(--ml); bottom:52px; z-index:4; font:400 10px/1 var(--mono); letter-spacing:.06em; color:var(--warm-light); opacity:.62;}
 .ix-deck .cover .foot b{font-weight:500; opacity:1; background:rgba(245,242,237,.14); padding:3px 6px;}
@@ -120,7 +122,7 @@ body.ix-viewer main{padding:0 !important; margin:0 !important;}
 .ix-deck .split.img-left .photo{right:auto; left:64px;}
 .ix-deck .split.img-left .txt{left:600px; right:var(--mr);}
 .ix-deck .split .eyebrow{margin-bottom:26px;}
-.ix-deck .split h2{font-family:var(--serif); font-weight:400; font-size:44px; line-height:1.08; margin-bottom:26px;}
+.ix-deck .split h2{font-family:var(--serif); font-weight:400; font-size:var(--title-section); line-height:1.08; margin-bottom:26px;}
 .ix-deck .split .txt .body{max-width:520px;}
 .ix-deck .split .txt .body p + p{margin-top:14px;}
 .ix-deck .split .flowlist li{font-size:13px;}
