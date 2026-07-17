@@ -41,6 +41,14 @@
 /* Inline **negrita** from the .md → <strong>. Weight only; colour inherits per theme. */
 .ix-deck strong{font-weight:600;}
 
+/* Brand emphasis (`/ palabra /`). Was emitting a .emph span with no rule anywhere in the repo, so
+   the highlight rendered identical to its surroundings — only the slashes showed.
+   Medium: one step over the Regular it sits in, which is the smallest move that still reads. The
+   corporate site strokes the glyphs instead (`-webkit-text-stroke: 0.6px`) because that outline can
+   animate continuously and a weight jumps — a different problem, not a lighter touch.
+   ⚠️ 500 on serif is outside lib/tokens.ts (300/400) — pending being written in. */
+.ix-deck .emph{font-weight:500;}
+
 /* Viewer mode (shared client link): hide all site chrome, only the deck shows. */
 body.ix-viewer aside, body.ix-viewer header, body.ix-viewer #menu-overlay{display:none !important;}
 body.ix-viewer main{padding:0 !important; margin:0 !important;}
