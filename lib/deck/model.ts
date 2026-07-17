@@ -1,4 +1,4 @@
-import type { ImageRef, Slide, Theme, Token } from './types.ts';
+import type { Background, ImageRef, Slide, Theme, Token } from './types.ts';
 
 /* A `###`(+) heading with the body paragraphs and list items that follow it (until the next
    `###`). Drives columns, roadmap phases and the budget "Condiciones" section. */
@@ -17,7 +17,8 @@ export type BlockModel = {
   eyebrow?: string;                // first UPPERCASE line
   title: string;                   // primary heading (highest level present), theme suffix stripped
   subtitle?: string;               // next heading below the primary, before any ### section
-  themeOverride?: Theme;           // {oscuro|dark|claro|light} suffix on the primary heading
+  themeOverride?: Theme;           // {oscuro|dark} — from the [ly:] line or the heading suffix
+  bg?: Background;                  // {blanco|warm-dark|warm-light} background fill (light slides)
   body: string[];                  // every paragraph, in order
   quotes: string[];                // every `>` quote, in order
   items?: string[];                // first list's items (undefined if no list)
@@ -36,12 +37,26 @@ export type BlockModel = {
 const find = <T extends Token['t']>(tokens: Token[], t: T) =>
   tokens.find((x) => x.t === t) as Extract<Token, { t: T }> | undefined;
 
-/* Strip a trailing `{oscuro|dark|claro|light}` theme override off a heading. */
-export function overrideTheme(text: string): { clean: string; theme: Theme | undefined } {
-  const m = text.match(/\s*\{(oscuro|dark|claro|light)\}\s*$/i);
-  if (!m) return { clean: text, theme: undefined };
-  const t = m[1].toLowerCase();
-  return { clean: text.replace(m[0], '').trim(), theme: t === 'oscuro' || t === 'dark' ? 'dark' : 'light' };
+/* Resolve an appearance modifier ({blanco}, {warm-dark}, {oscuro}…) to a theme and/or background.
+   The three light fills keep dark text (theme light); only dark flips the theme. Unknown token → {}. */
+export function resolveAppearance(tok?: string): { theme?: Theme; bg?: Background } {
+  switch (tok?.trim().toLowerCase()) {
+    case 'oscuro': case 'dark': return { theme: 'dark' };
+    case 'claro': case 'light': case 'warm-light': case 'crema': return { theme: 'light', bg: 'warm-light' };
+    case 'blanco': case 'white': return { theme: 'light', bg: 'white' };
+    case 'warm-dark': case 'arena': return { theme: 'light', bg: 'warm-dark' };
+    default: return {};
+  }
+}
+
+/* Strip a trailing `{…}` appearance override off a heading. Leaves the text untouched if the token
+   isn't a known modifier, so stray braces aren't eaten. */
+export function overrideTheme(text: string): { clean: string; theme?: Theme; bg?: Background } {
+  const m = text.match(/\s*\{([a-z-]+)\}\s*$/i);
+  if (!m) return { clean: text };
+  const app = resolveAppearance(m[1]);
+  if (app.theme === undefined && app.bg === undefined) return { clean: text };
+  return { clean: text.replace(m[0], '').trim(), ...app };
 }
 
 /* `clave: valor` lines (from paragraphs, quotes or list items) — used by acceptance/cover. */
@@ -84,7 +99,9 @@ function extractSections(tokens: Token[]): Section[] {
    title, the next-lower one (above section level) is the subtitle — so `#`→title and `##`→subtitle
    when both exist, but a lone `## Título` still acts as the title. */
 export function parseBlock(tokens: Token[], position: number, total: number): BlockModel {
-  const marker = (find(tokens, 'layout') as Extract<Token, { t: 'layout' }> | undefined)?.name;
+  const layoutTok = find(tokens, 'layout') as Extract<Token, { t: 'layout' }> | undefined;
+  const marker = layoutTok?.name;
+  const fromMarker = resolveAppearance(layoutTok?.mod);   // {} when the [ly:] line has no modifier
   const headings = tokens.filter((t): t is Extract<Token, { t: 'h' }> => t.t === 'h').map((h) => ({ level: h.level, text: h.text }));
 
   // Title = the FIRST heading (document order) — robust and backward-compatible: a stray
@@ -123,7 +140,10 @@ export function parseBlock(tokens: Token[], position: number, total: number): Bl
     eyebrow: caps?.text,
     title: ov.clean,
     subtitle,
-    themeOverride: ov.theme,
+    // The [ly:] line modifier wins over the heading suffix — it's explicit and works on the
+    // marker-only brand pages too, which have no heading to carry a `{…}`.
+    themeOverride: fromMarker.theme ?? ov.theme,
+    bg: fromMarker.bg ?? ov.bg,
     body,
     quotes,
     items: lists[0],

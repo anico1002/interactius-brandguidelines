@@ -18,7 +18,11 @@ export type RichNode =
   | { t: 'h'; level: number; text: string }
   | { t: 'caps'; text: string };
 
-export type Slide =
+/* Background fill an author can pick for a light slide (dark stays reserved for the canonical hero
+   slides). All three take dark text, so only the fill changes, never the text colour. */
+export type Background = 'warm-light' | 'warm-dark' | 'white';
+
+type SlideVariant =
   | { kind: 'cover'; theme: Theme; title: string; subtitle?: string; eyebrow?: string; client?: string; image?: ImageRef; footer?: string }
   | { kind: 'statement'; theme: Theme; eyebrow?: string; title: string }
   | { kind: 'bullets'; theme: Theme; title: string; items: string[] }
@@ -39,6 +43,10 @@ export type Slide =
   | { kind: 'objetivos'; theme: Theme; title: string; items: string[]; image?: ImageRef }
   | { kind: 'roadmapPhases'; theme: Theme; title: string; subtitle?: string; faseLabel?: string; phases: Phase[] };
 
+/* `bg` is orthogonal to kind, so it rides on every variant via intersection — narrowing on `kind`
+   still works, and no per-layout change is needed. */
+export type Slide = SlideVariant & { bg?: Background };
+
 export type DeckType = 'comercial' | 'informe' | 'generica';
 
 export type SlideKind = Slide['kind'];
@@ -55,6 +63,6 @@ export type Token =
   | { t: 'ul'; items: string[] }
   | { t: 'image'; alt: string; src: string }
   | { t: 'fence'; lang: string; body: string }
-  | { t: 'layout'; name: string };
+  | { t: 'layout'; name: string; mod?: string };
 
 export type SlideSource = { tokens: Token[]; index: number };

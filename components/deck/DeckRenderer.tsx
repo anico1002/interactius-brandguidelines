@@ -62,8 +62,8 @@ export function DeckRenderer({
         <ImageEditContext.Provider value={viewer ? null : onPickImage ?? null}>
           <div className="ix-deck" ref={ref}>
             {deck.slides.map((slide, i) => (
-              <section className="slide" key={i} id={`ix-slide-${i}`} data-ix-slide={i}>
-                <div className="fwrap">{renderSlide(slide, i + 1)}</div>
+              <section className={`slide theme-${slide.theme ?? 'light'}`} key={i} id={`ix-slide-${i}`} data-ix-slide={i}>
+                <div className={`fwrap${slide.bg ? ` bg-${slide.bg}` : ''}`}>{renderSlide(slide, i + 1)}</div>
               </section>
             ))}
           </div>

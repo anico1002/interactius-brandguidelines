@@ -14,6 +14,19 @@
      slide. Two values, one place. */
   --track-caps:.08em;   /* micro-label in UPPERCASE */
   --track-label:.04em;  /* caption not in uppercase */
+  --img-w:430px;        /* full-height side image (split · reto · objetivos) — one width, so a slide
+                           with the image left and one with it right never jump between each other */
+  --img-gap:96px;       /* gap between that image and the text column — one value, so split and reto
+                           (and both split variants) never sit at different distances */
+  --hairline:rgba(28,26,23,.14);  /* structural line for enumerated/table separators (objetivos,
+                           budget). Stays translucent: those never cross another line and sit on both
+                           warm-light and white, so they adapt to the background. */
+  /* The vertical rule and the page separator DO cross each other. Two translucent strokes stacking
+     at that point read darker than either alone, so both are solid — the exact colour each
+     translucent line already resolves to over its slide, per theme. Solid over solid = no build-up.
+     Light = rgba(28,26,23,.14) over warm-light; dark = rgba(245,242,237,.16) over dark. */
+  --rule-light:#D7D4CF;
+  --rule-dark:#3F3D39;
   --expo:cubic-bezier(0.16,1,0.3,1);
   --s:1;
   --ml:108px; --mr:108px; --mt:64px; --mb:56px;
@@ -127,16 +140,22 @@ body.ix-viewer main{padding:0 !important; margin:0 !important;}
 .ix-deck .slide{position:relative; width:100%; height:calc(720px * var(--s)); display:flex; justify-content:center; align-items:center; scroll-snap-align:center;}
 .ix-deck .fwrap{width:calc(1280px * var(--s)); height:calc(720px * var(--s)); position:relative;}
 /* Horizontal page separator drawn ON TOP, at the top edge of each page (webscroll only). */
-.ix-deck .slide + .slide::before{content:''; position:absolute; top:0; left:0; right:0; height:1px; background:rgba(28,26,23,.14); z-index:6;}
+.ix-deck .slide + .slide::before{content:''; position:absolute; top:0; left:0; right:0; height:1px; z-index:6;}
+.ix-deck .slide + .slide.theme-light::before{background:var(--rule-light);}
+.ix-deck .slide + .slide.theme-dark::before{background:var(--rule-dark);}
 .ix-deck .frame{position:absolute; top:0; left:0; width:1280px; height:720px; overflow:hidden;
   transform:scale(var(--s)); transform-origin:top left;}
 .ix-deck .theme-dark{background:var(--dark); color:var(--warm-light);}
 .ix-deck .theme-light{background:var(--warm-light); color:var(--dark);}
+/* Author-picked background for a light slide — `[ly: x] {blanco|warm-dark}`. Only the fill changes;
+   text stays dark. Extra class beats .theme-light on specificity. warm-light is the default. */
+.ix-deck .fwrap.bg-white .theme-light{background:var(--white);}
+.ix-deck .fwrap.bg-warm-dark .theme-light{background:var(--warm-dark);}
 
 /* Chrome */
 .ix-deck .rule{position:absolute; left:64px; top:0; bottom:0; width:1px;}
-.ix-deck .theme-light .rule{background:rgba(28,26,23,.14);}
-.ix-deck .theme-dark .rule{background:rgba(245,242,237,.16);}
+.ix-deck .theme-light .rule{background:var(--rule-light);}
+.ix-deck .theme-dark .rule{background:var(--rule-dark);}
 /* Interior lateral tab — two vertical mono labels (matches the master):
    "2026" on a white label, "Interactius" on a warm-grey label. */
 .ix-deck .tab{position:absolute; left:22px; top:26px; z-index:3; display:flex; flex-direction:column; gap:7px; align-items:flex-start;}
@@ -151,13 +170,17 @@ body.ix-viewer main{padding:0 !important; margin:0 !important;}
 /* Shared type */
 .ix-deck .eyebrow{font:500 11px/1.4 var(--mono); letter-spacing:var(--track-caps); text-transform:uppercase;}
 .ix-deck .theme-light .eyebrow{color:var(--ash);} .ix-deck .theme-dark .eyebrow{color:var(--warm-light); opacity:.6;}
+/* Mono text colour, three tiers on light backgrounds — apply by role, not by eye:
+   Dark (énfasis: cabeceras, cita) · Ash Dark (cuerpo de lectura) · Ash (secundario: etiquetas,
+   números, subtítulos, notas, eyebrows). On dark slides it is warm-light. Opal/Bordeaux stay for
+   accents/errors only. */
 .ix-deck .body{font:400 13px/1.6 var(--mono);}
 .ix-deck .theme-light .body{color:var(--ash-dark);} .ix-deck .theme-dark .body{color:var(--warm-light); opacity:.8;}
 
 /* Body flow list (`- …` inside paragraph/split/contexto text) — diamond bullet, mono, theme-aware.
    Each layout tunes the type size below; sits inline with the surrounding paragraphs. */
 .ix-deck .flowlist{list-style:none; margin:.7em 0;}
-.ix-deck .flowlist li{display:grid; grid-template-columns:16px 1fr; gap:8px; margin-bottom:9px; font:400 15px/1.5 var(--mono);}
+.ix-deck .flowlist li{display:grid; grid-template-columns:16px 1fr; gap:8px; margin-bottom:9px; font:400 16px/1.5 var(--mono);}
 .ix-deck .flowlist li:last-child{margin-bottom:0;}
 .ix-deck .flowlist .dia{font-size:9px; line-height:1.9;}
 .ix-deck .theme-light .flowlist li{color:var(--ash-dark);} .ix-deck .theme-light .flowlist .dia{color:var(--dark);}
@@ -169,7 +192,7 @@ body.ix-viewer main{padding:0 !important; margin:0 !important;}
   font:500 9px/1.5 var(--mono); letter-spacing:var(--track-caps); text-transform:uppercase; color:var(--warm-light); opacity:.4;}
 .ix-deck .imgslot .imghint{position:absolute; left:0; right:0; bottom:0; padding:10px 14px;
   display:flex; align-items:center; gap:7px; opacity:0; transition:opacity .3s var(--expo);
-  font:500 10px/1 var(--mono); letter-spacing:var(--track-caps); text-transform:uppercase;
+  font:500 9px/1 var(--mono); letter-spacing:var(--track-caps); text-transform:uppercase;
   color:var(--white); background:linear-gradient(to top, rgba(28,26,23,.78), transparent);}
 .ix-deck .imgslot:hover .imghint{opacity:1;}
 .ix-deck .imgslot .imghint::before{content:"↑"; font-size:12px;}
@@ -195,8 +218,8 @@ body.ix-viewer main{padding:0 !important; margin:0 !important;}
 /* Title of a primary slide: same step as .statement h2 — the type scale calls this `title`. Was a
    hand-set 60px, which is on no step of the scale. */
 .ix-deck .cover h1{font-family:var(--serif); font-weight:300; font-size:var(--t-title); line-height:1.06; letter-spacing:-.01em; color:var(--warm-light);}
-.ix-deck .cover .sub{margin-top:24px; font:400 12.5px/1.6 var(--mono); color:var(--warm-light); opacity:.72; max-width:440px;}
-.ix-deck .cover .foot{position:absolute; left:var(--ml); bottom:52px; z-index:4; font:400 10px/1 var(--mono); letter-spacing:var(--track-label); color:var(--warm-light); opacity:.62;}
+.ix-deck .cover .sub{margin-top:24px; font:400 13px/1.6 var(--mono); color:var(--warm-light); opacity:.72; max-width:440px;}
+.ix-deck .cover .foot{position:absolute; left:var(--ml); bottom:52px; z-index:4; font:400 9px/1 var(--mono); letter-spacing:var(--track-label); color:var(--warm-light); opacity:.62;}
 .ix-deck .cover .foot b{font-weight:500; opacity:1; background:rgba(245,242,237,.14); padding:3px 6px;}
 /* Client logo: takes the name chip's anchor. Sized to a 250x48 box with `contain`, so width leads
    and nothing ever distorts. Matching the Interactius mark's height instead reads as half its
@@ -210,11 +233,13 @@ body.ix-viewer main{padding:0 !important; margin:0 !important;}
   filter:brightness(0) invert(1);}
 
 /* 2 · Image + text split — image always on the RIGHT (left stays light for the tab) */
-.ix-deck .split .photo{position:absolute; right:0; top:0; bottom:0; width:430px;}
-.ix-deck .split .txt{position:absolute; left:var(--ml); right:600px; top:150px;}
+.ix-deck .split .photo{position:absolute; right:0; top:0; bottom:0; width:var(--img-w);}
+/* Image bleeds to the right edge; text ends one --img-gap before it (image left edge = img-w wide). */
+.ix-deck .split .txt{position:absolute; left:var(--ml); right:calc(var(--img-w) + var(--img-gap)); top:150px;}
 /* split-izq: mirror of the default (image on the left, text on the right). */
 .ix-deck .split.img-left .photo{right:auto; left:64px;}
-.ix-deck .split.img-left .txt{left:600px; right:var(--mr);}
+/* Image inset at left:64; text starts one --img-gap past its right edge (64 + img-w). */
+.ix-deck .split.img-left .txt{left:calc(64px + var(--img-w) + var(--img-gap)); right:var(--mr);}
 .ix-deck .split .eyebrow{margin-bottom:26px;}
 .ix-deck .split h2{font-family:var(--serif); font-weight:300; font-size:var(--title-section); line-height:1.08; margin-bottom:26px;}
 .ix-deck .split .txt .body{max-width:520px;}
@@ -227,10 +252,10 @@ body.ix-viewer main{padding:0 !important; margin:0 !important;}
 .ix-deck .statement h2{font-family:var(--serif); font-weight:300; font-size:var(--t-title); line-height:1.06; color:var(--warm-light); letter-spacing:-.01em;}
 
 /* 4 · Bullets */
-/* Title 5px below the list's 108px: the serif carries space above the cap, so aligning the boxes
-   left the heading reading a touch high. Optical, not metric — the two now sit level to the eye. */
-.ix-deck .bullets .title{position:absolute; left:var(--ml); top:113px; width:360px; font-family:var(--serif); font-weight:300; font-size:var(--title-section); line-height:1.08;}
-.ix-deck .bullets .list{position:absolute; left:560px; top:108px; right:var(--mr);}
+.ix-deck .bullets .title{position:absolute; left:var(--ml); top:108px; width:360px; font-family:var(--serif); font-weight:300; font-size:var(--title-section); line-height:1.08;}
+/* 12px below the title's 108px: the serif cap sits under the top of its box, so the list drops to
+   optically line the first bullet up with the heading's first line. */
+.ix-deck .bullets .list{position:absolute; left:560px; top:120px; right:var(--mr);}
 .ix-deck .bullets .item{display:grid; grid-template-columns:26px 1fr; gap:8px; margin-bottom:30px;}
 .ix-deck .bullets .dia{font-size:11px; line-height:1.7; color:var(--dark);}
 .ix-deck .bullets .item .body{max-width:430px;}
@@ -238,14 +263,18 @@ body.ix-viewer main{padding:0 !important; margin:0 !important;}
 /* 5 · Three columns */
 .ix-deck .cols .title{position:absolute; left:var(--ml); top:88px; font-family:var(--serif); font-weight:300; font-size:var(--title-section); line-height:1;}
 .ix-deck .cols .grid{position:absolute; left:var(--ml); right:var(--mr); top:216px; display:grid; grid-template-columns:repeat(3,1fr); gap:48px;}
-.ix-deck .cols .num{font:500 11px/1 var(--mono); letter-spacing:var(--track-caps); color:var(--opal);}
-.ix-deck .cols .colhd{margin:18px 0 14px; font-family:var(--serif); font-weight:300; font-size:25px; line-height:1.1;}
-.ix-deck .cols .colbody{font:400 12px/1.65 var(--mono); color:var(--ash-dark);}
+/* Each text group sits on a white card. The grid stretches all three columns to the tallest one's
+   height, so the cards match without measuring — no staircase, whatever the copy. Padding is the
+   24px half-gutter. */
+.ix-deck .cols .col{background:var(--white); padding:24px;}
+.ix-deck .cols .num{font:500 11px/1 var(--mono); letter-spacing:var(--track-caps); color:var(--ash);}
+.ix-deck .cols .colhd{margin:18px 0 14px; font-family:var(--serif); font-weight:300; font-size:26px; line-height:1.1;}
+.ix-deck .cols .colbody{font:400 13px/1.65 var(--mono); color:var(--ash-dark);}
 .ix-deck .cols .colbody b{font-weight:600; color:var(--dark);}
 
 /* 6 · Gantt */
 .ix-deck .gantt .title{position:absolute; left:var(--ml); top:72px; font-family:var(--serif); font-weight:300; font-size:var(--title-section);}
-.ix-deck .gantt .sub{position:absolute; left:calc(var(--ml) + 2px); top:136px; font:400 13px/1 var(--mono); color:var(--ash-dark);}
+.ix-deck .gantt .sub{position:absolute; left:calc(var(--ml) + 2px); top:136px; font:400 13px/1 var(--mono); color:var(--ash);}
 .ix-deck .gantt .chart{position:absolute; left:var(--ml); right:var(--mr); top:236px; display:grid; grid-template-columns:130px repeat(8,1fr); align-items:center;}
 .ix-deck .gantt .ghd{font:600 13px/1 var(--mono); text-align:center; padding-bottom:14px; color:var(--dark);}
 .ix-deck .gantt .ghd.lbl{text-align:left;}
@@ -265,10 +294,11 @@ body.ix-viewer main{padding:0 !important; margin:0 !important;}
 .ix-deck .closing .url{margin-top:22px; font:400 13px/1 var(--mono); letter-spacing:var(--track-label); color:var(--warm-light); opacity:.62; text-decoration:underline; text-underline-offset:4px;}
 
 /* 8 · Paragraph (fallback / contexto) */
-.ix-deck .paragraph .wrap{position:absolute; left:var(--ml); right:var(--mr); top:140px;}
+.ix-deck .paragraph .wrap{position:absolute; left:var(--ml); right:var(--mr); top:64px;}  /* top is a pre-paint fallback; FitText centres the group in the band */
 .ix-deck .paragraph .eyebrow{margin-bottom:26px;}
 .ix-deck .paragraph p{font-family:var(--serif); font-weight:300; font-size:34px; line-height:1.28; max-width:880px;}
-.ix-deck .paragraph p + p{margin-top:.7em;}
+/* Separation after a paragraph break: half the eyebrow→text gap (26px). */
+.ix-deck .paragraph p + p{margin-top:13px;}
 .ix-deck .paragraph .flowlist{max-width:880px;}
 .ix-deck .paragraph .flowlist li{font-size:19px; line-height:1.4;}
 .ix-deck .theme-dark.paragraph p{color:var(--warm-light);}
@@ -276,19 +306,19 @@ body.ix-viewer main{padding:0 !important; margin:0 !important;}
 /* Fixed page · Manifesto (ref p.10) */
 .ix-deck .manifesto{background:var(--warm-dark);}
 .ix-deck .manifesto .wrap{position:absolute; left:var(--ml); right:var(--mr); top:50%; transform:translateY(-50%);}
-.ix-deck .manifesto h2{font-family:var(--serif); font-weight:300; font-size:40px; line-height:1.26; color:var(--dark); max-width:760px;}
-.ix-deck .manifesto .sub{margin-top:22px; font:400 14px/1.5 var(--mono); color:var(--ash);}
+.ix-deck .manifesto h2{font-family:var(--serif); font-weight:300; font-size:var(--title-section); line-height:1.26; color:var(--dark); max-width:760px;}
+.ix-deck .manifesto .sub{margin-top:22px; font:400 13px/1.5 var(--mono); color:var(--ash);}
 
 /* Fixed page · Team (ref p.11) */
 .ix-deck .team .txt{position:absolute; left:var(--ml); top:70px; width:330px;}
-.ix-deck .team .txt p{font:400 11.5px/1.6 var(--mono); color:var(--ash-dark); margin-bottom:13px;}
+.ix-deck .team .txt p{font:400 13px/1.6 var(--mono); color:var(--ash-dark); margin-bottom:13px;}
 .ix-deck .team .txt p.bold{font-weight:600; color:var(--dark);}
 .ix-deck .team .txt .list{list-style:none; margin-top:2px;}
-.ix-deck .team .txt .list li{display:grid; grid-template-columns:16px 1fr; gap:8px; margin-bottom:12px; font:400 11.5px/1.6 var(--mono); color:var(--ash-dark);}
+.ix-deck .team .txt .list li{display:grid; grid-template-columns:16px 1fr; gap:8px; margin-bottom:12px; font:400 13px/1.6 var(--mono); color:var(--ash-dark);}
 .ix-deck .team .txt .list .dia{font-size:9px; line-height:2; color:var(--dark);}
 .ix-deck .team .txt .eyebrow{margin:0 0 10px;}
-.ix-deck .team .txt h3.th{font-family:var(--serif); font-weight:300; font-size:17px; line-height:1.2; color:var(--dark); margin:2px 0 10px;}
-.ix-deck .team .txt blockquote.quote{margin:0 0 13px; padding-left:12px; border-left:2px solid var(--warm-dark); font:400 11.5px/1.6 var(--mono); color:var(--dark);}
+.ix-deck .team .txt h3.th{font-family:var(--serif); font-weight:300; font-size:22px; line-height:1.2; color:var(--dark); margin:2px 0 10px;}
+.ix-deck .team .txt blockquote.quote{margin:0 0 13px; padding-left:12px; border-left:2px solid var(--warm-dark); font:400 13px/1.6 var(--mono); color:var(--dark);}
 .ix-deck .team .grid{position:absolute; right:40px; top:48px; width:720px; height:auto;}
 
 /* Fixed page · Clients (ref p.41) — image carries its own category labels; contained, not full-bleed */
@@ -300,14 +330,18 @@ body.ix-viewer main{padding:0 !important; margin:0 !important;}
 /* Budget (ref p.42) */
 .ix-deck .budget .title{position:absolute; left:var(--ml); top:80px; font-family:var(--serif); font-weight:300; font-size:var(--title-section); line-height:1;}
 .ix-deck .budget .table{position:absolute; left:var(--ml); bottom:92px; width:418px;}
-.ix-deck .budget .row{display:flex; justify-content:space-between; align-items:baseline; padding:15px 0; border-bottom:1px solid rgba(28,26,23,.16); font:400 14px/1 var(--mono); color:var(--ash-dark);}
+.ix-deck .budget .row{display:flex; justify-content:space-between; align-items:baseline; padding:15px 0; border-bottom:1px solid var(--hairline); font:400 13px/1 var(--mono); color:var(--ash-dark);}
 .ix-deck .budget .row.total{font-weight:600; color:var(--dark); border-bottom:none; padding-top:18px;}
 .ix-deck .budget .amt{font-variant-numeric:tabular-nums;}
-.ix-deck .budget .cond{position:absolute; left:632px; right:var(--mr); top:150px;}
+/* Bottom-anchored so the conditions end level with the Total and grow UP as they change,
+   however many there are. 107 = the table's bottom:92 + the total row's 15px bottom padding, so the
+   last condition's baseline meets the Total's. */
+.ix-deck .budget .cond{position:absolute; left:632px; right:var(--mr); bottom:107px;}
 .ix-deck .budget .cond h3{font-family:var(--serif); font-weight:300; font-size:26px; line-height:1; margin-bottom:24px; color:var(--dark);}
 .ix-deck .budget .cond .item{display:grid; grid-template-columns:20px 1fr; gap:8px; margin-bottom:15px;}
+.ix-deck .budget .cond .item:last-child{margin-bottom:0;}
 .ix-deck .budget .cond .dia{font-size:10px; line-height:1.7; color:var(--dark);}
-.ix-deck .budget .cond .body{font:400 12px/1.55 var(--mono); color:var(--ash-dark);}
+.ix-deck .budget .cond .body{font:400 13px/1.55 var(--mono); color:var(--ash-dark);}
 
 /* Acceptance / signature (ref p.43) */
 .ix-deck .accept .title{position:absolute; left:var(--ml); top:64px; font-family:var(--serif); font-weight:300; font-size:var(--title-section); line-height:1.12; max-width:380px;}
@@ -316,8 +350,8 @@ body.ix-viewer main{padding:0 !important; margin:0 !important;}
 .ix-deck .accept .who{font:600 11px/1.6 var(--mono); color:var(--dark); white-space:pre-line;}
 .ix-deck .accept .lines{position:absolute; left:1000px; top:236px; display:flex; flex-direction:column; gap:22px;}
 .ix-deck .accept .lines span{display:block; width:160px; border-bottom:1px solid rgba(28,26,23,.35);}
-.ix-deck .accept .note{position:absolute; left:var(--ml); bottom:64px; width:330px; font:400 12px/1.6 var(--mono); color:var(--ash-dark);}
-.ix-deck .accept .cta{position:absolute; right:120px; bottom:62px; font-family:var(--serif); font-weight:300; font-size:30px; color:var(--dark);}
+.ix-deck .accept .note{position:absolute; left:var(--ml); bottom:64px; width:330px; font:400 13px/1.6 var(--mono); color:var(--ash-dark);}
+.ix-deck .accept .cta{position:absolute; right:120px; bottom:62px; font-family:var(--serif); font-weight:300; font-size:26px; color:var(--dark);}
 
 /* Client signature pad (viewer route only): second column in the white half, beside the signer block. */
 .ix-deck .accept .signpad{position:absolute; left:850px; top:170px; width:360px;}
@@ -329,50 +363,59 @@ body.ix-viewer main{padding:0 !important; margin:0 !important;}
 .ix-deck .accept .signbox.done{display:flex; align-items:center; justify-content:center;}
 .ix-deck .accept .signbox.done img{max-width:90%; max-height:90%; object-fit:contain;}
 .ix-deck .accept .signpad .fields{display:flex; gap:14px; margin-top:16px;}
-.ix-deck .accept .signpad .fields input{flex:1; min-width:0; appearance:none; border:none; border-bottom:1px solid rgba(28,26,23,.35); background:transparent; font:400 12px/1.4 var(--mono); color:var(--dark); padding:6px 2px;}
+.ix-deck .accept .signpad .fields input{flex:1; min-width:0; appearance:none; border:none; border-bottom:1px solid rgba(28,26,23,.35); background:transparent; font:400 13px/1.4 var(--mono); color:var(--dark); padding:6px 2px;}
 .ix-deck .accept .signpad .fields input::placeholder{color:var(--ash);}
 .ix-deck .accept .signpad .fields input:focus{outline:none; border-bottom-color:var(--dark);}
-.ix-deck .accept .signpad .err{margin-top:10px; font:400 10.5px/1.4 var(--mono); color:var(--bordeaux);}
+.ix-deck .accept .signpad .err{margin-top:10px; font:400 11px/1.4 var(--mono); color:var(--bordeaux);}
 .ix-deck .accept .signpad .firmar{margin-top:16px; appearance:none; border:1px solid var(--dark); background:var(--dark); color:var(--warm-light); font:500 11px/1 var(--mono); letter-spacing:var(--track-label); padding:11px 24px; cursor:pointer;}
 .ix-deck .accept .signpad .firmar:disabled{opacity:.5; cursor:default;}
 .ix-deck .accept .signpad.signed .meta{margin-top:14px; display:flex; flex-direction:column; gap:3px;}
-.ix-deck .accept .signpad.signed .meta strong{font:600 12px/1.4 var(--mono); color:var(--dark);}
+.ix-deck .accept .signpad.signed .meta strong{font:600 13px/1.4 var(--mono); color:var(--dark);}
 .ix-deck .accept .signpad.signed .meta span{font:400 11px/1.4 var(--mono); color:var(--ash);}
 
 /* Contexto (ref p.31 long / p.32 short) */
+/* Same band and eyebrow gap as the paragraph slide — its serif-body twin. FitText centres both. */
 .ix-deck .contexto .wrap{position:absolute; left:var(--ml); right:var(--mr); top:64px;}
-.ix-deck .contexto .eyebrow{margin-bottom:24px;}
+.ix-deck .contexto .eyebrow{margin-bottom:26px;}
 .ix-deck .contexto p{font-family:var(--serif); font-weight:300; color:var(--dark);}
-.ix-deck .contexto.long p{font-size:26px; line-height:1.4; max-width:660px;}
+/* Long context matches the paragraph slide: same 34px and the same 880px measure, not the old
+   hand-shrunk 26px in a narrower box — that was a guard against overflow, which FitText now handles.
+   Separation after a paragraph break is half the eyebrow→text gap (24px). */
+.ix-deck .contexto.long p{font-size:34px; line-height:1.3; max-width:880px;}
 .ix-deck .contexto.short p{font-size:var(--title-section); line-height:1.25; max-width:560px;}
-.ix-deck .contexto .flowlist{max-width:660px;}
+.ix-deck .contexto p + p{margin-top:12px;}
+.ix-deck .contexto .flowlist{max-width:880px;}
 .ix-deck .contexto .flowlist li{font-size:16px; line-height:1.5;}
 
 /* El reto (ref p.29) — image left, eyebrow + serif title right */
-.ix-deck .elreto .photo{position:absolute; left:64px; top:0; bottom:0; width:420px;}
-.ix-deck .elreto .txt{position:absolute; left:560px; right:var(--mr); top:120px;}
+.ix-deck .elreto .photo{position:absolute; left:64px; top:0; bottom:0; width:var(--img-w);}
+/* Image inset at left:64 like split-izq; text starts the same --img-gap past it. */
+.ix-deck .elreto .txt{position:absolute; left:calc(64px + var(--img-w) + var(--img-gap)); right:var(--mr); top:120px;}
 .ix-deck .elreto .eyebrow{margin-bottom:24px;}
-.ix-deck .elreto h2{font-family:var(--serif); font-weight:300; font-size:52px; line-height:1.08; color:var(--dark);}
+.ix-deck .elreto h2{font-family:var(--serif); font-weight:300; font-size:var(--title-section); line-height:1.08; color:var(--dark);}
 
 /* Objetivos (ref p.22) — title + numbered list left, image right */
 .ix-deck .objetivos .title{position:absolute; left:var(--ml); top:64px; font-family:var(--serif); font-weight:300; font-size:var(--title-section);}
 .ix-deck .objetivos .list{position:absolute; left:var(--ml); top:172px; width:560px; list-style:none;}
-.ix-deck .objetivos .list li{display:grid; grid-template-columns:24px 1fr; gap:8px; padding:14px 0; border-bottom:1px solid rgba(28,26,23,.14);}
+.ix-deck .objetivos .list li{display:grid; grid-template-columns:24px 1fr; gap:8px; padding:14px 0; border-bottom:1px solid var(--hairline);}
 .ix-deck .objetivos .list li:last-child{border-bottom:none;}
 .ix-deck .objetivos .list .n{font:400 11px/1.6 var(--mono); color:var(--ash);}
-.ix-deck .objetivos .list .body{font:400 12px/1.55 var(--mono); color:var(--ash-dark);}
-.ix-deck .objetivos .photo{position:absolute; right:0; top:0; bottom:0; width:430px;}
+.ix-deck .objetivos .list .body{font:400 13px/1.55 var(--mono); color:var(--ash-dark);}
+.ix-deck .objetivos .photo{position:absolute; right:0; top:0; bottom:0; width:var(--img-w);}
 
 /* Roadmap fases (ref p.35) — phase columns */
 .ix-deck .roadmapphases .title{position:absolute; left:var(--ml); top:56px; font-family:var(--serif); font-weight:300; font-size:var(--title-section);}
-.ix-deck .roadmapphases .sub{position:absolute; left:var(--ml); top:122px; font:400 13px/1.4 var(--mono); color:var(--ash-dark);}
+.ix-deck .roadmapphases .sub{position:absolute; left:var(--ml); top:122px; font:400 13px/1.4 var(--mono); color:var(--ash);}
 .ix-deck .roadmapphases .phases{position:absolute; left:var(--ml); right:var(--mr); top:172px; display:grid; grid-auto-flow:column; grid-auto-columns:1fr; gap:34px;}
+/* Each phase on a white card, like the columns slide — the grid stretches them to the tallest, so
+   no staircase whatever the copy. Same 24px padding. */
+.ix-deck .roadmapphases .phase{background:var(--white); padding:24px;}
 .ix-deck .roadmapphases .fase{font:500 9px/1 var(--mono); letter-spacing:var(--track-caps); text-transform:uppercase; color:var(--ash); margin-bottom:10px;}
 .ix-deck .roadmapphases h3{font-family:var(--serif); font-weight:300; font-size:22px; line-height:1.1; margin-bottom:12px; color:var(--dark);}
 .ix-deck .roadmapphases .pbody{font:400 11px/1.5 var(--mono); color:var(--ash-dark); margin-bottom:14px;}
 .ix-deck .roadmapphases .qh{font:600 11px/1.4 var(--mono); color:var(--dark); margin-bottom:8px;}
 .ix-deck .roadmapphases ul{list-style:none;}
-.ix-deck .roadmapphases li{display:grid; grid-template-columns:14px 1fr; gap:6px; margin-bottom:8px; font:400 10.5px/1.45 var(--mono); color:var(--ash-dark);}
+.ix-deck .roadmapphases li{display:grid; grid-template-columns:14px 1fr; gap:6px; margin-bottom:8px; font:400 11px/1.45 var(--mono); color:var(--ash-dark);}
 .ix-deck .roadmapphases .dia{font-size:8px; line-height:1.6; color:var(--dark);}
 
 /* Print: one 16:9 slide per page, deck only (no site chrome). */

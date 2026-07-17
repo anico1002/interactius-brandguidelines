@@ -83,15 +83,30 @@ Se conservan las barras y, al traducir, solo cambia la palabra de dentro.
 
 ---
 
-## 3. Temas (claro / oscuro)
+## 3. Fondo de la diapositiva
 
-- Por defecto: **oscuro** en portada, *statement* y cierre; **claro** en el resto.
-- Forzar tema añadiendo al final del **encabezado**: `{oscuro}` / `{dark}` /
-  `{claro}` / `{light}`.
+Por defecto: **oscuro** en portada, *statement* y cierre; **claro** (crema) en el resto.
 
-```markdown
-## Nuestra mirada {oscuro}
-```
+En las diapositivas claras puedes elegir entre **tres fondos** (el texto siempre queda oscuro):
+
+| Escribes | Fondo |
+|---|---|
+| _(nada)_ o `{warm-light}` | Crema `#F5F2ED` (por defecto) |
+| `{blanco}` / `{white}` | Blanco puro `#FFFFFF` |
+| `{warm-dark}` / `{arena}` | Arena `#E0DAD2` |
+
+El fondo **oscuro** se reserva para las pantallas canónicas (portada, statement, cierre). Se puede
+forzar con `{oscuro}` / `{dark}` por compatibilidad, pero no es un fondo "de autor".
+
+**Dónde ponerlo** — dos sitios, el que te venga:
+- Junto al marcador de layout (funciona también en las páginas de solo-marcador como manifiesto):
+  ```markdown
+  [ly: manifiesto] {blanco}
+  ```
+- Al final de un **encabezado**:
+  ```markdown
+  ## Nuestra mirada {arena}
+  ```
 
 ---
 

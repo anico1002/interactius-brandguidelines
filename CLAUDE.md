@@ -39,6 +39,28 @@ Corolario: si encuentras una regla que **se aplica en el código pero no está e
 `lib/tokens.ts` / `lib/typeScale.ts`, eso ya es un hallazgo. Dilo. Una norma de facto que nadie
 documentó es una norma que el siguiente se saltará sin querer.
 
+## Cómo pulir el deck (instrucciones permanentes de Alberto)
+
+1. **Un cambio de layout se propaga solo.** Si un ajuste sobre una slide vale para las demás del
+   mismo layout (`split`, `lista`/bullets, `columnas`…), aplícalo a todas de una vez. No esperes a
+   llegar a esas slides ni preguntes de nuevo. El CSS del deck es por-layout, así que un cambio en
+   la regla ya afecta a todas: apróvéchalo, no lo dupliques.
+
+2. **Diseño líquido: ninguna slide se rompe.** El texto que hay en las presentaciones es
+   **orientativo** — cambiará. Nunca cuadrar una slide sobre el texto actual. Toda maqueta que pueda
+   recibir texto variable debe **detectar cuándo el contenido desborda y encogerlo** para que quede
+   dentro de márgenes, sea cual sea su longitud. Prioridad: el **cuerpo serif grande** (párrafo,
+   contexto) — el mono pequeño y los titulares casi nunca desbordan. Herramienta: `FitText`
+   (`components/deck/FitText.tsx`), sin suelo — garantiza que nunca desborda. Determinista: el lienzo
+   es fijo 1280×720, así que ajustar a caja da siempre el mismo resultado para el mismo texto.
+
+3. **Coherencia de espaciado.** Márgenes, paddings, tops y huecos deben ser **consistentes entre
+   layouts del mismo rol**. Dos slides que se ven de la misma familia (p. ej. `texto` y `contexto`,
+   ambas antetítulo + cuerpo serif) tienen que compartir top, ancho de caja, tamaño y huecos —
+   nada de "empieza más arriba a propósito". Si detectas que el mismo rol usa dos valores, alinéalo
+   (y avisa). No hay una escala de espaciado canónica escrita; los valores de página son
+   `--ml/--mr/--mt/--mb` (108/108/64/56) y el gutter 48 (mitad 24 como inset interior).
+
 ## Antes de tocar diseño, lee la fuente de verdad
 
 **No la cites de memoria** — los valores cambian y el daño de afirmar un número falso con seguridad

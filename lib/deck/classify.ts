@@ -145,7 +145,9 @@ export function blockKind(m: BlockModel): Slide['kind'] {
 
 export function classify(src: SlideSource, position: number, total: number): Slide {
   const m = parseBlock(src.tokens, position, total);
-  return buildSlide(m, blockKind(m), m.marker);
+  const slide = buildSlide(m, blockKind(m), m.marker);
+  // bg rides on every kind via the Slide intersection — attach once here (only when non-default).
+  return m.bg && m.bg !== 'warm-light' ? { ...slide, bg: m.bg } : slide;
 }
 
 export function compile(_md: string, sources: SlideSource[]): Slide[] {

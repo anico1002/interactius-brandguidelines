@@ -59,3 +59,20 @@ test('the catalog covers every renderable slide kind', () => {
   const covered = new Set(LAYOUT_CATALOG.map((c) => c.kind));
   for (const k of KINDS) assert.ok(covered.has(k as never), `kind ${k} missing from the catalog`);
 });
+
+import { compileDeck } from '../index.ts';
+
+test('background modifier {…} on the [ly:] line sets the fill, keeping dark text', () => {
+  assert.equal(compileDeck('[ly: manifiesto] {blanco}').slides[0].bg, 'white');
+  assert.equal(compileDeck('[ly: lista] {warm-dark}\n\n## X\n\n- a').slides[0].bg, 'warm-dark');
+});
+
+test('no modifier means the default fill (no bg set)', () => {
+  assert.equal(compileDeck('[ly: lista]\n\n## X\n\n- a').slides[0].bg, undefined);
+  assert.equal(compileDeck('[ly: lista] {warm-light}\n\n## X\n\n- a').slides[0].bg, undefined); // default → unset
+});
+
+test('{oscuro} still flips the theme (back-compat), and works on a heading too', () => {
+  assert.equal(compileDeck('[ly: enunciado] {oscuro}\n\nEYEBROW\n\n## T').slides[0].theme, 'dark');
+  assert.equal(compileDeck('## Título {blanco}\n\nCuerpo.').slides[0].bg, 'white');
+});
