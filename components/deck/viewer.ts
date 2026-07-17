@@ -15,3 +15,8 @@ export const SignContext = createContext<SignCtx | null>(null);
    and anywhere images aren't editable (thumbnails, shared view), which makes ImageSlot
    render as a plain, non-clickable image. */
 export const ImageEditContext = createContext<((slideIndex: number) => void) | null>(null);
+
+/* Public URL of the client's logo (deck meta, not markdown — uploaded in DeckMetaModal and
+   defaulted per client). Null when the deck has none, and the cover falls back to the client
+   name. Always rendered as an <img src>, never inlined: the file is third-party SVG. */
+export const ClientLogoContext = createContext<string | null>(null);

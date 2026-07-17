@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation';
 import { AnimatePresence, motion } from 'framer-motion';
 import { compileDeck, deckWarnings } from '@/lib/deck';
 import type { ClientRecord, DeckListItem, DeckMeta, DeckRecord } from '@/lib/decks/types';
-import { createDeck, getDeck, listClients, listDecks, translateDeck, updateDeck } from '@/lib/decks/api';
+import { createDeck, getDeck, listClients, listDecks, publicLogoUrl, translateDeck, updateDeck } from '@/lib/decks/api';
 import { splitSourceBlocks, setBlockImage } from '@/lib/deck/source';
 import { DeckRenderer } from './DeckRenderer';
 import { ToneReport } from './ToneReport';
@@ -137,6 +137,9 @@ export function DeckStudio({ deckId }: { deckId?: string } = {}) {
   const previewRef = useRef<HTMLDivElement>(null);
 
   const dirty = useMemo(() => snap(md, meta) !== savedSnap, [md, meta, savedSnap]);
+  /* Uploaded in DeckMetaModal (and defaulted per client): the cover shows it instead of the
+     client name. Memoised because resolving the URL builds a Supabase client. */
+  const clientLogo = useMemo(() => publicLogoUrl(meta.logo_path), [meta.logo_path]);
 
   // Restore the saved editor width, then keep it within [min, 50% of viewport].
   useEffect(() => {
@@ -416,7 +419,7 @@ export function DeckStudio({ deckId }: { deckId?: string } = {}) {
   if (viewer) {
     return (
       <div style={{ height: '100vh' }}>
-        <DeckRenderer deck={deck} viewer />
+        <DeckRenderer deck={deck} viewer clientLogo={clientLogo} />
       </div>
     );
   }
@@ -523,7 +526,7 @@ export function DeckStudio({ deckId }: { deckId?: string } = {}) {
         </AnimatePresence>
 
         <div ref={previewRef} className="deck-preview" style={{ flex: 1, minWidth: 0, minHeight: 0 }}>
-          <DeckRenderer deck={deck} onPickImage={setImageSlot} />
+          <DeckRenderer deck={deck} onPickImage={setImageSlot} clientLogo={clientLogo} />
         </div>
       </div>
 

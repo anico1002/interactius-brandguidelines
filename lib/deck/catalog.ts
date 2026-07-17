@@ -32,7 +32,9 @@ const SKELETONS: Record<string, string> = {
 
 ## Subtítulo de la portada
 
-> cliente: Nombre del cliente`,
+> cliente: Nombre del cliente
+
+${IMG}`,
 
   enunciado: `ANTETÍTULO EN MAYÚSCULAS
 
