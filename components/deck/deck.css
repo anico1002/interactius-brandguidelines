@@ -50,7 +50,7 @@
    hand — pending being written into the scale.
    The corporate site strokes the glyphs instead (`-webkit-text-stroke: 0.6px`) because an outline
    can animate continuously while a weight jumps — an animation constraint, not a typographic one. */
-.ix-deck .emph{font-weight:500;}
+.ix-deck .emph{font-weight:400;}
 
 /* **negrita** inside serif. `strong` is 600 for mono, where the brand sanctions it and it is the
    only way to carry weight in a monospaced face. On serif that same 600 jumps three steps from the
@@ -75,7 +75,50 @@
    .ix-deck .elreto h2,
    .ix-deck .objetivos .title,
    .ix-deck .roadmapphases .title,
-   .ix-deck .roadmapphases h3) strong{font-weight:500;}
+   .ix-deck .roadmapphases h3) strong{font-weight:400;}
+/* The brand marks emphasis with slashes, as the corporate site does with `/ change /`. `/ palabra /`
+   carries them in its own text; **negrita** gets them here, so serif has one emphasis mark rather
+   than two. Drawn in CSS, so nobody's markdown changes. */
+:is(.ix-deck .cover h1,
+   .ix-deck .split h2,
+   .ix-deck .statement h2,
+   .ix-deck .bullets .title,
+   .ix-deck .cols .title,
+   .ix-deck .cols .colhd,
+   .ix-deck .gantt .title,
+   .ix-deck .closing h2,
+   .ix-deck .paragraph p,
+   .ix-deck .manifesto h2,
+   .ix-deck .team .txt h3.th,
+   .ix-deck .budget .title,
+   .ix-deck .budget .cond h3,
+   .ix-deck .accept .title,
+   .ix-deck .accept .cta,
+   .ix-deck .contexto p,
+   .ix-deck .elreto h2,
+   .ix-deck .objetivos .title,
+   .ix-deck .roadmapphases .title,
+   .ix-deck .roadmapphases h3) strong::before{content:"/ "; font-weight:300;}
+:is(.ix-deck .cover h1,
+   .ix-deck .split h2,
+   .ix-deck .statement h2,
+   .ix-deck .bullets .title,
+   .ix-deck .cols .title,
+   .ix-deck .cols .colhd,
+   .ix-deck .gantt .title,
+   .ix-deck .closing h2,
+   .ix-deck .paragraph p,
+   .ix-deck .manifesto h2,
+   .ix-deck .team .txt h3.th,
+   .ix-deck .budget .title,
+   .ix-deck .budget .cond h3,
+   .ix-deck .accept .title,
+   .ix-deck .accept .cta,
+   .ix-deck .contexto p,
+   .ix-deck .elreto h2,
+   .ix-deck .objetivos .title,
+   .ix-deck .roadmapphases .title,
+   .ix-deck .roadmapphases h3) strong::after{content:" /"; font-weight:300;}
 
 /* Viewer mode (shared client link): hide all site chrome, only the deck shows. */
 body.ix-viewer aside, body.ix-viewer header, body.ix-viewer #menu-overlay{display:none !important;}
