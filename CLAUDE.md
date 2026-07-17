@@ -22,6 +22,23 @@ Avisa de esto:
 
 No avises de gustos. Esto no va de tu criterio estético: va de la norma escrita.
 
+### La norma es viva, y la práctica también manda
+
+**Que algo se salga de la norma no significa que esté mal: puede significar que la norma se
+quedó corta.** Las guidelines se escribieron mirando **la web**, antes de que existieran las
+presentaciones. Hoy hay decks reales en producción, y esa práctica es **evidencia legítima** para
+cambiar la norma, no una desviación a corregir.
+
+Cuando choquen norma y práctica, no elijas tú: **tráelo**. Alberto es el diseñador y decide. Puede
+salir cualquiera de las dos:
+- Se corrige la pieza → se alinea al sistema.
+- Se corrige el sistema → **y entonces se documenta en las guidelines**. Un cambio de norma que solo
+  vive en el CSS de una pieza no es un cambio de norma: es otra desviación.
+
+Corolario: si encuentras una regla que **se aplica en el código pero no está escrita** en
+`lib/tokens.ts` / `lib/typeScale.ts`, eso ya es un hallazgo. Dilo. Una norma de facto que nadie
+documentó es una norma que el siguiente se saltará sin querer.
+
 ## Antes de tocar diseño, lee la fuente de verdad
 
 **No la cites de memoria** — los valores cambian y el daño de afirmar un número falso con seguridad
