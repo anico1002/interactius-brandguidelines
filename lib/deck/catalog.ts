@@ -10,9 +10,146 @@ export type LayoutCatalogEntry = {
   kind: Slide['kind'];   // the compiled slide kind
   name: string;          // human label
   slots: string;         // what the content fills
+  skeleton: string;      // ready-to-paste markdown block (see SKELETONS)
 };
 
-export const LAYOUT_CATALOG: LayoutCatalogEntry[] = [
+/* Placeholder image for the skeletons: a real brand asset, so a pasted block renders instead of
+   404-ing. Swapped from the editor's image gallery with one click. */
+const IMG = '![Imagen del universo visual](/universo/universo-01.jpg)';
+
+/* Ready-to-paste markdown per layout: the marker plus dummy content that mirrors the layout's
+   real structure, so the author sees which slots exist without opening the guide. Text is
+   instructive ("Título de la sección") rather than plausible copy — it must be obvious that it
+   needs replacing, and it must never read as real content if it survives into a client deck.
+
+   The brand pages (manifiesto/equipo/clientes) are marker-only on purpose: their layouts fall
+   back to the canonical brand copy when the block is EMPTY (all-or-nothing, see Manifesto.tsx),
+   so dummy text here would silently replace the very content the author wants.
+
+   No trailing `---`: the separator is a paste-time concern, added by the gallery on copy. */
+const SKELETONS: Record<string, string> = {
+  portada: `# Título de la presentación
+
+## Subtítulo de la portada
+
+> cliente: Nombre del cliente`,
+
+  enunciado: `ANTETÍTULO EN MAYÚSCULAS
+
+## Titular grande que resume la idea`,
+
+  texto: `ANTETÍTULO EN MAYÚSCULAS
+
+Primer párrafo del cuerpo de texto.
+
+- Punto de una lista, si hace falta.
+- Otro punto de la lista.
+
+Segundo párrafo, después de la lista.`,
+
+  lista: `## Título de la diapositiva
+
+- Primer punto de la lista.
+- Segundo punto de la lista.
+- Tercer punto de la lista.`,
+
+  columnas: `## Título de la sección
+
+### Primer subtítulo
+Texto de la primera columna.
+
+### Segundo subtítulo
+Texto de la segunda columna.
+
+### Tercer subtítulo
+Texto de la tercera columna.`,
+
+  'split-izq': `ANTETÍTULO EN MAYÚSCULAS
+
+## Título junto a la imagen
+
+Párrafo que acompaña a la imagen.
+
+${IMG}`,
+
+  'split-der': `ANTETÍTULO EN MAYÚSCULAS
+
+## Título junto a la imagen
+
+Párrafo que acompaña a la imagen.
+
+${IMG}`,
+
+  contexto: `CONTEXTO
+
+Primer párrafo que describe el contexto del proyecto.
+
+Segundo párrafo, si hace falta desarrollarlo más.`,
+
+  reto: `EL RETO
+
+## Enunciado del reto en una frase
+
+${IMG}`,
+
+  objetivos: `## Objetivos
+
+- Primer objetivo.
+- Segundo objetivo.
+- Tercer objetivo.
+
+${IMG}`,
+
+  roadmap: `## Roadmap
+
+Estimamos que la duración del proyecto será de 6 semanas.
+
+### Nombre de la primera fase
+Texto introductorio de la fase.
+- Primera tarea.
+- Segunda tarea.
+
+### Nombre de la segunda fase
+Texto introductorio de la fase.
+- Primera tarea.
+- Segunda tarea.`,
+
+  gantt: `## Roadmap
+
+semanas: 8
+Primera fase: 1-2
+Segunda fase: 3-5
+Tercera fase: 6-8
+hitos cliente: 2, 5, 8`,
+
+  presupuesto: `## Presupuesto
+
+- Primera partida: 1.000 €
+- Segunda partida: 2.000 €
+- Tercera partida: 3.000 €
+
+### Condiciones
+- Primera condición.
+- Segunda condición.`,
+
+  manifiesto: '',
+  equipo: '',
+  clientes: '',
+
+  aceptacion: `## Aceptación de la propuesta
+
+nombre: Nombre y apellidos
+cargo: Cargo en la empresa
+empresa: Nombre de la empresa
+nif: NIF de la empresa
+direccion: Dirección fiscal`,
+
+  cierre: `## Gracias
+
+www.interactius.com`,
+};
+
+const BASE: Omit<LayoutCatalogEntry, 'skeleton'>[] = [
   { marker: 'portada',     kind: 'cover',         name: 'Portada',         slots: 'título, subtítulo, cliente, imagen de fondo' },
   { marker: 'enunciado',   kind: 'statement',     name: 'Enunciado',       slots: 'antetítulo (MAYÚS) + título grande' },
   { marker: 'texto',       kind: 'paragraph',     name: 'Texto',           slots: 'antetítulo + párrafos y listas (-)' },
@@ -33,7 +170,22 @@ export const LAYOUT_CATALOG: LayoutCatalogEntry[] = [
   { marker: 'cierre',      kind: 'closing',       name: 'Cierre',          slots: 'título + url' },
 ];
 
+/* Each layout carries its own skeleton. `SKELETONS` is keyed by marker and checked against the
+   table by catalog.test.ts, so adding a layout without a skeleton fails the suite. */
+export const LAYOUT_CATALOG: LayoutCatalogEntry[] = BASE.map((e) => ({
+  ...e,
+  skeleton: SKELETONS[e.marker],
+}));
+
 /* marker → kind, derived so there is a single list to maintain. */
 export const LAYOUT_MAP: Record<string, Slide['kind']> = Object.fromEntries(
   LAYOUT_CATALOG.map((c) => [c.marker, c.kind]),
 );
+
+/* The exact text the gallery copies to the clipboard. The `---` goes AFTER the block: authors
+   paste on the empty line below an existing slide's closing `---`, so the separator they still
+   need is the one that closes the new slide. */
+export function layoutSnippet(entry: LayoutCatalogEntry): string {
+  const body = entry.skeleton ? `\n\n${entry.skeleton}` : '';
+  return `[ly: ${entry.marker}]${body}\n\n---\n`;
+}

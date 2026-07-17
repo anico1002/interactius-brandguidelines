@@ -1,18 +1,20 @@
 'use client';
 import { useState } from 'react';
-import { LAYOUT_CATALOG } from '@/lib/deck/catalog';
+import { LAYOUT_CATALOG, layoutSnippet, type LayoutCatalogEntry } from '@/lib/deck/catalog';
 import { Modal } from './Modal';
 import { LayoutThumb } from './LayoutThumb';
 import { btn, colors } from './ui';
 
 const MONO = 'var(--font-ibm-plex-mono, monospace)';
 
-/* Catalog of available layouts. Click a row to copy its `[ly: marcador]` to the clipboard. */
+/* Catalog of available layouts. Click a row to copy a ready-to-paste block: the `[ly: marcador]`
+   plus dummy content shaped like the layout, so a last-minute slide lands filled in. */
 export function LayoutGallery({ onClose }: { onClose: () => void }) {
   const [copied, setCopied] = useState<string | null>(null);
 
-  const copy = async (marker: string) => {
-    const text = `[ly: ${marker}]`;
+  const copy = async (entry: LayoutCatalogEntry) => {
+    const marker = entry.marker;
+    const text = layoutSnippet(entry);
     try {
       await navigator.clipboard.writeText(text);
     } catch {
@@ -42,8 +44,8 @@ export function LayoutGallery({ onClose }: { onClose: () => void }) {
           return (
             <button
               key={e.marker}
-              onClick={() => copy(e.marker)}
-              title="Copiar marcador al portapapeles"
+              onClick={() => copy(e)}
+              title="Copiar plantilla al portapapeles"
               style={{
                 display: 'grid', gridTemplateColumns: '124px 122px 104px 1fr', gap: 14, alignItems: 'center', width: '100%',
                 textAlign: 'left', appearance: 'none', border: 'none', borderBottom: `1px solid ${colors.warmDark}`,
