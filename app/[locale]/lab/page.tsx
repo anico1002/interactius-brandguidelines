@@ -4,6 +4,7 @@ import { LAYOUT_CATALOG, layoutSnippet } from '@/lib/deck/catalog';
 import { compileDeck } from '@/lib/deck';
 import { DeckRenderer } from '@/components/deck/DeckRenderer';
 import { LayoutGallery } from '@/components/deck/studio/LayoutGallery';
+import { REAL_MD } from './real-content';
 
 /* LOCAL SANDBOX — not part of the product, do not ship.
    Lives outside /deck so the Supabase middleware never runs, which makes the layout skeletons and
@@ -12,7 +13,9 @@ import { LayoutGallery } from '@/components/deck/studio/LayoutGallery';
 export default function Lab() {
   const [open, setOpen] = useState(false);
   const [logo, setLogo] = useState<string | null>(null);
-  const md = useMemo(() => LAYOUT_CATALOG.map(layoutSnippet).join('\n'), []);
+  /* Real copy by default: dummy text looks fine at any size, so it can't settle a type decision. */
+  const [real, setReal] = useState(true);
+  const md = useMemo(() => (real ? REAL_MD : LAYOUT_CATALOG.map(layoutSnippet).join('\n')), [real]);
   const deck = useMemo(() => compileDeck(md), [md]);
 
   /* Real client logos live in Supabase Storage, out of reach locally: read the picked file
@@ -23,8 +26,12 @@ export default function Lab() {
     <div style={{ display: 'grid', gridTemplateRows: 'auto 1fr', height: '100vh' }}>
       <header style={{ display: 'flex', gap: 12, alignItems: 'center', padding: 12, borderBottom: '1px solid #E0DAD2' }}>
         <strong style={{ font: '600 13px/1 monospace' }}>LAB · {deck.slides.length} slides</strong>
+        <label style={{ font: '500 11px/1.4 monospace', display: 'flex', gap: 6, alignItems: 'center', cursor: 'pointer' }}>
+          <input type="checkbox" checked={real} onChange={(e) => setReal(e.target.checked)} />
+          {real ? 'Contenido REAL (TMB · QualitaHub · Naturgy)' : 'Contenido de plantilla'}
+        </label>
         <button onClick={() => setOpen(true)} style={{ font: '500 12px/1 monospace', padding: '8px 12px', cursor: 'pointer' }}>
-          Abrir galería de layouts
+          Galería
         </button>
         <label style={{ font: '400 11px/1.4 monospace', display: 'flex', gap: 6, alignItems: 'center' }}>
           Logo de cliente:
