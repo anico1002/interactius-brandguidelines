@@ -16,6 +16,14 @@ import { LAYOUT_CATALOG } from '@/lib/deck/catalog';
 /* Brand pages fall back to canonical copy while the block is empty, so they stay marker-only. */
 const BRAND_PAGES = new Set(['manifiesto', 'clientes', 'aceptacion']);
 
+/* What makes an example typical differs by layout. Ranking the cover by whole-block length picks
+   by image URL and client name as much as by the headline, and lands on a two-line title when the
+   median headline is 54 characters and runs three. Rank the title-led layouts by their title. */
+const TITLE_LED = new Set(['portada', 'enunciado', 'reto', 'split-izq', 'split-der', 'cierre']);
+
+const weigh = (marker: string, body: string): number =>
+  TITLE_LED.has(marker) ? (body.match(/^#{1,2}\s+(.+)$/m)?.[1]?.length ?? 0) : body.length;
+
 export type RealMix = { md: string; sources: Record<string, string> };
 
 export async function loadRealMix(): Promise<RealMix> {
@@ -41,7 +49,7 @@ export async function loadRealMix(): Promise<RealMix> {
       sources[marker] = 'contenido de marca';
       continue;
     }
-    const found = (blocks[marker] ?? []).sort((a, b) => a.body.length - b.body.length);
+    const found = (blocks[marker] ?? []).sort((a, b) => weigh(marker, a.body) - weigh(marker, b.body));
     if (!found.length) {
       md.push(`[ly: ${marker}]`);
       sources[marker] = 'nadie lo usa';
