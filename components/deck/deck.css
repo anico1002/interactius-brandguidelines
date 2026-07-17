@@ -106,10 +106,13 @@ body.ix-viewer main{padding:0 !important; margin:0 !important;}
 /* Measure steps with the headline (Cover.tsx sets data-measure). Fixed at 700px the real titles
    split 25 chars → 2 lines but 85 → 5, stacking up with half the slide empty beside them. Two
    steps hold all nine on record at two or three lines: 700px keeps a short title reading as a
-   block (it fills 55-77% of the measure), 880px unpacks a long one. Stops short of the 1064px
-   between the margins on purpose — the block stays anchored left instead of crossing the slide. */
+   block, 820px unpacks a long one.
+   820 and not 880 — which would fit more titles onto two lines — because the headline has to read
+   as a block set left: that shape is the identity, and these titles get reused in social posts.
+   Lines are worth spending on it. Both stop well short of the 1064px between the margins for the
+   same reason: the block never crosses the slide. */
 .ix-deck .cover .lockup{position:absolute; left:var(--ml); bottom:108px; max-width:700px; z-index:4;}
-.ix-deck .cover .lockup[data-measure="long"]{max-width:880px;}
+.ix-deck .cover .lockup[data-measure="long"]{max-width:820px;}
 /* Title of a primary slide: same step as .statement h2 — the type scale calls this `title`. Was a
    hand-set 60px, which is on no step of the scale. */
 .ix-deck .cover h1{font-family:var(--serif); font-weight:400; font-size:var(--t-title); line-height:1.06; letter-spacing:-.01em; color:var(--warm-light);}
