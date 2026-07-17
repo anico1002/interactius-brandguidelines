@@ -227,7 +227,9 @@ body.ix-viewer main{padding:0 !important; margin:0 !important;}
 .ix-deck .statement h2{font-family:var(--serif); font-weight:300; font-size:var(--t-title); line-height:1.06; color:var(--warm-light); letter-spacing:-.01em;}
 
 /* 4 · Bullets */
-.ix-deck .bullets .title{position:absolute; left:var(--ml); top:108px; width:360px; font-family:var(--serif); font-weight:300; font-size:var(--title-section); line-height:1.08;}
+/* Title 5px below the list's 108px: the serif carries space above the cap, so aligning the boxes
+   left the heading reading a touch high. Optical, not metric — the two now sit level to the eye. */
+.ix-deck .bullets .title{position:absolute; left:var(--ml); top:113px; width:360px; font-family:var(--serif); font-weight:300; font-size:var(--title-section); line-height:1.08;}
 .ix-deck .bullets .list{position:absolute; left:560px; top:108px; right:var(--mr);}
 .ix-deck .bullets .item{display:grid; grid-template-columns:26px 1fr; gap:8px; margin-bottom:30px;}
 .ix-deck .bullets .dia{font-size:11px; line-height:1.7; color:var(--dark);}
