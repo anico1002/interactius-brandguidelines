@@ -8,6 +8,12 @@
   --opal:#B0B5B0; --bordeaux:#99335F; --emerald:#5999A6;
   --serif:var(--font-ibm-plex-serif), 'IBM Plex Serif', ui-serif, serif;
   --mono:var(--font-ibm-plex-mono), 'IBM Plex Mono', ui-monospace, monospace;
+  /* Tracking for micro-type, mirroring what the guidelines site does: `caption` carries .04em, and
+     every uppercase label overrides it to .08em (29 of 29 uses, no exceptions). The deck used to
+     pick per-element — .14 / .1 / .08 / .06 / .02 — so the same role read differently slide to
+     slide. Two values, one place. */
+  --track-caps:.08em;   /* micro-label in UPPERCASE */
+  --track-label:.04em;  /* caption not in uppercase */
   --expo:cubic-bezier(0.16,1,0.3,1);
   --s:1;
   --ml:108px; --mr:108px; --mt:64px; --mb:56px;
@@ -55,16 +61,16 @@ body.ix-viewer main{padding:0 !important; margin:0 !important;}
 /* Interior lateral tab — two vertical mono labels (matches the master):
    "2026" on a white label, "Interactius" on a warm-grey label. */
 .ix-deck .tab{position:absolute; left:22px; top:26px; z-index:3; display:flex; flex-direction:column; gap:7px; align-items:flex-start;}
-.ix-deck .tab .lbl{writing-mode:vertical-rl; transform:rotate(180deg); font:400 11px/1 var(--mono); letter-spacing:.04em; padding:7px 4px;}
+.ix-deck .tab .lbl{writing-mode:vertical-rl; transform:rotate(180deg); font:400 11px/1 var(--mono); letter-spacing:var(--track-label); padding:7px 4px;}
 .ix-deck .theme-light .tab .yr{background:var(--white); color:var(--dark);}
 .ix-deck .theme-light .tab .nm{background:var(--warm-dark); color:var(--dark);}
 .ix-deck .theme-dark .tab .yr{background:var(--warm-light); color:var(--dark);}
 .ix-deck .theme-dark .tab .nm{background:rgba(245,242,237,.16); color:var(--warm-light);}
-.ix-deck .pageno{position:absolute; left:26px; bottom:24px; z-index:3; font:400 11px/1 var(--mono); letter-spacing:.02em;}
+.ix-deck .pageno{position:absolute; left:26px; bottom:24px; z-index:3; font:400 11px/1 var(--mono); letter-spacing:var(--track-label);}
 .ix-deck .theme-light .pageno{color:var(--ash);} .ix-deck .theme-dark .pageno{color:var(--warm-light); opacity:.55;}
 
 /* Shared type */
-.ix-deck .eyebrow{font:500 11px/1.4 var(--mono); letter-spacing:.14em; text-transform:uppercase;}
+.ix-deck .eyebrow{font:500 11px/1.4 var(--mono); letter-spacing:var(--track-caps); text-transform:uppercase;}
 .ix-deck .theme-light .eyebrow{color:var(--ash);} .ix-deck .theme-dark .eyebrow{color:var(--warm-light); opacity:.6;}
 .ix-deck .body{font:400 13px/1.6 var(--mono);}
 .ix-deck .theme-light .body{color:var(--ash-dark);} .ix-deck .theme-dark .body{color:var(--warm-light); opacity:.8;}
@@ -81,11 +87,11 @@ body.ix-viewer main{padding:0 !important; margin:0 !important;}
 /* Editable image slot */
 .ix-deck .imgslot{background-size:cover; background-position:center; cursor:pointer;}
 .ix-deck .imgslot .placeholder{position:absolute; left:14px; bottom:40px; right:14px;
-  font:500 9px/1.5 var(--mono); letter-spacing:.1em; text-transform:uppercase; color:var(--warm-light); opacity:.4;}
+  font:500 9px/1.5 var(--mono); letter-spacing:var(--track-caps); text-transform:uppercase; color:var(--warm-light); opacity:.4;}
 .ix-deck .imgslot .imghint{position:absolute; left:0; right:0; bottom:0; padding:10px 14px;
   display:flex; align-items:center; gap:7px; opacity:0; transition:opacity .3s var(--expo);
-  font:500 10px/1 var(--mono); letter-spacing:.08em; text-transform:uppercase;
-  color:#fff; background:linear-gradient(to top, rgba(28,26,23,.78), transparent);}
+  font:500 10px/1 var(--mono); letter-spacing:var(--track-caps); text-transform:uppercase;
+  color:var(--white); background:linear-gradient(to top, rgba(28,26,23,.78), transparent);}
 .ix-deck .imgslot:hover .imghint{opacity:1;}
 .ix-deck .imgslot .imghint::before{content:"↑"; font-size:12px;}
 
@@ -102,7 +108,7 @@ body.ix-viewer main{padding:0 !important; margin:0 !important;}
    hand-set 60px, which is on no step of the scale. */
 .ix-deck .cover h1{font-family:var(--serif); font-weight:400; font-size:var(--t-title); line-height:1.06; letter-spacing:-.01em; color:var(--warm-light);}
 .ix-deck .cover .sub{margin-top:24px; font:400 12.5px/1.6 var(--mono); color:var(--warm-light); opacity:.72; max-width:440px;}
-.ix-deck .cover .foot{position:absolute; left:var(--ml); bottom:52px; z-index:4; font:400 10px/1 var(--mono); letter-spacing:.06em; color:var(--warm-light); opacity:.62;}
+.ix-deck .cover .foot{position:absolute; left:var(--ml); bottom:52px; z-index:4; font:400 10px/1 var(--mono); letter-spacing:var(--track-label); color:var(--warm-light); opacity:.62;}
 .ix-deck .cover .foot b{font-weight:500; opacity:1; background:rgba(245,242,237,.14); padding:3px 6px;}
 /* Client logo: takes the name chip's anchor. Sized to a 250x48 box with `contain`, so width leads
    and nothing ever distorts. Matching the Interactius mark's height instead reads as half its
@@ -142,7 +148,7 @@ body.ix-viewer main{padding:0 !important; margin:0 !important;}
 /* 5 · Three columns */
 .ix-deck .cols .title{position:absolute; left:var(--ml); top:88px; font-family:var(--serif); font-weight:400; font-size:var(--title-section); line-height:1;}
 .ix-deck .cols .grid{position:absolute; left:var(--ml); right:var(--mr); top:216px; display:grid; grid-template-columns:repeat(3,1fr); gap:48px;}
-.ix-deck .cols .num{font:500 11px/1 var(--mono); letter-spacing:.08em; color:var(--opal);}
+.ix-deck .cols .num{font:500 11px/1 var(--mono); letter-spacing:var(--track-caps); color:var(--opal);}
 .ix-deck .cols .colhd{margin:18px 0 14px; font-family:var(--serif); font-weight:400; font-size:25px; line-height:1.1;}
 .ix-deck .cols .colbody{font:400 12px/1.65 var(--mono); color:var(--ash-dark);}
 .ix-deck .cols .colbody b{font-weight:600; color:var(--dark);}
@@ -166,7 +172,7 @@ body.ix-viewer main{padding:0 !important; margin:0 !important;}
 .ix-deck .closing .wm{position:absolute; top:96px; left:50%; transform:translateX(-50%);}
 .ix-deck .closing .wm img{height:28px; display:block;}
 .ix-deck .closing h2{font-family:var(--serif); font-weight:400; font-size:124px; line-height:1; color:var(--warm-light);}
-.ix-deck .closing .url{margin-top:22px; font:400 13px/1 var(--mono); letter-spacing:.04em; color:var(--warm-light); opacity:.62; text-decoration:underline; text-underline-offset:4px;}
+.ix-deck .closing .url{margin-top:22px; font:400 13px/1 var(--mono); letter-spacing:var(--track-label); color:var(--warm-light); opacity:.62; text-decoration:underline; text-underline-offset:4px;}
 
 /* 8 · Paragraph (fallback / contexto) */
 .ix-deck .paragraph .wrap{position:absolute; left:var(--ml); right:var(--mr); top:140px;}
@@ -225,11 +231,11 @@ body.ix-viewer main{padding:0 !important; margin:0 !important;}
 
 /* Client signature pad (viewer route only): second column in the white half, beside the signer block. */
 .ix-deck .accept .signpad{position:absolute; left:850px; top:170px; width:360px;}
-.ix-deck .accept .signpad .lab{font:500 9px/1 var(--mono); letter-spacing:.14em; text-transform:uppercase; color:var(--ash); margin-bottom:10px;}
+.ix-deck .accept .signpad .lab{font:500 9px/1 var(--mono); letter-spacing:var(--track-caps); text-transform:uppercase; color:var(--ash); margin-bottom:10px;}
 .ix-deck .accept .signbox{position:relative; width:360px; height:120px; background:var(--white); border:1px solid rgba(28,26,23,.35); touch-action:none;}
 .ix-deck .accept .signbox canvas{display:block; width:100%; height:100%; cursor:crosshair;}
 .ix-deck .accept .signbox .hint{position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font:400 11px/1 var(--mono); color:var(--ash); pointer-events:none;}
-.ix-deck .accept .signbox .clear{position:absolute; top:6px; right:8px; appearance:none; border:none; background:transparent; font:500 9px/1 var(--mono); letter-spacing:.1em; text-transform:uppercase; color:var(--ash); cursor:pointer;}
+.ix-deck .accept .signbox .clear{position:absolute; top:6px; right:8px; appearance:none; border:none; background:transparent; font:500 9px/1 var(--mono); letter-spacing:var(--track-caps); text-transform:uppercase; color:var(--ash); cursor:pointer;}
 .ix-deck .accept .signbox.done{display:flex; align-items:center; justify-content:center;}
 .ix-deck .accept .signbox.done img{max-width:90%; max-height:90%; object-fit:contain;}
 .ix-deck .accept .signpad .fields{display:flex; gap:14px; margin-top:16px;}
@@ -237,7 +243,7 @@ body.ix-viewer main{padding:0 !important; margin:0 !important;}
 .ix-deck .accept .signpad .fields input::placeholder{color:var(--ash);}
 .ix-deck .accept .signpad .fields input:focus{outline:none; border-bottom-color:var(--dark);}
 .ix-deck .accept .signpad .err{margin-top:10px; font:400 10.5px/1.4 var(--mono); color:var(--bordeaux);}
-.ix-deck .accept .signpad .firmar{margin-top:16px; appearance:none; border:1px solid var(--dark); background:var(--dark); color:var(--warm-light); font:500 11px/1 var(--mono); letter-spacing:.04em; padding:11px 24px; cursor:pointer;}
+.ix-deck .accept .signpad .firmar{margin-top:16px; appearance:none; border:1px solid var(--dark); background:var(--dark); color:var(--warm-light); font:500 11px/1 var(--mono); letter-spacing:var(--track-label); padding:11px 24px; cursor:pointer;}
 .ix-deck .accept .signpad .firmar:disabled{opacity:.5; cursor:default;}
 .ix-deck .accept .signpad.signed .meta{margin-top:14px; display:flex; flex-direction:column; gap:3px;}
 .ix-deck .accept .signpad.signed .meta strong{font:600 12px/1.4 var(--mono); color:var(--dark);}
@@ -271,7 +277,7 @@ body.ix-viewer main{padding:0 !important; margin:0 !important;}
 .ix-deck .roadmapphases .title{position:absolute; left:var(--ml); top:56px; font-family:var(--serif); font-weight:400; font-size:var(--title-section);}
 .ix-deck .roadmapphases .sub{position:absolute; left:var(--ml); top:122px; font:400 13px/1.4 var(--mono); color:var(--ash-dark);}
 .ix-deck .roadmapphases .phases{position:absolute; left:var(--ml); right:var(--mr); top:172px; display:grid; grid-auto-flow:column; grid-auto-columns:1fr; gap:34px;}
-.ix-deck .roadmapphases .fase{font:500 9px/1 var(--mono); letter-spacing:.1em; text-transform:uppercase; color:var(--ash); margin-bottom:10px;}
+.ix-deck .roadmapphases .fase{font:500 9px/1 var(--mono); letter-spacing:var(--track-caps); text-transform:uppercase; color:var(--ash); margin-bottom:10px;}
 .ix-deck .roadmapphases h3{font-family:var(--serif); font-weight:400; font-size:22px; line-height:1.1; margin-bottom:12px; color:var(--dark);}
 .ix-deck .roadmapphases .pbody{font:400 11px/1.5 var(--mono); color:var(--ash-dark); margin-bottom:14px;}
 .ix-deck .roadmapphases .qh{font:600 11px/1.4 var(--mono); color:var(--dark); margin-bottom:8px;}
@@ -289,7 +295,7 @@ body.ix-viewer main{padding:0 !important; margin:0 !important;}
   aside, header, #menu-overlay{ display:none !important; }
   main{ padding:0 !important; margin:0 !important; }
   body{ background:#fff; }
-  .ix-deck{ height:auto; overflow:visible; scroll-snap-type:none; background:#fff; }
+  .ix-deck{ height:auto; overflow:visible; scroll-snap-type:none; background:var(--white); }
   .ix-deck .slide{ width:1280px; height:720px; display:block; page-break-after:always; break-after:page; }
   .ix-deck .slide + .slide::before{ display:none; }
   .ix-deck .slide:last-child{ page-break-after:auto; break-after:auto; }
