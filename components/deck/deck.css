@@ -50,6 +50,31 @@
    can animate continuously while a weight jumps — an animation constraint, not a typographic one. */
 .ix-deck .emph{font-weight:400;}
 
+/* **negrita** inside serif. `strong` is 600 for mono, where the brand sanctions it and it is the
+   only way to carry weight in a monospaced face. On serif that same 600 jumps three steps from the
+   Light the display text now sits at, and lands outside the 300/400 the scale allows. Serif
+   emphasis is Regular — the same step `/ palabra /` takes. */
+:is(.ix-deck .cover h1,
+   .ix-deck .split h2,
+   .ix-deck .statement h2,
+   .ix-deck .bullets .title,
+   .ix-deck .cols .title,
+   .ix-deck .cols .colhd,
+   .ix-deck .gantt .title,
+   .ix-deck .closing h2,
+   .ix-deck .paragraph p,
+   .ix-deck .manifesto h2,
+   .ix-deck .team .txt h3.th,
+   .ix-deck .budget .title,
+   .ix-deck .budget .cond h3,
+   .ix-deck .accept .title,
+   .ix-deck .accept .cta,
+   .ix-deck .contexto p,
+   .ix-deck .elreto h2,
+   .ix-deck .objetivos .title,
+   .ix-deck .roadmapphases .title,
+   .ix-deck .roadmapphases h3) strong{font-weight:400;}
+
 /* Viewer mode (shared client link): hide all site chrome, only the deck shows. */
 body.ix-viewer aside, body.ix-viewer header, body.ix-viewer #menu-overlay{display:none !important;}
 body.ix-viewer main{padding:0 !important; margin:0 !important;}
