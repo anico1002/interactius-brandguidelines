@@ -5,8 +5,16 @@ import { ImageSlot } from '../ImageSlot';
 import { ClientLogoContext } from '../viewer';
 import { inline } from '../inline';
 
+/* The measure steps with the headline instead of being fixed. A long title in a narrow box stacks
+   into five lines with half the slide empty beside it; a short one across a wide box stops reading
+   as a block anchored left. Two steps hold every title on record (25–79 characters) at two or
+   three lines — see .lockup in deck.css for the widths. Counted in characters, so the deck stays
+   deterministic: no measuring, no reflow, same markdown same result. */
+const SHORT_TITLE = 40;
+
 export function Cover({ slide, page }: { slide: Extract<Slide, { kind: 'cover' }>; page: number }) {
   const clientLogo = useContext(ClientLogoContext);
+  const measure = slide.title.length > SHORT_TITLE ? 'long' : 'short';
   return (
     <div className={`frame theme-${slide.theme} cover`}>
       <ImageSlot image={slide.image} className="photo" slideIndex={page - 1} />
@@ -15,7 +23,7 @@ export function Cover({ slide, page }: { slide: Extract<Slide, { kind: 'cover' }
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src="/logo/interactius-negativo.svg" alt="interactīus" />
       </div>
-      <div className="lockup">
+      <div className="lockup" data-measure={measure}>
         <h1>{inline(slide.title)}</h1>
         {slide.subtitle && <div className="sub">{inline(slide.subtitle)}</div>}
       </div>
