@@ -8,3 +8,21 @@
 const COMPOUND = /(\p{L})-(\p{L})/gu;
 
 export const keepCompounds = (text: string): string => text.replace(COMPOUND, '$1‑$2');
+
+/* No widow: a headline must not end with one short word stranded on a line of its own ("2.0" under
+   two full lines). Bind the last word to the one before it with a non-breaking space, so they wrap
+   together — the typesetter's rule, and it holds for any text rather than for one title.
+   Only tiny tails ("2.0", "App", "EFP"). A word of six or seven letters fills a line honestly and
+   reads as a line, not as a leftover; binding it would drag a whole word down for nothing. */
+const WIDOW_MAX = 5;
+
+export function bindWidow(text: string): string {
+  const at = text.trimEnd().lastIndexOf(' ');
+  if (at < 0) return text;
+  const last = text.slice(at + 1);
+  if (!last || last.length > WIDOW_MAX) return text;
+  return text.slice(0, at) + ' ' + last;
+}
+
+/* Everything a display headline gets, in order. */
+export const typesetHeadline = (text: string): string => bindWidow(keepCompounds(text));

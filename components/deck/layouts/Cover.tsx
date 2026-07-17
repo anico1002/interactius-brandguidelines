@@ -4,7 +4,7 @@ import type { Slide } from '@/lib/deck/types';
 import { ImageSlot } from '../ImageSlot';
 import { ClientLogoContext } from '../viewer';
 import { inline } from '../inline';
-import { keepCompounds } from '@/lib/deck/typeset';
+import { typesetHeadline } from '@/lib/deck/typeset';
 
 /* The measure steps with the headline instead of being fixed. A long title in a narrow box stacks
    into five lines with half the slide empty beside it; a short one across a wide box stops reading
@@ -25,7 +25,7 @@ export function Cover({ slide, page }: { slide: Extract<Slide, { kind: 'cover' }
         <img src="/logo/interactius-negativo.svg" alt="interactīus" />
       </div>
       <div className="lockup" data-measure={measure}>
-        <h1>{inline(keepCompounds(slide.title))}</h1>
+        <h1>{inline(typesetHeadline(slide.title))}</h1>
         {slide.subtitle && <div className="sub">{inline(slide.subtitle)}</div>}
       </div>
       {/* The client's uploaded logo stands in for the name chip; without one, the name as before.
