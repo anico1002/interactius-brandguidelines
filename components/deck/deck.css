@@ -43,12 +43,14 @@
 
 /* Brand emphasis (`/ palabra /`). Was emitting a .emph span with no rule anywhere in the repo, so
    the highlight rendered identical to its surroundings — only the slashes showed.
-   Light base, Regular emphasis — the pair lib/tokens.ts asks for ("uso preferente de pesos Light y
-   Regular para destacados"), so display serif sits at 300 and the highlight steps to 400. Medium
-   over Regular was tried first and read as no change at all.
+   Medium over the Light the display text sits at — two steps, which is what it takes to read.
+   Medium over Regular was tried first and read as nothing: the same step lands differently
+   depending on the weight underneath it, and Light is what makes one visible.
+   ⚠️ 500 on serif is outside lib/tokens.ts (300/400). Alberto's call, taken with the evidence in
+   hand — pending being written into the scale.
    The corporate site strokes the glyphs instead (`-webkit-text-stroke: 0.6px`) because an outline
    can animate continuously while a weight jumps — an animation constraint, not a typographic one. */
-.ix-deck .emph{font-weight:400;}
+.ix-deck .emph{font-weight:500;}
 
 /* **negrita** inside serif. `strong` is 600 for mono, where the brand sanctions it and it is the
    only way to carry weight in a monospaced face. On serif that same 600 jumps three steps from the
@@ -73,7 +75,7 @@
    .ix-deck .elreto h2,
    .ix-deck .objetivos .title,
    .ix-deck .roadmapphases .title,
-   .ix-deck .roadmapphases h3) strong{font-weight:400;}
+   .ix-deck .roadmapphases h3) strong{font-weight:500;}
 
 /* Viewer mode (shared client link): hide all site chrome, only the deck shows. */
 body.ix-viewer aside, body.ix-viewer header, body.ix-viewer #menu-overlay{display:none !important;}
