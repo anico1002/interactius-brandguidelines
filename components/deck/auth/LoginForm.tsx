@@ -1,0 +1,63 @@
+'use client';
+import { useState, type FormEvent } from 'react';
+import { supabaseBrowser } from '@/lib/supabase/client';
+import * as s from './authUi';
+
+/* Only allow same-app redirects into the Deck Maker (avoid open-redirect). */
+function safeNext(raw: string | null): string {
+  if (raw && raw.startsWith('/deck') && !raw.startsWith('//')) return raw;
+  return '/deck';
+}
+
+export function LoginForm({ next }: { next: string | null }) {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+
+  async function onSubmit(e: FormEvent) {
+    e.preventDefault();
+    setError(null);
+    setBusy(true);
+    const { error } = await supabaseBrowser().auth.signInWithPassword({ email: email.trim(), password });
+    if (error) {
+      setBusy(false);
+      setError('Email o contraseña incorrectos.');
+      return;
+    }
+    // Full navigation so the fresh session cookie reaches the middleware gate.
+    window.location.assign(safeNext(next));
+  }
+
+  return (
+    <form onSubmit={onSubmit} style={s.card}>
+      <div style={s.title}>Iniciar sesión</div>
+      <div style={s.subtitle}>Acceso al generador de presentaciones.</div>
+
+      {error && <div style={s.errorBox}>{error}</div>}
+
+      <div style={s.field}>
+        <label style={s.label} htmlFor="email">Email</label>
+        <input
+          id="email" type="email" autoComplete="username" required
+          value={email} onChange={(e) => setEmail(e.target.value)} style={s.input}
+        />
+      </div>
+      <div style={s.field}>
+        <label style={s.label} htmlFor="password">Contraseña</label>
+        <input
+          id="password" type="password" autoComplete="current-password" required
+          value={password} onChange={(e) => setPassword(e.target.value)} style={s.input}
+        />
+      </div>
+
+      <button type="submit" disabled={busy} style={busy ? s.submitBusy : s.submit}>
+        {busy ? 'Entrando…' : 'Entrar'}
+      </button>
+
+      <div style={s.footer}>
+        <a href="/deck/forgot" style={s.link}>¿Olvidaste tu contraseña?</a>
+      </div>
+    </form>
+  );
+}

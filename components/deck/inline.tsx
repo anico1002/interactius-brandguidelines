@@ -1,14 +1,33 @@
 import { Fragment } from 'react';
 
-/* Inline markdown for deck text: **negrita** → <strong>.
-   Deterministic and injection-safe (we only emit <strong>, never raw HTML).
-   Returns the plain string untouched when there's nothing to format. */
+/* Inline markdown for deck text: **negrita** → <strong>, and ` / palabra / ` → the brand
+   emphasis span (keeps the slashes, as in the manifesto title). Deterministic and
+   injection-safe (we only emit <strong>/<span>, never raw HTML). Returns the plain string
+   untouched when there's nothing to format. */
+
+// Slash emphasis: `/ word /` delimited by slash-space … space-slash. The surrounding spaces
+// stay outside the match so they're preserved; ordinary slashes (URLs, paths, "co-CEO / x")
+// never match because they lack the paired `/ … /` shape.
+const EMPH = /\/ (.+?) \//g;
+
+function emphasize(text: string, keyBase: string): React.ReactNode {
+  if (!text.includes('/ ')) return text;
+  const parts = text.split(EMPH);
+  if (parts.length === 1) return text;
+  return parts.map((part, i) =>
+    i % 2 === 1
+      ? <span className="emph" key={`${keyBase}-e${i}`}>/ {part} /</span>
+      : <Fragment key={`${keyBase}-f${i}`}>{part}</Fragment>
+  );
+}
+
 export function inline(text: string): React.ReactNode {
-  if (!text || !text.includes('**')) return text;
+  if (!text) return text;
+  if (!text.includes('**') && !text.includes('/ ')) return text;
   const parts = text.split(/\*\*(.+?)\*\*/g);
   return parts.map((part, i) =>
     i % 2 === 1
       ? <strong key={i}>{part}</strong>
-      : <Fragment key={i}>{part}</Fragment>
+      : <Fragment key={i}>{emphasize(part, String(i))}</Fragment>
   );
 }

@@ -100,8 +100,11 @@ export function MenuOverlay() {
                 );
               })}
               <li className="mt-3 pt-3 border-t border-dark/10">
-                <Link
-                  href="/presentaciones"
+                {/* Deck Maker opens in a new tab, outside the brand chrome. */}
+                <a
+                  href="/deck"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   onClick={() => close()}
                   className="group w-full flex items-baseline gap-3 py-[8px]
                              text-left font-mono text-[13px] leading-snug
@@ -110,7 +113,8 @@ export function MenuOverlay() {
                 >
                   <span className="text-[10px] text-dark/35" aria-hidden>→</span>
                   <span className="flex-1">{PRESENTACIONES[locale]}</span>
-                </Link>
+                  <span aria-hidden className="text-[10px] text-dark/35">↗</span>
+                </a>
               </li>
               </ul>
             </nav>

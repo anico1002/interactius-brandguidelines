@@ -2,6 +2,15 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { parseGantt } from '../blocks.ts';
 
+test('the axis unit comes from the count line key (default Semanas)', () => {
+  assert.equal(parseGantt('semanas: 8\nFase: 1').unit, 'Semanas');
+  assert.equal(parseGantt('Fase: 1').unit, 'Semanas'); // default when no axis line
+  const meses = parseGantt('meses: 6\nDescubrir: 1-2');
+  assert.equal(meses.unit, 'Meses');
+  assert.equal(meses.weeks, 6);
+  assert.equal(parseGantt('días: 30').unit, 'Días');
+});
+
 test('parses weeks, rows with ranges, and milestones', () => {
   const g = parseGantt('semanas: 8\nDiagnóstico: 1\nDiscovery: 2-3\nVolumetría: 4-8\nhitos cliente: 1, 3, 5, 8');
   assert.equal(g.weeks, 8);

@@ -18,17 +18,24 @@ test('compiles the sample deck to the expected slide kinds (no injection)', () =
   assert.equal('theme' in bullets && bullets.theme, 'light');
 });
 
-test('commercial type injects the 3 intro pages after the cover', () => {
+test('no slides are injected: slides are 1:1 with the markdown blocks', () => {
+  // commercial no longer differs from generica — nothing is auto-inserted.
   const deck = compileDeck(md, 'comercial');
-  const kinds = deck.slides.map((s) => s.kind);
-  assert.deepEqual(kinds.slice(0, 4), ['cover', 'manifesto', 'team', 'clients']);
-  assert.equal(kinds[kinds.length - 1], 'closing');
+  assert.deepEqual(
+    deck.slides.map((s) => s.kind),
+    ['cover', 'elreto', 'bullets', 'columns', 'gantt', 'closing'],
+  );
+  assert.deepEqual(deck.provenance, [0, 1, 2, 3, 4, 5]);
 });
 
-test('a Presupuesto section becomes budget and is always followed by acceptance', () => {
+test('a Presupuesto section is NOT followed by an auto acceptance page', () => {
   const deck = compileDeck('# P\n> cliente: X\n\n---\n\n## Presupuesto\n\n---\n\n# Gracias', 'comercial');
   const kinds = deck.slides.map((s) => s.kind);
-  const bi = kinds.indexOf('budget');
-  assert.ok(bi >= 0);
-  assert.equal(kinds[bi + 1], 'acceptance');
+  assert.deepEqual(kinds, ['cover', 'budget', 'closing']);
+});
+
+test('brand pages are produced by explicit [ly: …] markers', () => {
+  const md2 = '[ly: manifiesto]\n# Hola\n\n---\n\n[ly: equipo]\nUn párrafo.\n\n---\n\n[ly: clientes]\n\n---\n\n[ly: aceptacion]\nnombre: Ana';
+  const deck = compileDeck(md2, 'comercial');
+  assert.deepEqual(deck.slides.map((s) => s.kind), ['manifesto', 'team', 'clients', 'acceptance']);
 });

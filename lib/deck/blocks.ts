@@ -38,14 +38,18 @@ function formatEUR(n: number, decimals: boolean): string {
   return `${body} €`;
 }
 
-export function parseBudget(tokens: Token[]): { items: BudgetItem[]; total: string; conditions: string[] } {
+export function parseBudget(tokens: Token[]): { items: BudgetItem[]; total: string; conditions: string[]; conditionsLabel?: string } {
   // Conditions: optional list under a "### Condiciones" sub-heading; the first
   // remaining list holds the line items.
   let condIdx = -1;
   for (let i = 0; i < tokens.length; i++) {
     const t = tokens[i];
-    if (t.t === 'h' && t.level >= 3 && /condicion/i.test(t.text)) { condIdx = i; break; }
+    // es: condiciones · ca: condicions · en: conditions
+    if (t.t === 'h' && t.level >= 3 && /condicion|condition/i.test(t.text)) { condIdx = i; break; }
   }
+  // The "### Condiciones" heading text is rendered as the section label (editable/translatable).
+  const condHead = condIdx >= 0 ? tokens[condIdx] : undefined;
+  const conditionsLabel = condHead && condHead.t === 'h' ? condHead.text : undefined;
   const condList = condIdx >= 0
     ? (tokens.slice(condIdx + 1).find((t) => t.t === 'ul') as Extract<Token, { t: 'ul' }> | undefined)
     : undefined;
@@ -60,34 +64,50 @@ export function parseBudget(tokens: Token[]): { items: BudgetItem[]; total: stri
   const items = raw.filter((it) => it !== explicitTotal);
 
   if (items.length === 0) {
-    return { items: DEFAULT_BUDGET_ITEMS, total: '11.076 €', conditions };
+    return { items: DEFAULT_BUDGET_ITEMS, total: '11.076 €', conditions, conditionsLabel };
   }
 
   const decimals = items.some((it) => /,/.test(it.amount));
   const sum = items.reduce((acc, it) => acc + amountToNumber(it.amount), 0);
   const total = explicitTotal?.amount || formatEUR(sum, decimals);
-  return { items, total, conditions };
+  return { items, total, conditions, conditionsLabel };
 }
 
-export function parseGantt(body: string): { weeks: number; rows: GanttRow[]; milestones: number[] } {
+// The axis line sets the column count AND its unit label (the word the user typed).
+const UNIT_KEYS = new Set([
+  // es
+  'semanas', 'semana', 'meses', 'mes', 'días', 'dias', 'día', 'dia',
+  // ca
+  'setmanes', 'setmana', 'mesos', 'dies',
+  // en
+  'weeks', 'week', 'months', 'month', 'days', 'day',
+]);
+const capitalize = (w: string) => (w ? w.charAt(0).toUpperCase() + w.slice(1).toLowerCase() : w);
+
+export function parseGantt(body: string): { weeks: number; unit: string; rows: GanttRow[]; milestones: number[]; milestoneLabel?: string } {
   let weeks = 8;
+  let unit = 'Semanas';
   const rows: GanttRow[] = [];
   let milestones: number[] = [];
+  let milestoneLabel: string | undefined;
   for (const raw of body.split('\n')) {
     const line = raw.trim();
     if (!line) continue;
     const [keyPart, valPart] = splitOnce(line, ':');
     const key = keyPart.trim().toLowerCase();
     const val = (valPart ?? '').trim();
-    if (key === 'semanas') { weeks = parseInt(val, 10) || weeks; continue; }
-    if (key.startsWith('hitos')) {
+    if (UNIT_KEYS.has(key)) { weeks = parseInt(val, 10) || weeks; unit = capitalize(keyPart.trim()); continue; }
+    if (key.startsWith('hitos') || key.startsWith('milestone')) {
       milestones = val.split(',').map((n) => parseInt(n.trim(), 10)).filter((n) => !isNaN(n));
+      // The word after `hitos`/`milestones` is the milestone row label (e.g. `hitos cliente:`).
+      const label = keyPart.trim().replace(/^(hitos|milestones?)\s*/i, '').trim();
+      if (label) milestoneLabel = capitalize(label);
       continue;
     }
     const [start, end] = parseRange(val);
     rows.push({ label: keyPart.trim(), start, end, accent: ACCENTS[rows.length % ACCENTS.length] });
   }
-  return { weeks, rows, milestones };
+  return { weeks, unit, rows, milestones, milestoneLabel };
 }
 
 function splitOnce(s: string, sep: string): [string, string | undefined] {

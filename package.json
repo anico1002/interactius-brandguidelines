@@ -12,9 +12,12 @@
     "build:ai-kit": "node scripts/build-ai-kit.mjs"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.102.0",
     "@mdx-js/loader": "^3.1.0",
     "@mdx-js/react": "^3.1.0",
     "@next/mdx": "^15.1.0",
+    "@supabase/ssr": "^0.12.3",
+    "@supabase/supabase-js": "^2.108.2",
     "framer-motion": "^11.15.0",
     "gray-matter": "^4.0.3",
     "next": "^15.1.0",

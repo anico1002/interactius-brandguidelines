@@ -1,123 +1,151 @@
-import type { Slide, SlideSource, Token, Theme, Column } from './types.ts';
+import type { Slide, SlideSource, Column, Signer, RichNode, Token } from './types.ts';
 import { themeFor } from './theme.ts';
 import { parseGantt, parseBudget } from './blocks.ts';
+import { LAYOUT_MAP } from './catalog.ts';
+import { parseBlock, type BlockModel } from './model.ts';
 
-const find = <T extends Token['t']>(tokens: Token[], t: T) =>
-  tokens.find((x) => x.t === t) as Extract<Token, { t: T }> | undefined;
-const heading = (tokens: Token[]) =>
-  tokens.find((x) => x.t === 'h') as Extract<Token, { t: 'h' }> | undefined;
+// Detection (fallback when there is no explicit [ly:] marker) — returns only the kind.
+// Reads the canonical model; `headings[0]` mirrors the old "first heading" signal.
+function detectKind(m: BlockModel): Slide['kind'] {
+  const h = m.headings[0];
+  const eb = m.eyebrow?.trim().toUpperCase();
+  const hk = m.title.trim().toUpperCase();
 
-function extractPhases(tokens: Token[]): { name: string; body: string; items: string[] }[] {
-  const phases: { name: string; body: string; items: string[] }[] = [];
-  for (let i = 0; i < tokens.length; i++) {
-    const t = tokens[i];
-    if (t.t === 'h' && t.level >= 3) {
-      let body = '';
-      const items: string[] = [];
-      for (let j = i + 1; j < tokens.length; j++) {
-        const u = tokens[j];
-        if (u.t === 'h' && u.level >= 3) break;
-        if (u.t === 'p' && !body) body = u.text;
-        if (u.t === 'ul') items.push(...u.items);
-      }
-      phases.push({ name: t.text, body, items });
-    }
-  }
-  return phases;
+  if (m.fence && m.fence.lang === 'gantt') return 'gantt';
+
+  if (eb === 'CONTEXTO') return 'contexto';
+  if (eb === 'EL RETO') return 'elreto';
+  if (hk === 'OBJETIVOS') return 'objetivos';
+  if (hk === 'ROADMAP') return 'roadmapPhases';
+  if (hk === 'PRESUPUESTO') return 'budget';
+
+  if (m.isFirst && h && h.level === 1 && (m.body.length > 0 || m.client || m.image || !m.eyebrow)) return 'cover';
+  if (m.isLast && h && (/gracias/i.test(m.title) || m.body.some((p) => /www\.|https?:/i.test(p)))) return 'closing';
+  if (m.eyebrow && h && !m.items && m.sections.length === 0 && !m.image) return 'statement';
+  if (h && m.sections.length >= 2) return 'columns';
+  if (h && m.items) return 'bullets';
+  if (h && m.image) return 'split';
+  return 'paragraph';
 }
 
-function overrideTheme(text: string): { clean: string; theme: Theme | undefined } {
-  const m = text.match(/\s*\{(oscuro|dark|claro|light)\}\s*$/i);
-  if (!m) return { clean: text, theme: undefined };
-  const t = m[1].toLowerCase();
-  return { clean: text.replace(m[0], '').trim(), theme: t === 'oscuro' || t === 'dark' ? 'dark' : 'light' };
+// Ordered body flow for the free-text layouts (paragraph/split/contexto): paragraphs and bullet
+// lists (`- …`) kept in document order, so a `-` list can sit between paragraphs. Quotes are
+// folded into paragraphs (kept as plain body text, as before); headings/eyebrows are consumed as
+// title/eyebrow elsewhere and excluded here.
+function bodyFlow(tokens: Token[]): RichNode[] {
+  const out: RichNode[] = [];
+  for (const tk of tokens) {
+    if (tk.t === 'p' || tk.t === 'quote') out.push({ t: 'p', text: tk.text });
+    else if (tk.t === 'ul') out.push({ t: 'ul', items: tk.items });
+  }
+  return out;
+}
+
+// Plain-text length of a body flow (paragraphs + list items) — used for contexto's long/short size.
+const flowText = (nodes: RichNode[]): string =>
+  nodes.map((n) => (n.t === 'ul' ? n.items.join(' ') : n.t === 'p' || n.t === 'quote' || n.t === 'h' || n.t === 'caps' ? n.text : '')).join(' ');
+
+// Construct the typed slide for a kind by mapping the canonical model into the layout's slots.
+// Robust to missing roles (explicit markers may not match the content).
+function buildSlide(m: BlockModel, kind: Slide['kind'], marker?: string): Slide {
+  const T = (k: Slide['kind']) => themeFor(k, m.themeOverride);
+  switch (kind) {
+    case 'cover':
+      return { kind, theme: T('cover'), title: m.title, subtitle: m.subtitle ?? m.body[0], eyebrow: m.eyebrow, client: m.client, image: m.image };
+    case 'closing':
+      return { kind, theme: T('closing'), title: m.title || 'Gracias', url: m.body.find((p) => /www\.|https?:/i.test(p)) };
+    case 'statement':
+      return { kind, theme: T('statement'), eyebrow: m.eyebrow, title: m.title };
+    case 'paragraph': {
+      // Body is an ordered flow of paragraphs and `-` lists (in document order), falling back to
+      // the title when empty.
+      const flow = bodyFlow(m.tokens);
+      return { kind, theme: T('paragraph'), eyebrow: m.eyebrow, body: flow.length ? flow : [{ t: 'p', text: m.title }] };
+    }
+    case 'bullets':
+      return { kind, theme: T('bullets'), title: m.title, items: m.items ?? [] };
+    case 'columns': {
+      const columns: Column[] = m.sections.map((s, i) => ({ label: String(i + 1).padStart(2, '0'), heading: s.heading, body: s.body[0] ?? '' }));
+      return { kind, theme: T('columns'), title: m.title, columns };
+    }
+    case 'split': {
+      // Default (and split-der) keeps the image-right layout; split-izq mirrors it. The text
+      // column renders an ordered flow of paragraphs and `-` lists beside the image.
+      const flow = bodyFlow(m.tokens);
+      return { kind, theme: T('split'), eyebrow: m.eyebrow, title: m.title, body: flow.length ? flow : undefined, image: m.image, imageSide: marker === 'split-izq' ? 'left' : 'right' };
+    }
+    case 'gantt': {
+      // The spec can live in a ```gantt fence``` OR as plain `clave: valor` lines in the block.
+      const spec = m.fence?.body ?? [...m.body, ...(m.items ?? [])].filter((l) => l.includes(':')).join('\n');
+      const g = parseGantt(spec);
+      // Prose vs spec: with a fence, every paragraph is prose (the spec lives in the fence);
+      // without one, the spec lines carry a `clave: valor` colon, so the paragraphs WITHOUT a
+      // colon are free prose — the first is the subtitle (normal text below the title), the
+      // second the bottom-right note.
+      const prose = m.fence ? m.body : m.body.filter((l) => !l.includes(':'));
+      return { kind, theme: T('gantt'), title: m.title || 'Roadmap', subtitle: prose[0], weeks: g.weeks, unit: g.unit, rows: g.rows, milestones: g.milestones, milestoneLabel: g.milestoneLabel, note: prose[1] };
+    }
+    case 'budget':
+      return { kind, theme: 'light', title: m.title || undefined, ...parseBudget(m.tokens) };
+    case 'contexto': {
+      // Ordered flow of paragraphs and `-` lists; long/short sizing keys off the total text length.
+      const flow = bodyFlow(m.tokens);
+      return { kind, theme: T('contexto'), eyebrow: m.eyebrow, body: flow, long: flowText(flow).length >= 150 };
+    }
+    case 'elreto':
+      return { kind, theme: T('elreto'), eyebrow: m.eyebrow, title: m.title, image: m.image };
+    case 'objetivos':
+      return { kind, theme: T('objetivos'), title: m.title, items: m.items ?? [], image: m.image };
+    case 'roadmapPhases': {
+      // Per phase: first paragraph = body, a second paragraph = the tasks header (e.g. "¿Qué
+      // hacemos?"), so the header is authored in the markdown and translates. The "Fase" label
+      // above each phase is authored via a `fase: …` line (defaults to "Fase" in the component),
+      // so it can be changed/translated; that meta line is kept out of the subtitle.
+      const subtitle = m.subtitle ?? m.body.find((p) => !/^[\p{L} ]+:\s*.+$/u.test(p));
+      return { kind, theme: T('roadmapPhases'), title: m.title, subtitle, faseLabel: m.meta['fase'], phases: m.sections.map((s) => ({ name: s.heading, body: s.body[0] ?? '', itemsHeader: s.body[1], items: s.items })) };
+    }
+    case 'manifesto':
+      return { kind, theme: T('manifesto'), title: m.title || m.body[0], subtitle: m.subtitle ?? (m.hasHeading ? m.body[0] : m.body[1]) };
+    case 'team': {
+      // The team text column renders a free-form flow (paragraphs/lists/quotes/sub-headings/
+      // eyebrows) in document order, so every formatting element is supported.
+      const content: RichNode[] = m.tokens.flatMap((tk): RichNode[] => {
+        if (tk.t === 'p') return [{ t: 'p', text: tk.text }];
+        if (tk.t === 'ul') return [{ t: 'ul', items: tk.items }];
+        if (tk.t === 'quote') return [{ t: 'quote', text: tk.text }];
+        if (tk.t === 'h') return [{ t: 'h', level: tk.level, text: tk.text }];
+        if (tk.t === 'caps') return [{ t: 'caps', text: tk.text }];
+        return [];
+      });
+      return { kind, theme: T('team'), content: content.length ? content : undefined, image: m.image };
+    }
+    case 'clients':
+      return { kind, theme: T('clients'), image: m.image };
+    case 'acceptance': {
+      const signer: Signer = { name: m.meta['nombre'], role: m.meta['cargo'], company: m.meta['empresa'], nif: m.meta['nif'], address: m.meta['direccion'] };
+      const hasSigner = Object.values(signer).some(Boolean);
+      return {
+        kind, theme: 'light',
+        title: m.title || undefined,
+        signer: hasSigner ? signer : undefined,
+        // The note is the `aviso:` line or, failing that, the first free paragraph — so a note
+        // written as plain text (not a key:value) is captured and translated.
+        note: m.meta['aviso'] ?? m.body[0],
+        cta: m.meta['cta'],
+        signatureImage: m.image,
+      };
+    }
+  }
+}
+
+/* The resolved kind for a block: explicit [ly:] marker wins, else inference. */
+export function blockKind(m: BlockModel): Slide['kind'] {
+  return (m.marker && LAYOUT_MAP[m.marker]) || detectKind(m);
 }
 
 export function classify(src: SlideSource, position: number, total: number): Slide {
-  const tokens = src.tokens;
-  const h = heading(tokens);
-  const caps = find(tokens, 'caps');
-  const quote = find(tokens, 'quote');
-  const image = find(tokens, 'image');
-  const fence = find(tokens, 'fence');
-  const list = find(tokens, 'ul');
-  const subs = tokens.filter((x) => x.t === 'h' && x.level >= 3) as Extract<Token, { t: 'h' }>[];
-  const paras = tokens.filter((x) => x.t === 'p') as Extract<Token, { t: 'p' }>[];
-
-  const ov = overrideTheme(h?.text ?? '');
-  const title = ov.clean;
-  const T = (kind: Slide['kind']) => themeFor(kind, ov.theme);
-
-  const isFirst = position === 0;
-  const isLast = position === total - 1;
-  const clientLine = quote?.text.match(/^cliente:\s*(.+)$/i);
-
-  // 1. Explicit data blocks (gantt fence wins, incl. "Roadmap" + gantt)
-  if (fence && fence.lang === 'gantt') {
-    const g = parseGantt(fence.body);
-    return { kind: 'gantt', theme: T('gantt'), title: title || 'Roadmap', subtitle: paras[0]?.text, weeks: g.weeks, rows: g.rows, milestones: g.milestones, note: paras[1]?.text };
-  }
-
-  // 1b. Keyword-mapped commercial sections (ref slides 22/29/31/32/35 + Presupuesto)
-  const eb = caps?.text.trim().toUpperCase();
-  const hk = title.trim().toUpperCase();
-  if (eb === 'CONTEXTO') {
-    const body = paras.map((p) => p.text).join(' ') || quote?.text || '';
-    return { kind: 'contexto', theme: T('contexto'), body, long: body.length >= 150 };
-  }
-  if (eb === 'EL RETO') {
-    return { kind: 'elreto', theme: T('elreto'), title, image: image ? { src: image.src, alt: image.alt } : undefined };
-  }
-  if (hk === 'OBJETIVOS') {
-    return { kind: 'objetivos', theme: T('objetivos'), title, items: list?.items ?? [], image: image ? { src: image.src, alt: image.alt } : undefined };
-  }
-  if (hk === 'ROADMAP') {
-    return { kind: 'roadmapPhases', theme: T('roadmapPhases'), title, subtitle: paras[0]?.text, phases: extractPhases(tokens) };
-  }
-  if (hk === 'PRESUPUESTO') {
-    return { kind: 'budget', theme: 'light', ...parseBudget(tokens) };
-  }
-
-  // 2. Cover: first slide with an H1 that carries a subtitle/client/image, or simply no caps eyebrow.
-  if (isFirst && h && h.level === 1 && (paras.length > 0 || clientLine || image || !caps)) {
-    return { kind: 'cover', theme: T('cover'), title, subtitle: paras[0]?.text, eyebrow: caps?.text, client: clientLine?.[1]?.trim(), image: image ? { src: image.src, alt: image.alt } : undefined };
-  }
-
-  // 3. Closing: last slide titled Gracias, or H1 with a url-looking line.
-  if (isLast && h && (/gracias/i.test(title) || paras.some((p) => /www\.|https?:/i.test(p.text)))) {
-    const url = paras.find((p) => /www\.|https?:/i.test(p.text))?.text;
-    return { kind: 'closing', theme: T('closing'), title: title || 'Gracias', url };
-  }
-
-  // 4. Statement: caps eyebrow + heading, nothing structured.
-  if (caps && h && !list && subs.length === 0 && !image) {
-    return { kind: 'statement', theme: T('statement'), eyebrow: caps.text, title };
-  }
-
-  // 5. Columns: heading + 2+ subheads.
-  if (h && subs.length >= 2) {
-    const columns: Column[] = subs.map((sub, i) => {
-      const idx = tokens.indexOf(sub);
-      const next = tokens[idx + 1];
-      const body = next && next.t === 'p' ? next.text : '';
-      return { label: String(i + 1).padStart(2, '0'), heading: sub.text, body };
-    });
-    return { kind: 'columns', theme: T('columns'), title, columns };
-  }
-
-  // 6. Bullets: heading + list.
-  if (h && list) {
-    return { kind: 'bullets', theme: T('bullets'), title, items: list.items };
-  }
-
-  // 7. Image + text split.
-  if (h && image) {
-    return { kind: 'split', theme: T('split'), eyebrow: caps?.text, title, body: paras[0]?.text, image: { src: image.src, alt: image.alt } };
-  }
-
-  // 8. Paragraph fallback (also covers "contexto": heading + lead paragraph).
-  const body = quote?.text ?? paras[0]?.text ?? title;
-  return { kind: 'paragraph', theme: T('paragraph'), eyebrow: caps?.text, body };
+  const m = parseBlock(src.tokens, position, total);
+  return buildSlide(m, blockKind(m), m.marker);
 }
 
 export function compile(_md: string, sources: SlideSource[]): Slide[] {

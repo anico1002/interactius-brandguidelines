@@ -7,20 +7,24 @@ import type { BudgetItem } from '@/lib/deck';
    an empty block falls back to the reference example (see lib/deck/blocks.ts). */
 export function Budget({
   page,
+  title,
   items,
   total,
   conditions,
+  conditionsLabel,
 }: {
   page: number;
+  title?: string;
   items: BudgetItem[];
   total: string;
   conditions: string[];
+  conditionsLabel?: string;
 }) {
   return (
     <div className="frame theme-light budget">
       <div className="whitehalf" />
       <Chrome page={page} />
-      <div className="title">Presupuesto</div>
+      <div className="title">{inline(title ?? 'Presupuesto')}</div>
       <div className="table">
         {items.map((it, i) => (
           <div className="row" key={`${it.label}-${i}`}>
@@ -34,7 +38,7 @@ export function Budget({
         </div>
       </div>
       <div className="cond">
-        <h3>Condiciones</h3>
+        <h3>{conditionsLabel ?? 'Condiciones'}</h3>
         {conditions.map((c, i) => (
           <div className="item" key={i}>
             <div className="dia">◆</div>

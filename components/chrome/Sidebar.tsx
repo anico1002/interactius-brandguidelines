@@ -16,7 +16,6 @@ export function Sidebar() {
   const locale = useLocale() as Locale;
   const pathname = usePathname();
   const onHome = pathname === '/';
-  const onDeck = pathname === '/presentaciones';
   const [active, setActive] = useState<string>('intro');
 
   useEffect(() => {
@@ -100,24 +99,20 @@ export function Sidebar() {
             );
           })}
           <li className="mt-3 pt-3 border-t border-dark/10">
-            <Link
-              href="/presentaciones"
-              className={`group w-full flex items-baseline gap-3 py-[7px]
-                          text-left font-mono text-[12px] leading-snug
-                          transition-colors duration-300 ease-expo
-                          ${onDeck ? 'text-dark' : 'text-dark/55 hover:text-dark'}`}
-              aria-current={onDeck ? 'page' : undefined}
+            {/* Deck Maker is a standalone tool: open it in a new tab, outside the brand chrome. */}
+            <a
+              href="/deck"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group w-full flex items-baseline gap-3 py-[7px]
+                         text-left font-mono text-[12px] leading-snug
+                         transition-colors duration-300 ease-expo
+                         text-dark/55 hover:text-dark"
             >
-              <span className={`text-[10px] ${onDeck ? 'text-dark/70' : 'text-dark/35'}`} aria-hidden>
-                →
-              </span>
+              <span className="text-[10px] text-dark/35" aria-hidden>→</span>
               <span className="flex-1">{PRESENTACIONES[locale]}</span>
-              <span
-                aria-hidden
-                className={`block w-1 h-1 rounded-full bg-dark transition-opacity duration-300 ease-expo
-                            ${onDeck ? 'opacity-100' : 'opacity-0'}`}
-              />
-            </Link>
+              <span aria-hidden className="text-[10px] text-dark/35 group-hover:text-dark/70 transition-colors duration-300 ease-expo">↗</span>
+            </a>
           </li>
         </ul>
       </nav>

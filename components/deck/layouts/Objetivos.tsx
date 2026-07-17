@@ -8,7 +8,7 @@ export function Objetivos({ slide, page }: { slide: Extract<Slide, { kind: 'obje
   return (
     <div className={`frame theme-${slide.theme} objetivos`}>
       <Chrome page={page} />
-      <div className="title">{slide.title}</div>
+      <div className="title">{inline(slide.title)}</div>
       <ol className="list">
         {slide.items.map((it, i) => (
           <li key={i}>
@@ -17,7 +17,7 @@ export function Objetivos({ slide, page }: { slide: Extract<Slide, { kind: 'obje
           </li>
         ))}
       </ol>
-      <ImageSlot image={slide.image} className="photo" />
+      <ImageSlot image={slide.image} className="photo" slideIndex={page - 1} />
     </div>
   );
 }
