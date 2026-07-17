@@ -9,15 +9,15 @@ import { LayoutGallery } from '@/components/deck/studio/LayoutGallery';
    Lives outside /deck so the Supabase middleware never runs, which makes the layout skeletons and
    the gallery testable without project credentials. Renders the deck you get by pasting all 18
    snippets, in catalog order. Delete once /deck runs locally. */
-/* Stand-in for a client's uploaded logo: the real one lives in Supabase Storage, out of reach
-   locally, and any transparent asset proves the cover slot the same way. */
-const FAKE_CLIENT_LOGO = '/logo/isotipo-negativo.svg';
-
 export default function Lab() {
   const [open, setOpen] = useState(false);
-  const [logo, setLogo] = useState(false);
+  const [logo, setLogo] = useState<string | null>(null);
   const md = useMemo(() => LAYOUT_CATALOG.map(layoutSnippet).join('\n'), []);
   const deck = useMemo(() => compileDeck(md), [md]);
+
+  /* Real client logos live in Supabase Storage, out of reach locally: read the picked file
+     straight from disk so any logo can be tried on the cover without uploading anything. */
+  const pickLogo = (file?: File) => setLogo(file ? URL.createObjectURL(file) : null);
 
   return (
     <div style={{ display: 'grid', gridTemplateRows: 'auto 1fr', height: '100vh' }}>
@@ -26,16 +26,19 @@ export default function Lab() {
         <button onClick={() => setOpen(true)} style={{ font: '500 12px/1 monospace', padding: '8px 12px', cursor: 'pointer' }}>
           Abrir galería de layouts
         </button>
-        <label style={{ font: '400 11px/1.4 monospace', display: 'flex', gap: 6, alignItems: 'center', cursor: 'pointer' }}>
-          <input type="checkbox" checked={logo} onChange={(e) => setLogo(e.target.checked)} />
-          Logo de cliente en portada
+        <label style={{ font: '400 11px/1.4 monospace', display: 'flex', gap: 6, alignItems: 'center' }}>
+          Logo de cliente:
+          <input type="file" accept="image/svg+xml,image/png,image/*" onChange={(e) => pickLogo(e.target.files?.[0])} style={{ font: '400 11px monospace' }} />
         </label>
+        {logo && (
+          <button onClick={() => setLogo(null)} style={{ font: '400 11px monospace', cursor: 'pointer' }}>Quitar</button>
+        )}
         <span style={{ font: '400 11px/1.4 monospace', color: '#75706B' }}>
-          Clica un layout → se copia la plantilla. Pégala donde quieras para comprobarla.
+          Clica un layout → se copia la plantilla.
         </span>
       </header>
       <div style={{ minHeight: 0 }}>
-        <DeckRenderer deck={deck} clientLogo={logo ? FAKE_CLIENT_LOGO : null} />
+        <DeckRenderer deck={deck} clientLogo={logo} />
       </div>
       {open && <LayoutGallery onClose={() => setOpen(false)} />}
     </div>

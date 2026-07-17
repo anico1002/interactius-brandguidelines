@@ -102,11 +102,15 @@ body.ix-viewer main{padding:0 !important; margin:0 !important;}
 .ix-deck .cover .sub{margin-top:24px; font:400 12.5px/1.6 var(--mono); color:var(--warm-light); opacity:.72; max-width:440px;}
 .ix-deck .cover .foot{position:absolute; left:var(--ml); bottom:52px; z-index:4; font:400 10px/1 var(--mono); letter-spacing:.06em; color:var(--warm-light); opacity:.62;}
 .ix-deck .cover .foot b{font-weight:500; opacity:1; background:rgba(245,242,237,.14); padding:3px 6px;}
-/* Client logo: takes the name chip's anchor. Box is fixed so any aspect ratio lands in the same
-   spot; `contain` keeps the artwork undistorted inside it. Height is capped at the clearance
-   below .lockup (bottom:108px) — a taller box collides with the subtitle. */
+/* Client logo: takes the name chip's anchor. Sized by height, like the Interactius mark above it
+   (28px), so logos of any proportion carry the same visual weight — a hair smaller, since it is
+   the guest. Width is only a safety cap for very wide artwork.
+   Tinted white rather than detected: the scrim lays 92% ink over this corner (see .scrim), so the
+   backdrop is dark whatever the photo — the same reason the Interactius mark is hardcoded to its
+   negative. The filter also normalises whatever the client sends (colour, positive, negative). */
 .ix-deck .cover .clientlogo{position:absolute; left:var(--ml); bottom:52px; z-index:4;
-  width:250px; max-height:48px; object-fit:contain; object-position:left bottom;}
+  height:24px; width:auto; max-width:250px; object-fit:contain; object-position:left bottom;
+  filter:brightness(0) invert(1);}
 
 /* 2 · Image + text split — image always on the RIGHT (left stays light for the tab) */
 .ix-deck .split .photo{position:absolute; right:0; top:0; bottom:0; width:430px;}
