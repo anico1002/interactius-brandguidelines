@@ -1,5 +1,6 @@
 'use client';
 import { useState } from 'react';
+import type { SaveState } from '../DeckStudio';
 import { btn, colors, toolbarBtn } from './ui';
 
 const MONO = 'var(--font-ibm-plex-mono, monospace)';
@@ -10,6 +11,8 @@ export function DeckToolbar({
   title,
   dirty,
   saving,
+  saveState,
+  hasId,
   onHome,
   onEditTitle,
   onSave,
@@ -22,6 +25,8 @@ export function DeckToolbar({
   title: string | null;
   dirty: boolean;
   saving: boolean;
+  saveState: SaveState;
+  hasId: boolean;
   onHome: () => void;
   onEditTitle: () => void;
   onSave: () => void;
@@ -79,9 +84,7 @@ export function DeckToolbar({
         )}
       </span>
 
-      <button style={{ ...btn, opacity: saving ? 0.6 : 1 }} onClick={onSave} disabled={saving}>
-        {saving ? 'Guardando…' : 'Guardar'}
-      </button>
+      <SaveIndicator dirty={dirty} saving={saving} saveState={saveState} hasId={hasId} onSave={onSave} />
 
       <button style={{ ...toolbarBtn, ...(toneOn ? { background: colors.dark, color: colors.warmLight, borderColor: colors.dark } : {}) }} onClick={onToggleTone}>
         Revisar Tono
@@ -91,5 +94,47 @@ export function DeckToolbar({
 
       <button style={toolbarBtn} onClick={onCopyUrl}>{copied ? 'Copiado ✓' : 'Compartir URL'}</button>
     </div>
+  );
+}
+
+/* The former "Guardar" button, now a save-state indicator. Autosave persists edits once the deck
+   has an id, so the control mostly just reports status; clicking still forces an immediate save
+   (or a retry). A brand-new deck has no id, so it keeps a solid "Guardar" CTA to open the save
+   dialog and create the row. */
+function SaveIndicator({
+  dirty, saving, saveState, hasId, onSave,
+}: {
+  dirty: boolean;
+  saving: boolean;
+  saveState: SaveState;
+  hasId: boolean;
+  onSave: () => void;
+}) {
+  // New deck: the first save is manual — keep the solid call-to-action.
+  if (!hasId) {
+    return (
+      <button style={btn} onClick={onSave} title="Guardar la presentación">Guardar</button>
+    );
+  }
+
+  const label: { text: string; color: string; tip: string } = { text: 'Guardado ✓', color: colors.ash, tip: 'Guardado automático activo' };
+  if (saving) { label.text = 'Guardando…'; }
+  else if (saveState === 'error') { label.text = 'Error · reintentar'; label.color = '#B4402E'; label.tip = 'Reintentar guardado'; }
+  else if (dirty) { label.text = 'Sin guardar'; label.tip = 'Guardar ahora'; }
+
+  return (
+    <button
+      onClick={onSave}
+      disabled={saving}
+      title={label.tip}
+      style={{
+        appearance: 'none', border: '1px solid transparent', background: 'transparent',
+        font: `500 11px/1 ${MONO}`, letterSpacing: '.04em', whiteSpace: 'nowrap',
+        color: label.color, padding: '10px 12px', flexShrink: 0,
+        cursor: saving ? 'default' : 'pointer', opacity: saving ? 0.7 : 1,
+      }}
+    >
+      {label.text}
+    </button>
   );
 }

@@ -39,6 +39,11 @@ const EMPTY_META: DeckMeta = {
 };
 const snap = (md: string, meta: DeckMeta) => JSON.stringify({ md, meta });
 
+// Autosave lifecycle for the toolbar indicator.
+export type SaveState = 'idle' | 'saving' | 'saved' | 'error';
+// Idle time after the last edit before autosave fires.
+const AUTOSAVE_DELAY = 1400;
+
 // Resizable editor panel — drag the divider to widen it, up to half the viewport.
 const ASIDE_MIN = 320;
 const ASIDE_DEFAULT = 420;
@@ -118,7 +123,10 @@ export function DeckStudio({ deckId }: { deckId?: string } = {}) {
   const [modal, setModal] = useState<ModalState>(null);
   const [guard, setGuard] = useState<{ run: () => void; targetName?: string } | null>(null);
   const [toneOn, setToneOn] = useState(false);
-  const [saving, setSaving] = useState(false);
+  const [saveState, setSaveState] = useState<SaveState>('idle');
+  const saving = saveState === 'saving';
+  // Guards against overlapping PATCHes (autosave + manual/share flush racing).
+  const savingRef = useRef(false);
   const [copied, setCopied] = useState(false);
   // Set when Compartir URL / Descargar PDF is clicked on an unsaved deck: the save dialog opens,
   // and the action runs automatically once the deck has an id.
@@ -279,23 +287,62 @@ export function DeckStudio({ deckId }: { deckId?: string } = {}) {
   // Toolbar actions
   const onNew = () => withGuard(() => setModal({ kind: 'new', initial: { type: 'comercial' }, seedMd: '', template: true }));
 
+  // Persist the current md+meta against the saved deck id. Reused by autosave, the
+  // manual Guardar button and the share/PDF flush. No-ops when there's nothing to save
+  // or another PATCH is already in flight (the trailing dirty state re-triggers autosave).
+  const saveNow = async () => {
+    if (!currentDeckId || savingRef.current) return;
+    savingRef.current = true;
+    setSaveState('saving');
+    try {
+      await updateDeck(currentDeckId, { ...meta, md });
+      setSavedSnap(snap(md, meta));
+      setSaveState('saved');
+    } catch (e) {
+      // surface minimally; keep editor state so the user can retry
+      console.error(e);
+      setSaveState('error');
+    } finally {
+      savingRef.current = false;
+    }
+  };
+  // Ref so the debounce timer always calls the latest closure without resetting on every keystroke.
+  const saveNowRef = useRef(saveNow);
+  saveNowRef.current = saveNow;
+
   const onSave = async () => {
     if (!currentDeckId) {
       // Save-as: capture metadata first, keep current md.
       setModal({ kind: 'new', initial: { type: meta.type }, seedMd: md });
       return;
     }
-    setSaving(true);
-    try {
-      await updateDeck(currentDeckId, { ...meta, md });
-      setSavedSnap(snap(md, meta));
-    } catch (e) {
-      // surface minimally; keep editor state
-      console.error(e);
-    } finally {
-      setSaving(false);
-    }
+    await saveNow();
   };
+
+  // Autosave: once the deck has an id, persist edits after a short idle window.
+  useEffect(() => {
+    if (!currentDeckId || !dirty || savingRef.current) return;
+    const t = setTimeout(() => saveNowRef.current(), AUTOSAVE_DELAY);
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [md, meta, currentDeckId, dirty, saveState]);
+
+  // Fade the "Guardado ✓" confirmation back to idle.
+  useEffect(() => {
+    if (saveState !== 'saved') return;
+    const t = setTimeout(() => setSaveState('idle'), 2000);
+    return () => clearTimeout(t);
+  }, [saveState]);
+
+  // Warn on tab close/refresh while a save is still pending or failed. In-app navigation
+  // is already covered by withGuard/ConfirmModal.
+  useEffect(() => {
+    const pending = (dirty && !!currentDeckId) || saveState === 'error';
+    if (!pending) return;
+    const h = (e: BeforeUnloadEvent) => { e.preventDefault(); e.returnValue = ''; };
+    window.addEventListener('beforeunload', h);
+    return () => window.removeEventListener('beforeunload', h);
+  }, [dirty, currentDeckId, saveState]);
 
   const onOpenDeck = (item: DeckListItem) =>
     withGuard(() => router.push(`/deck/${item.id}`), item.commercial_id);
@@ -430,6 +477,8 @@ export function DeckStudio({ deckId }: { deckId?: string } = {}) {
         title={meta.commercial_id || null}
         dirty={dirty}
         saving={saving}
+        saveState={saveState}
+        hasId={!!currentDeckId}
         onHome={onHome}
         onEditTitle={onEditTitle}
         onSave={onSave}
