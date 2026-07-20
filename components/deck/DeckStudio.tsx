@@ -21,11 +21,6 @@ import { TEMPLATES } from '@/lib/deck/templates';
 
 const SAMPLE = TEMPLATES.comercial;
 
-const btn: React.CSSProperties = {
-  appearance: 'none', border: '1px solid #1C1A17', background: '#1C1A17', color: '#F5F2ED',
-  font: '500 11px/1 var(--font-ibm-plex-mono, monospace)', letterSpacing: '.04em', padding: '10px 12px', cursor: 'pointer', flex: 1,
-};
-
 // UTF-8 safe, URL-safe base64 (base64url) — decodes legacy `#view=1&md=…` share links.
 function b64decode(s: string): string {
   let b64 = s.replace(/-/g, '+').replace(/_/g, '/');
@@ -43,6 +38,8 @@ const snap = (md: string, meta: DeckMeta) => JSON.stringify({ md, meta });
 export type SaveState = 'idle' | 'saving' | 'saved' | 'error';
 // Idle time after the last edit before autosave fires.
 const AUTOSAVE_DELAY = 1400;
+// Idle time after the last edit before the live preview recompiles.
+const PREVIEW_DELAY = 250;
 
 // Resizable editor panel — drag the divider to widen it, up to half the viewport.
 const ASIDE_MIN = 320;
@@ -319,6 +316,18 @@ export function DeckStudio({ deckId }: { deckId?: string } = {}) {
     await saveNow();
   };
 
+  // Live preview: recompile the rendered deck shortly after each markdown/type change so edits
+  // are seen in real time (replaces the old manual "Generar" button). Debounced to avoid
+  // recompiling on every keystroke; try/catch keeps the last good preview if a half-typed block
+  // fails to parse.
+  useEffect(() => {
+    const t = setTimeout(() => {
+      try { setDeck(compileDeck(md, meta.type)); }
+      catch (e) { console.error(e); }
+    }, PREVIEW_DELAY);
+    return () => clearTimeout(t);
+  }, [md, meta.type]);
+
   // Autosave: once the deck has an id, persist edits after a short idle window.
   useEffect(() => {
     if (!currentDeckId || !dirty || savingRef.current) return;
@@ -525,10 +534,6 @@ export function DeckStudio({ deckId }: { deckId?: string } = {}) {
             spellCheck={false}
             style={{ flex: 1, minHeight: 0, resize: 'none', padding: 12, border: '1px solid #E0DAD2', background: '#fff', font: '400 12px/1.55 var(--font-ibm-plex-mono, monospace)', color: '#1C1A17' }}
           />
-
-          <div style={{ display: 'flex', gap: 8, flexShrink: 0 }}>
-            <button style={btn} onClick={() => setDeck(compileDeck(md, meta.type))}>Generar</button>
-          </div>
 
           {warnings.length > 0 && (
             <div style={{ flexShrink: 0, maxHeight: 120, overflowY: 'auto', border: '1px solid #E0DAD2', background: '#FBF3E7', padding: '8px 10px' }}>
