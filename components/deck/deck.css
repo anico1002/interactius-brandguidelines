@@ -89,49 +89,10 @@
    .ix-deck .objetivos .title,
    .ix-deck .roadmapphases .title,
    .ix-deck .roadmapphases h3) strong{font-weight:400;}
-/* The brand marks emphasis with slashes, as the corporate site does with `/ change /`. `/ palabra /`
-   carries them in its own text; **negrita** gets them here, so serif has one emphasis mark rather
-   than two. Drawn in CSS, so nobody's markdown changes. */
-:is(.ix-deck .cover h1,
-   .ix-deck .split h2,
-   .ix-deck .statement h2,
-   .ix-deck .bullets .title,
-   .ix-deck .cols .title,
-   .ix-deck .cols .colhd,
-   .ix-deck .gantt .title,
-   .ix-deck .closing h2,
-   .ix-deck .paragraph p,
-   .ix-deck .manifesto h2,
-   .ix-deck .team .txt h3.th,
-   .ix-deck .budget .title,
-   .ix-deck .budget .cond h3,
-   .ix-deck .accept .title,
-   .ix-deck .accept .cta,
-   .ix-deck .contexto p,
-   .ix-deck .elreto h2,
-   .ix-deck .objetivos .title,
-   .ix-deck .roadmapphases .title,
-   .ix-deck .roadmapphases h3) strong::before{content:"/ "; font-weight:300;}
-:is(.ix-deck .cover h1,
-   .ix-deck .split h2,
-   .ix-deck .statement h2,
-   .ix-deck .bullets .title,
-   .ix-deck .cols .title,
-   .ix-deck .cols .colhd,
-   .ix-deck .gantt .title,
-   .ix-deck .closing h2,
-   .ix-deck .paragraph p,
-   .ix-deck .manifesto h2,
-   .ix-deck .team .txt h3.th,
-   .ix-deck .budget .title,
-   .ix-deck .budget .cond h3,
-   .ix-deck .accept .title,
-   .ix-deck .accept .cta,
-   .ix-deck .contexto p,
-   .ix-deck .elreto h2,
-   .ix-deck .objetivos .title,
-   .ix-deck .roadmapphases .title,
-   .ix-deck .roadmapphases h3) strong::after{content:" /"; font-weight:300;}
+/* No automatic slashes around **negrita**: they hurt readability in running serif text. The mark
+   stays available, but as an authoring choice — `/ palabra /` typed in the markdown is literal
+   text and still renders, as the manifesto title does. Emphasis here is carried by weight alone
+   (the Regular-over-Light step above). */
 
 /* Viewer mode (shared client link): hide all site chrome, only the deck shows. */
 body.ix-viewer aside, body.ix-viewer header, body.ix-viewer #menu-overlay{display:none !important;}
@@ -197,6 +158,18 @@ body.ix-viewer main{padding:0 !important; margin:0 !important;}
 .ix-deck .imgslot:hover .imghint{opacity:1;}
 .ix-deck .imgslot .imghint::before{content:"↑"; font-size:12px;}
 
+/* Top-left section heading — ONE role, one leading. These seven are the same thing on seven
+   layouts: serif 300 at --title-section, set left under the top margin. They had drifted to five
+   different values (1, 1.08, 1.12 and — in gantt/objetivos/roadmap, which declared nothing and
+   inherited — 1.5). At one line the difference is invisible, which is why it survived; the day a
+   title wraps, 1.5 opens 66px between lines where its siblings sit at 47.5px.
+   1.08 is the value split/reto/bullets already used, so it wins by practice. Declared once here so
+   a new layout joins the role instead of restarting the drift — do NOT set line-height on these
+   again in the per-layout rules below. Sizes/positions still live with each layout.
+   `.manifesto h2` is deliberately out: it is a brand statement, not a section heading. */
+:is(.ix-deck .bullets, .ix-deck .cols, .ix-deck .gantt, .ix-deck .budget,
+    .ix-deck .accept, .ix-deck .objetivos, .ix-deck .roadmapphases) .title{line-height:1.08;}
+
 /* 1 · Cover */
 .ix-deck .cover .photo{position:absolute; inset:0;}
 .ix-deck .cover .scrim{position:absolute; inset:0; pointer-events:none;
@@ -213,7 +186,7 @@ body.ix-viewer main{padding:0 !important; margin:0 !important;}
    as a block set left: that shape is the identity, and these titles get reused in social posts.
    Lines are worth spending on it. Both stop well short of the 1064px between the margins for the
    same reason: the block never crosses the slide. */
-.ix-deck .cover .lockup{position:absolute; left:var(--ml); bottom:108px; max-width:700px; z-index:4;}
+.ix-deck .cover .lockup{position:absolute; left:var(--ml); bottom:128px; max-width:700px; z-index:4;}
 .ix-deck .cover .lockup[data-measure="long"]{max-width:820px;}
 /* Title of a primary slide: same step as .statement h2 — the type scale calls this `title`. Was a
    hand-set 60px, which is on no step of the scale. */
@@ -224,10 +197,13 @@ body.ix-viewer main{padding:0 !important; margin:0 !important;}
 /* Client logo: takes the name chip's anchor. Sized to a 250x48 box with `contain`, so width leads
    and nothing ever distorts. Matching the Interactius mark's height instead reads as half its
    size — that mark is 217x28, near 8:1, and a chunkier logo at the same height comes out half as
-   long. 48px is the ceiling here: .lockup sits at bottom:108px, leaving 56px of clearance.
+   long. 48px is the ceiling here (see the clearance note below).
    Tinted white rather than detected: the scrim lays 92% ink over this corner (see .scrim), so the
    backdrop is dark whatever the photo — the same reason the Interactius mark is hardcoded to its
-   negative. The filter also normalises whatever the client sends (colour, positive, negative). */
+   negative. The filter also normalises whatever the client sends (colour, positive, negative).
+   Note the clearance is the gap MINUS this box: .lockup at bottom:128px over a logo whose top
+   edge lands at 52+48=100px leaves 28px of air, not 76px. It read as touching at the old 108px,
+   which left 8px. The logo keeps its anchor at 52px, shared with .foot — the text moved up. */
 .ix-deck .cover .clientlogo{position:absolute; left:var(--ml); bottom:52px; z-index:4;
   width:250px; max-height:48px; object-fit:contain; object-position:left bottom;
   filter:brightness(0) invert(1);}
@@ -252,7 +228,7 @@ body.ix-viewer main{padding:0 !important; margin:0 !important;}
 .ix-deck .statement h2{font-family:var(--serif); font-weight:300; font-size:var(--t-title); line-height:1.06; color:var(--warm-light); letter-spacing:-.01em;}
 
 /* 4 · Bullets */
-.ix-deck .bullets .title{position:absolute; left:var(--ml); top:108px; width:360px; font-family:var(--serif); font-weight:300; font-size:var(--title-section); line-height:1.08;}
+.ix-deck .bullets .title{position:absolute; left:var(--ml); top:108px; width:360px; font-family:var(--serif); font-weight:300; font-size:var(--title-section);}
 /* 12px below the title's 108px: the serif cap sits under the top of its box, so the list drops to
    optically line the first bullet up with the heading's first line. */
 .ix-deck .bullets .list{position:absolute; left:560px; top:120px; right:var(--mr);}
@@ -261,7 +237,7 @@ body.ix-viewer main{padding:0 !important; margin:0 !important;}
 .ix-deck .bullets .item .body{max-width:430px;}
 
 /* 5 · Three columns */
-.ix-deck .cols .title{position:absolute; left:var(--ml); top:88px; font-family:var(--serif); font-weight:300; font-size:var(--title-section); line-height:1;}
+.ix-deck .cols .title{position:absolute; left:var(--ml); top:88px; font-family:var(--serif); font-weight:300; font-size:var(--title-section);}
 .ix-deck .cols .grid{position:absolute; left:var(--ml); right:var(--mr); top:216px; display:grid; grid-template-columns:repeat(3,1fr); gap:48px;}
 /* Each text group sits on a white card. The grid stretches all three columns to the tallest one's
    height, so the cards match without measuring — no staircase, whatever the copy. Padding is the
@@ -296,7 +272,11 @@ body.ix-viewer main{padding:0 !important; margin:0 !important;}
 /* 8 · Paragraph (fallback / contexto) */
 .ix-deck .paragraph .wrap{position:absolute; left:var(--ml); right:var(--mr); top:64px;}  /* top is a pre-paint fallback; FitText centres the group in the band */
 .ix-deck .paragraph .eyebrow{margin-bottom:26px;}
-.ix-deck .paragraph p{font-family:var(--serif); font-weight:300; font-size:34px; line-height:1.28; max-width:880px;}
+/* 34px/1.3 is the serif body pair, shared with .contexto.long — same role (eyebrow + serif body),
+   same size, so the same leading. They sat at 1.28 and 1.3: invisible side by side, but two places
+   to change one thing. 1.3 is the one that stayed, being the looser of the two — no existing box
+   gets shorter, so unifying can't introduce an overflow. */
+.ix-deck .paragraph p{font-family:var(--serif); font-weight:300; font-size:34px; line-height:1.3; max-width:880px;}
 /* Separation after a paragraph break: half the eyebrow→text gap (26px). */
 .ix-deck .paragraph p + p{margin-top:13px;}
 .ix-deck .paragraph .flowlist{max-width:880px;}
@@ -328,7 +308,7 @@ body.ix-viewer main{padding:0 !important; margin:0 !important;}
 .ix-deck .budget .whitehalf, .ix-deck .accept .whitehalf{position:absolute; top:0; bottom:0; left:550px; right:0; background:var(--white);}
 
 /* Budget (ref p.42) */
-.ix-deck .budget .title{position:absolute; left:var(--ml); top:80px; font-family:var(--serif); font-weight:300; font-size:var(--title-section); line-height:1;}
+.ix-deck .budget .title{position:absolute; left:var(--ml); top:80px; font-family:var(--serif); font-weight:300; font-size:var(--title-section);}
 .ix-deck .budget .table{position:absolute; left:var(--ml); bottom:92px; width:418px;}
 .ix-deck .budget .row{display:flex; justify-content:space-between; align-items:baseline; padding:15px 0; border-bottom:1px solid var(--hairline); font:400 13px/1 var(--mono); color:var(--ash-dark);}
 .ix-deck .budget .row.total{font-weight:600; color:var(--dark); border-bottom:none; padding-top:18px;}
@@ -344,7 +324,7 @@ body.ix-viewer main{padding:0 !important; margin:0 !important;}
 .ix-deck .budget .cond .body{font:400 13px/1.55 var(--mono); color:var(--ash-dark);}
 
 /* Acceptance / signature (ref p.43) */
-.ix-deck .accept .title{position:absolute; left:var(--ml); top:64px; font-family:var(--serif); font-weight:300; font-size:var(--title-section); line-height:1.12; max-width:380px;}
+.ix-deck .accept .title{position:absolute; left:var(--ml); top:64px; font-family:var(--serif); font-weight:300; font-size:var(--title-section); max-width:380px;}
 .ix-deck .accept .sign{position:absolute; left:600px; top:170px; width:220px;}
 .ix-deck .accept .sig{display:block; width:150px; height:auto; margin-bottom:8px;}
 .ix-deck .accept .who{font:600 11px/1.6 var(--mono); color:var(--dark); white-space:pre-line;}
@@ -406,10 +386,16 @@ body.ix-viewer main{padding:0 !important; margin:0 !important;}
 /* Roadmap fases (ref p.35) — phase columns */
 .ix-deck .roadmapphases .title{position:absolute; left:var(--ml); top:56px; font-family:var(--serif); font-weight:300; font-size:var(--title-section);}
 .ix-deck .roadmapphases .sub{position:absolute; left:var(--ml); top:122px; font:400 13px/1.4 var(--mono); color:var(--ash);}
-.ix-deck .roadmapphases .phases{position:absolute; left:var(--ml); right:var(--mr); top:172px; display:grid; grid-auto-flow:column; grid-auto-columns:1fr; gap:34px;}
+/* Gap is the 24px half-gutter (was an off-system 34). This layout takes up to 4 phases, and at 4
+   the cards get narrow enough that the copy wraps into an overflow off the bottom edge — the fix
+   is horizontal, buying line length back rather than shrinking type. */
+.ix-deck .roadmapphases .phases{position:absolute; left:var(--ml); right:var(--mr); top:172px; display:grid; grid-auto-flow:column; grid-auto-columns:1fr; gap:24px;}
 /* Each phase on a white card, like the columns slide — the grid stretches them to the tallest, so
-   no staircase whatever the copy. Same 24px padding. */
-.ix-deck .roadmapphases .phase{background:var(--white); padding:24px;}
+   no staircase whatever the copy. Vertical padding stays the 24px half-gutter to match those cards;
+   the sides come in to 18px, which with the tighter gap widens the 4-up text column 192→212px
+   (~29→32 characters a line). Deliberately not liquid: the type here is already the smallest on the
+   deck, so length is the author's job — this just moves where "too long" starts. */
+.ix-deck .roadmapphases .phase{background:var(--white); padding:24px 18px;}
 .ix-deck .roadmapphases .fase{font:500 9px/1 var(--mono); letter-spacing:var(--track-caps); text-transform:uppercase; color:var(--ash); margin-bottom:10px;}
 .ix-deck .roadmapphases h3{font-family:var(--serif); font-weight:300; font-size:22px; line-height:1.1; margin-bottom:12px; color:var(--dark);}
 .ix-deck .roadmapphases .pbody{font:400 11px/1.5 var(--mono); color:var(--ash-dark); margin-bottom:14px;}
