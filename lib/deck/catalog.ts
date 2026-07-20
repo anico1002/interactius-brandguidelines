@@ -1,4 +1,5 @@
 import type { Slide } from './types.ts';
+import { themeFor } from './theme.ts';
 
 /* Single source of truth for the available layouts. Drives:
    - LAYOUT_MAP (marker → kind) in classify.ts
@@ -28,9 +29,9 @@ const IMG = '![Imagen del universo visual](/universo/universo-01.jpg)';
 
    No trailing `---`: the separator is a paste-time concern, added by the gallery on copy. */
 const SKELETONS: Record<string, string> = {
-  portada: `# Título de la presentación
+  portada: `# Nombre de la propuesta
 
-## Subtítulo de la portada
+## Propuesta de colaboración - Mes Año
 
 > cliente: Nombre del cliente
 
@@ -116,7 +117,9 @@ Texto introductorio de la fase.
 - Primera tarea.
 - Segunda tarea.`,
 
-  gantt: `## Roadmap
+  gantt: `## Calendario
+
+Esta es una estimación aproximada
 
 semanas: 8
 Primera fase: 1-2
@@ -184,10 +187,21 @@ export const LAYOUT_MAP: Record<string, Slide['kind']> = Object.fromEntries(
   LAYOUT_CATALOG.map((c) => [c.marker, c.kind]),
 );
 
+/* The appearance token the snippet ships with. The background picker has no UI — the markdown IS
+   the interface — so a pasted block states its own fill to make the knob discoverable: the author
+   sees `{warm-light}` and swaps it for `{blanco}` or `{warm-dark}` without opening the guide.
+
+   It is deliberately a NO-OP: it spells out the default this layout already has, derived from
+   themeFor() so the two can't drift. The canonical dark heroes (portada/enunciado/cierre) get
+   `{oscuro}` for the same reason — writing `{warm-light}` there would flip them light. */
+function defaultAppearance(kind: Slide['kind']): string {
+  return themeFor(kind, undefined) === 'dark' ? '{oscuro}' : '{warm-light}';
+}
+
 /* The exact text the gallery copies to the clipboard. The `---` goes AFTER the block: authors
    paste on the empty line below an existing slide's closing `---`, so the separator they still
    need is the one that closes the new slide. */
 export function layoutSnippet(entry: LayoutCatalogEntry): string {
   const body = entry.skeleton ? `\n\n${entry.skeleton}` : '';
-  return `[ly: ${entry.marker}]${body}\n\n---\n`;
+  return `[ly: ${entry.marker}] ${defaultAppearance(entry.kind)}${body}\n\n---\n`;
 }

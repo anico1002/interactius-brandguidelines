@@ -76,3 +76,26 @@ test('{oscuro} still flips the theme (back-compat), and works on a heading too',
   assert.equal(compileDeck('[ly: enunciado] {oscuro}\n\nEYEBROW\n\n## T').slides[0].theme, 'dark');
   assert.equal(compileDeck('## Título {blanco}\n\nCuerpo.').slides[0].bg, 'white');
 });
+
+/* The snippet ships the appearance token already written so the author SEES the knob exists and
+   can swap it for {blanco}/{warm-dark} — the picker has no UI, the markdown is the interface. */
+test('every copied snippet carries an explicit appearance modifier', () => {
+  for (const entry of LAYOUT_CATALOG) {
+    assert.match(
+      layoutSnippet(entry),
+      new RegExp(`^\\[ly: ${entry.marker}\\] \\{(warm-light|oscuro)\\}`),
+      `snippet ${entry.marker} has no appearance token`,
+    );
+  }
+});
+
+/* The token must be a NO-OP: it states the layout's existing default, it does not change it.
+   Guards the canonical dark heroes (portada/enunciado/cierre) against being flipped to light. */
+test('the snippet modifier preserves each layout default theme and fill', () => {
+  for (const entry of LAYOUT_CATALOG) {
+    const withToken = classify(parse(layoutSnippet(entry))[0], 0, 1);
+    const bare = classify(parse(`[ly: ${entry.marker}]${entry.skeleton ? `\n\n${entry.skeleton}` : ''}`)[0], 0, 1);
+    assert.equal(withToken.theme, bare.theme, `snippet ${entry.marker} changed its theme`);
+    assert.equal(withToken.bg, bare.bg, `snippet ${entry.marker} changed its fill`);
+  }
+});

@@ -98,6 +98,10 @@ En las diapositivas claras puedes elegir entre **tres fondos** (el texto siempre
 El fondo **oscuro** se reserva para las pantallas canónicas (portada, statement, cierre). Se puede
 forzar con `{oscuro}` / `{dark}` por compatibilidad, pero no es un fondo "de autor".
 
+**Ya viene puesto.** Cuando copias un layout de la galería, el bloque llega con su fondo actual ya
+escrito (`{warm-light}`, o `{oscuro}` en portada/statement/cierre). No cambia nada por sí solo: está
+ahí para que veas el mando y lo sustituyas por `{blanco}` o `{warm-dark}` sin volver a esta guía.
+
 **Dónde ponerlo** — dos sitios, el que te venga:
 - Junto al marcador de layout (funciona también en las páginas de solo-marcador como manifiesto):
   ```markdown
@@ -107,6 +111,11 @@ forzar con `{oscuro}` / `{dark}` por compatibilidad, pero no es un fondo "de aut
   ```markdown
   ## Nuestra mirada {arena}
   ```
+
+**Dos excepciones, a propósito:** `[ly: presupuesto]` y `[ly: aceptacion]` van **siempre en claro**.
+Son las dos páginas contractuales del deck y su legibilidad no se negocia, así que `{oscuro}` no
+tiene efecto en ellas. El **fondo** sí se les puede cambiar (`{blanco}`, `{warm-dark}`); lo que no
+se puede es volverlas oscuras. No es un fallo: está fijado en el código (`lib/deck/classify.ts`).
 
 ---
 

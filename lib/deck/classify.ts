@@ -83,7 +83,10 @@ function buildSlide(m: BlockModel, kind: Slide['kind'], marker?: string): Slide 
       // colon are free prose — the first is the subtitle (normal text below the title), the
       // second the bottom-right note.
       const prose = m.fence ? m.body : m.body.filter((l) => !l.includes(':'));
-      return { kind, theme: T('gantt'), title: m.title || 'Roadmap', subtitle: prose[0], weeks: g.weeks, unit: g.unit, rows: g.rows, milestones: g.milestones, milestoneLabel: g.milestoneLabel, note: prose[1] };
+      // Untitled fallback is "Calendario", not "Roadmap": that is what the real decks call this
+      // slide (7 of 10 — Calendario/Calendari), and "Roadmap" is the name of a DIFFERENT layout
+      // (roadmapPhases), so borrowing it here made two layouts answer to one word.
+      return { kind, theme: T('gantt'), title: m.title || 'Calendario', subtitle: prose[0], weeks: g.weeks, unit: g.unit, rows: g.rows, milestones: g.milestones, milestoneLabel: g.milestoneLabel, note: prose[1] };
     }
     case 'budget':
       return { kind, theme: 'light', title: m.title || undefined, ...parseBudget(m.tokens) };
