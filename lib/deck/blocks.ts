@@ -34,6 +34,10 @@ function formatEUR(n: number, decimals: boolean): string {
   const body = n.toLocaleString('es-ES', {
     minimumFractionDigits: decimals ? 2 : 0,
     maximumFractionDigits: decimals ? 2 : 0,
+    // es-ES leaves four-digit integers ungrouped by default (9999 → "9999" but 10560 → "10.560"),
+    // so a total under 10.000 came out looking unlike every other amount on the slide. Grouping is
+    // typographic here, not locale trivia: the column has to read as one set of figures.
+    useGrouping: 'always',
   });
   return `${body} €`;
 }

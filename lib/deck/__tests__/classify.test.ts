@@ -40,6 +40,19 @@ test('budget: line items + total auto-summed from the .md', () => {
   assert.equal(s.total, '11.076 €');
 });
 
+/* es-ES does not group four-digit integers by default (9999 → "9999", 10560 → "10.560"), so an
+   auto-summed total under 10.000 lost its separator and read differently from every other amount
+   on the same slide. The thousands mark is not optional below 10k. */
+test('budget: a four-digit total still carries its thousands separator', () => {
+  const s = one('## Presupuesto\n- Fase 1: 4.500 €\n- Fase 2: 5.499 €') as any;
+  assert.equal(s.total, '9.999 €');
+});
+
+test('budget: four-digit totals keep the separator with decimals too', () => {
+  const s = one('## Presupuesto\n- Fase 1: 4.500,50 €\n- Fase 2: 5.499,25 €') as any;
+  assert.equal(s.total, '9.999,75 €');
+});
+
 test('budget: explicit Total row wins over auto-sum', () => {
   const s = one('## Presupuesto\n- Fase 1: 1.000 €\n- Fase 2: 2.000 €\n- Total: 3.500 €') as any;
   assert.equal(s.items.length, 2);
