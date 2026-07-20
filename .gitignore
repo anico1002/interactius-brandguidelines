@@ -18,3 +18,11 @@ coverage/
 
 # Local Claude Code settings
 .claude/settings.local.json
+
+# Deck layout sandbox — local only, must never ship. It sits outside /deck, so it has no auth
+# guard, and it reads real client decks (with budgets) straight from Supabase. Kept on disk
+# because tuning a layout change across all 18 slides at once is what it is for; ignored here so
+# a `git add -A` can't put it back into a public repo. Was removed once already in 83b4f51.
+# Brackets escaped: unescaped, gitignore reads [locale] as a character class and never matches
+# the literal Next.js dynamic-segment folder.
+app/\[locale\]/lab/
