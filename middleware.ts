@@ -18,6 +18,20 @@ const isPublicViewer = (p: string) => /^\/deck\/[^/]+\/view(\/|$)/.test(p);
 export default async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
+  // 0) Interactius Forms: public pages under /forms must skip both next-intl (no locale prefix)
+  //    and the deck's Supabase auth. Only the team-gated CSV export refreshes the deck session
+  //    (the actual 401 is enforced by requireUser() inside the route handler).
+  if (pathname.startsWith('/forms')) {
+    if (pathname === '/forms/api/export') {
+      const { response } = await updateSession(request);
+      return response;
+    }
+    const response = NextResponse.next();
+    // Belt-and-braces noindex at the edge for the public form pages (also set via page metadata).
+    if (!pathname.startsWith('/forms/api')) response.headers.set('X-Robots-Tag', 'noindex, nofollow');
+    return response;
+  }
+
   // 1) API routes: gate the editor ones, pass the public ones straight through.
   if (pathname.startsWith('/api')) {
     if (!isEditorApi(pathname)) return NextResponse.next();

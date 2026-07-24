@@ -1,0 +1,224 @@
+/* Per-type field row: label + caption + control + inline error, wired for accessibility
+   (label[for], aria-describedby, aria-required, aria-invalid). One switch over the 12 input types
+   (PRD §8.3). Presentational `section`/`content` are handled in FormRenderer, not here. */
+
+'use client';
+
+import type { InputField, FieldOption } from '@/lib/forms/schema';
+import { optionValue, optionLabel } from '@/lib/forms/schema';
+import { Md } from '../Md';
+
+type Props = {
+  field: InputField;
+  value: unknown;
+  error?: string;
+  onChange: (name: string, value: unknown) => void;
+};
+
+export function FieldRow({ field, value, error, onChange }: Props) {
+  const id = `f_${field.name}`;
+  const captionId = field.caption ? `${id}_cap` : undefined;
+  const errorId = error ? `${id}_err` : undefined;
+  const describedBy = [captionId, errorId].filter(Boolean).join(' ') || undefined;
+
+  return (
+    <div className="ixf-field">
+      <label className="ixf-label" htmlFor={id}>
+        <Md inline>{field.label}</Md>
+        {field.required ? <span className="ixf-req" aria-hidden>*</span> : null}
+      </label>
+      {field.caption ? (
+        <span className="ixf-caption" id={captionId}>
+          <Md inline>{field.caption}</Md>
+        </span>
+      ) : null}
+
+      <Control field={field} id={id} value={value} onChange={onChange} describedBy={describedBy} invalid={Boolean(error)} />
+
+      {error ? (
+        <span className="ixf-error" id={errorId} role="alert">
+          {error}
+        </span>
+      ) : null}
+    </div>
+  );
+}
+
+function Control({
+  field,
+  id,
+  value,
+  onChange,
+  describedBy,
+  invalid,
+}: {
+  field: InputField;
+  id: string;
+  value: unknown;
+  onChange: (name: string, value: unknown) => void;
+  describedBy?: string;
+  invalid: boolean;
+}) {
+  const common = {
+    id,
+    name: field.name,
+    'aria-describedby': describedBy,
+    'aria-required': field.required || undefined,
+    'aria-invalid': invalid || undefined,
+  } as const;
+  const set = (v: unknown) => onChange(field.name, v);
+
+  switch (field.type) {
+    case 'textarea':
+      return (
+        <textarea
+          {...common}
+          className="ixf-textarea"
+          rows={field.rows ?? 4}
+          maxLength={field.maxlength}
+          placeholder={field.placeholder}
+          value={(value as string) ?? ''}
+          onChange={(e) => set(e.target.value)}
+        />
+      );
+
+    case 'radio':
+    case 'select':
+      if (field.type === 'select') {
+        return (
+          <select {...common} className="ixf-select" value={(value as string) ?? ''} onChange={(e) => set(e.target.value)}>
+            <option value="" disabled>
+              {field.placeholder ?? 'Selecciona…'}
+            </option>
+            {field.options.map((o: FieldOption) => (
+              <option key={optionValue(o)} value={optionValue(o)}>
+                {optionLabel(o)}
+              </option>
+            ))}
+          </select>
+        );
+      }
+      return (
+        <div className="ixf-choices" role="radiogroup" aria-describedby={describedBy} aria-required={field.required || undefined}>
+          {field.options.map((o: FieldOption) => (
+            <label key={optionValue(o)} className="ixf-choice">
+              <input
+                type="radio"
+                name={field.name}
+                value={optionValue(o)}
+                checked={value === optionValue(o)}
+                onChange={() => set(optionValue(o))}
+              />
+              <span>{optionLabel(o)}</span>
+            </label>
+          ))}
+        </div>
+      );
+
+    case 'checkbox': {
+      const selected = Array.isArray(value) ? (value as string[]) : [];
+      const toggle = (v: string) =>
+        set(selected.includes(v) ? selected.filter((x) => x !== v) : [...selected, v]);
+      return (
+        <div className="ixf-choices" role="group" aria-describedby={describedBy}>
+          {field.options.map((o: FieldOption) => (
+            <label key={optionValue(o)} className="ixf-choice">
+              <input type="checkbox" checked={selected.includes(optionValue(o))} onChange={() => toggle(optionValue(o))} />
+              <span>{optionLabel(o)}</span>
+            </label>
+          ))}
+        </div>
+      );
+    }
+
+    case 'boolean':
+      return (
+        <label className="ixf-choice">
+          <input
+            id={id}
+            type="checkbox"
+            aria-describedby={describedBy}
+            aria-required={field.required || undefined}
+            checked={value === true}
+            onChange={(e) => set(e.target.checked)}
+          />
+          <span>
+            <Md inline>{field.label}</Md>
+          </span>
+        </label>
+      );
+
+    case 'scale': {
+      const steps = [];
+      for (let i = field.min; i <= field.max; i++) steps.push(i);
+      return (
+        <div className="ixf-scale">
+          <div className="ixf-scale__track" role="radiogroup" aria-describedby={describedBy} aria-required={field.required || undefined}>
+            {steps.map((n) => (
+              <button
+                key={n}
+                type="button"
+                className="ixf-scale__btn"
+                aria-pressed={value === n}
+                onClick={() => set(n)}
+              >
+                {n}
+              </button>
+            ))}
+          </div>
+          {field.min_label || field.max_label ? (
+            <div className="ixf-scale__ends">
+              <span>{field.min_label}</span>
+              <span>{field.max_label}</span>
+            </div>
+          ) : null}
+        </div>
+      );
+    }
+
+    case 'number':
+      return (
+        <input
+          {...common}
+          className="ixf-input"
+          type="number"
+          min={field.min}
+          max={field.max}
+          step={field.step}
+          placeholder={field.placeholder}
+          value={(value as string | number | undefined) ?? ''}
+          onChange={(e) => set(e.target.value)}
+        />
+      );
+
+    case 'date':
+      return (
+        <input
+          {...common}
+          className="ixf-input"
+          type="date"
+          min={field.min}
+          max={field.max}
+          value={(value as string) ?? ''}
+          onChange={(e) => set(e.target.value)}
+        />
+      );
+
+    default: {
+      // text, email, tel, url
+      const inputType = field.type === 'text' ? 'text' : field.type;
+      return (
+        <input
+          {...common}
+          className="ixf-input"
+          type={inputType}
+          maxLength={'maxlength' in field ? field.maxlength : undefined}
+          pattern={'pattern' in field ? field.pattern : undefined}
+          placeholder={field.placeholder}
+          value={(value as string) ?? ''}
+          onChange={(e) => set(e.target.value)}
+        />
+      );
+    }
+  }
+}
