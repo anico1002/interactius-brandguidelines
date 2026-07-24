@@ -17,7 +17,10 @@ import { SERIF_300_B64, MONO_400_B64, INTERACTIUS_SVG_B64 } from '@/lib/decks/og
 export const runtime = 'nodejs';
 export const alt = 'Portada de la presentación';
 export const size = { width: 1280, height: 720 };
-export const contentType = 'image/png';
+// JPEG, not PNG: next/og only emits PNG, and a 1280×720 PNG with a real background photo weighs
+// ~1.9 MB — over WhatsApp's link-preview size limit (~600 KB), so WhatsApp shows title+description
+// but no image. We re-encode the PNG to JPEG (~190 KB) below. `contentType` sets og:image:type.
+export const contentType = 'image/jpeg';
 
 // Cover tokens, mirrored from deck.css (:root + .cover). Canvas is the deck's fixed 1280×720.
 const DARK = '#1C1A17';
@@ -37,7 +40,7 @@ export default async function Image({ params }: { params: Promise<{ id: string }
     const subtitle = meta?.subtitle?.trim() || null;
     const long = title.length > SHORT_TITLE;
 
-    return new ImageResponse(
+    const png = new ImageResponse(
       (
         <div style={{ position: 'relative', display: 'flex', width: '100%', height: '100%', backgroundColor: DARK }}>
           {/* Background photo */}
@@ -74,6 +77,19 @@ export default async function Image({ params }: { params: Promise<{ id: string }
         ],
       },
     );
+
+    // Re-encode PNG → JPEG to get under WhatsApp's preview size limit. sharp is loaded lazily so a
+    // (very unlikely) bundling failure degrades to the PNG instead of 500ing the whole route.
+    const pngBuf = Buffer.from(await png.arrayBuffer());
+    try {
+      const sharp = (await import('sharp')).default;
+      const jpeg = await sharp(pngBuf).jpeg({ quality: 80 }).toBuffer();
+      return new Response(new Uint8Array(jpeg), {
+        headers: { 'content-type': 'image/jpeg', 'cache-control': 'public, max-age=300' },
+      });
+    } catch {
+      return new Response(new Uint8Array(pngBuf), { headers: { 'content-type': 'image/png' } });
+    }
   } catch {
     // Never break the client's link preview: a plain dark canvas (no text → no font needed, no fs).
     return new ImageResponse(<div style={{ display: 'flex', width: '100%', height: '100%', backgroundColor: DARK }} />, size);
