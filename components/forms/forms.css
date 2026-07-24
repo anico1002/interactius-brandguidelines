@@ -1,0 +1,317 @@
+/* Interactius Forms — public form styling. Scoped to .ix-forms.
+   Tokens mirror lib/tokens.ts (see app/globals.css --c-*); if a brand colour changes there,
+   contrast here. Type sizes use the verified clamps from lib/typeScale.ts.
+   Brand rules honoured: IBM Plex Mono 400/500/600 + IBM Plex Serif 300/400, italics forbidden
+   (globals.css neutralises <em>). Accent (--accent) is set per-form from the frontmatter. */
+
+.ix-forms {
+  --mono: var(--font-ibm-plex-mono), ui-monospace, monospace;
+  --serif: var(--font-ibm-plex-serif), Georgia, serif;
+  /* Type scale (verified against lib/typeScale.ts) */
+  --fs-title: clamp(2rem, 1.4rem + 3vw, 4rem);        /* title  (serif) */
+  --fs-title-sm: clamp(1.25rem, 1rem + 1.25vw, 2rem); /* title-sm (serif) */
+  --fs-body: clamp(0.875rem, 0.8rem + 0.4vw, 1.125rem); /* body (mono) */
+  --fs-body-sm: clamp(0.75rem, 0.7rem + 0.25vw, 1rem);  /* body-sm (mono) */
+  --fs-caption: 0.75rem;
+  --accent: var(--c-bordeaux); /* overridden inline per form */
+
+  min-height: 100vh;
+  background: var(--c-warm-light);
+  color: var(--c-dark);
+}
+
+@media (min-width: 1024px) {
+  .ix-forms {
+    display: grid;
+    grid-template-columns: 60fr 40fr;
+    align-items: start;
+  }
+}
+
+/* ── Hero (left 60%): fixed on desktop, reduced banner on mobile ── */
+.ixf-hero {
+  position: relative;
+  background-color: var(--c-dark);
+  background-size: cover;
+  background-position: center;
+  color: var(--c-warm-light);
+  overflow: hidden;
+}
+@media (min-width: 1024px) {
+  .ixf-hero {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+  }
+}
+@media (max-width: 1023.98px) {
+  .ixf-hero {
+    min-height: 34vh;
+  }
+}
+/* Liminal treatment: subtle gradient for logo legibility + negative space. */
+.ixf-hero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(28, 26, 23, 0.55) 0%, rgba(28, 26, 23, 0.15) 40%, rgba(28, 26, 23, 0.45) 100%);
+  pointer-events: none;
+}
+.ixf-hero--plain::after {
+  /* No background image: quieter gradient over pure dark. */
+  background: radial-gradient(120% 90% at 20% 15%, rgba(255, 255, 255, 0.06) 0%, transparent 60%);
+}
+
+.ixf-hero__brandbar {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 48px;
+}
+.ixf-hero__logo {
+  max-height: 56px;
+  max-width: 240px;
+  width: auto;
+  object-fit: contain;
+}
+/* "by Interactius" — subordinate signature, distinct from the client logo (per decision). */
+.ixf-signature {
+  font-family: var(--mono);
+  font-size: var(--fs-caption);
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  color: rgba(245, 242, 237, 0.72);
+}
+.ixf-signature strong { font-weight: 600; color: var(--c-warm-light); }
+
+/* ── Form column (right 40%): independent scroll ── */
+.ixf-panel {
+  padding: 64px 48px 96px;
+  max-width: 640px;
+}
+@media (max-width: 1023.98px) {
+  .ixf-panel { padding: 40px 24px 72px; }
+}
+
+.ixf-eyebrow {
+  font-family: var(--mono);
+  font-size: var(--fs-caption);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 12px;
+}
+.ixf-title {
+  font-family: var(--serif);
+  font-weight: 300;
+  font-size: var(--fs-title);
+  line-height: 1.05;
+  margin-bottom: 20px;
+}
+.ixf-intro {
+  font-family: var(--serif);
+  font-weight: 400;
+  font-size: var(--fs-body);
+  line-height: 1.55;
+  color: var(--c-ash-dark, #46433F);
+}
+.ixf-intro p { margin: 0 0 12px; }
+.ixf-intro strong { font-weight: 400; color: var(--c-dark); background: var(--c-warm-dark); padding: 0 2px; }
+
+.ixf-fields {
+  margin-top: 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+/* Section separator (presentational) */
+.ixf-section { margin-top: 16px; padding-top: 24px; border-top: 1px solid var(--c-warm-dark); }
+.ixf-section:first-child { border-top: none; padding-top: 0; margin-top: 0; }
+.ixf-section__title {
+  font-family: var(--serif);
+  font-weight: 400;
+  font-size: var(--fs-title-sm);
+  line-height: 1.15;
+}
+.ixf-section__desc {
+  font-family: var(--mono);
+  font-size: var(--fs-body-sm);
+  line-height: 1.5;
+  color: var(--c-ash, #75706B);
+  margin-top: 6px;
+}
+
+/* Content block (presentational Markdown) */
+.ixf-content {
+  font-family: var(--serif);
+  font-weight: 400;
+  font-size: var(--fs-body);
+  line-height: 1.55;
+  color: var(--c-ash-dark, #46433F);
+}
+.ixf-content p { margin: 0 0 10px; }
+
+/* ── Fields ── */
+.ixf-field { display: flex; flex-direction: column; gap: 8px; }
+.ixf-label {
+  font-family: var(--mono);
+  font-weight: 500;
+  font-size: var(--fs-body-sm);
+  color: var(--c-dark);
+}
+.ixf-req { color: var(--accent); margin-left: 2px; }
+.ixf-caption {
+  font-family: var(--mono);
+  font-weight: 400;
+  font-size: var(--fs-caption);
+  line-height: 1.5;
+  color: var(--c-ash, #75706B);
+}
+.ixf-caption strong { font-weight: 600; color: var(--c-dark); }
+
+.ixf-input,
+.ixf-textarea,
+.ixf-select {
+  font-family: var(--mono);
+  font-size: var(--fs-body-sm);
+  color: var(--c-dark);
+  background: var(--c-white);
+  border: 1px solid var(--c-warm-dark);
+  border-radius: 2px;
+  padding: 12px 14px;
+  width: 100%;
+  transition: border-color 200ms var(--ease), box-shadow 200ms var(--ease);
+}
+.ixf-textarea { resize: vertical; min-height: 96px; line-height: 1.5; }
+.ixf-input:focus,
+.ixf-textarea:focus,
+.ixf-select:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 22%, transparent);
+}
+.ixf-input::placeholder,
+.ixf-textarea::placeholder { color: var(--c-ash, #75706B); opacity: 0.7; }
+
+/* Choice groups */
+.ixf-choices { display: flex; flex-direction: column; gap: 10px; }
+.ixf-choice {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-family: var(--mono);
+  font-size: var(--fs-body-sm);
+  color: var(--c-dark);
+  cursor: pointer;
+}
+.ixf-choice input { margin-top: 2px; accent-color: var(--accent); width: 16px; height: 16px; }
+
+/* Scale (Likert / NPS) */
+.ixf-scale { display: flex; flex-direction: column; gap: 8px; }
+.ixf-scale__track { display: flex; flex-wrap: wrap; gap: 6px; }
+.ixf-scale__btn {
+  font-family: var(--mono);
+  font-size: var(--fs-body-sm);
+  min-width: 40px;
+  padding: 8px 0;
+  text-align: center;
+  border: 1px solid var(--c-warm-dark);
+  background: var(--c-white);
+  border-radius: 2px;
+  cursor: pointer;
+  transition: background 200ms var(--ease), border-color 200ms var(--ease), color 200ms var(--ease);
+}
+.ixf-scale__btn[aria-pressed='true'] {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--c-white);
+}
+.ixf-scale__ends {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--mono);
+  font-size: var(--fs-caption);
+  color: var(--c-ash, #75706B);
+}
+
+/* Error state */
+.ixf-input[aria-invalid='true'],
+.ixf-textarea[aria-invalid='true'],
+.ixf-select[aria-invalid='true'] { border-color: var(--c-bordeaux); }
+.ixf-error {
+  font-family: var(--mono);
+  font-size: var(--fs-caption);
+  color: var(--c-bordeaux);
+}
+
+/* Submit */
+.ixf-actions { margin-top: 40px; display: flex; flex-direction: column; gap: 14px; }
+.ixf-submit {
+  font-family: var(--mono);
+  font-weight: 600;
+  font-size: var(--fs-body-sm);
+  letter-spacing: 0.02em;
+  color: var(--c-white);
+  background: var(--accent);
+  border: none;
+  border-radius: 2px;
+  padding: 15px 28px;
+  cursor: pointer;
+  align-self: flex-start;
+  transition: opacity 200ms var(--ease), transform 200ms var(--ease);
+}
+.ixf-submit:hover { opacity: 0.9; }
+.ixf-submit:disabled { opacity: 0.5; cursor: default; }
+.ixf-submit-error {
+  font-family: var(--mono);
+  font-size: var(--fs-body-sm);
+  color: var(--c-bordeaux);
+}
+
+/* Honeypot — visually hidden, off-screen, not focusable */
+.ixf-hp {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+/* Success (replaces the form; hero stays) */
+.ixf-success { animation: ixf-fade 600ms var(--ease); }
+.ixf-success__title {
+  font-family: var(--serif);
+  font-weight: 300;
+  font-size: var(--fs-title);
+  line-height: 1.05;
+  margin-bottom: 16px;
+}
+.ixf-success__msg {
+  font-family: var(--serif);
+  font-weight: 400;
+  font-size: var(--fs-body);
+  line-height: 1.55;
+  color: var(--c-ash-dark, #46433F);
+}
+@keyframes ixf-fade {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* 404 */
+.ixf-notfound {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 12px;
+  padding: 48px;
+  background: var(--c-dark);
+  color: var(--c-warm-light);
+}
+.ixf-notfound__code { font-family: var(--mono); font-size: var(--fs-caption); letter-spacing: 0.06em; color: var(--c-opal); }
+.ixf-notfound__title { font-family: var(--serif); font-weight: 300; font-size: var(--fs-title); line-height: 1.05; }
