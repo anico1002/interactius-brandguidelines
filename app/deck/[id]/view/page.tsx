@@ -2,14 +2,30 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { supabaseServer } from '@/lib/supabase/server';
 import type { DeckRecord, DeckSignature } from '@/lib/decks/types';
+import { getDeckShareMeta, shareTitle, shareSubtitle } from '@/lib/decks/shareMeta';
 import { DeckViewerClient } from './DeckViewerClient';
 
 export const dynamic = 'force-dynamic';
 
-export const metadata: Metadata = {
-  title: 'Presentación · Interactius',
-  robots: { index: false, follow: false },
-};
+/* The share link and the PDF both read their title from here:
+   - social preview → openGraph.title / description (image = ./opengraph-image);
+   - print-to-PDF → the browser names the file after document.title, i.e. this title.
+   Title = the presentation's own cover title; subtitle = "Propuesta de colaboración para {Cliente}".
+   Kept noindex: these are private client proposals — crawlers still read OG tags for link
+   unfurling, so the preview works while the page stays out of search. */
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+  const { id } = await params;
+  const meta = await getDeckShareMeta(id).catch(() => null);
+  const title = shareTitle(meta);
+  const description = shareSubtitle(meta);
+  return {
+    title,
+    description,
+    robots: { index: false, follow: false },
+    openGraph: { title, description, type: 'website' },
+    twitter: { card: 'summary_large_image', title, description },
+  };
+}
 
 type Props = {
   params: Promise<{ id: string }>;

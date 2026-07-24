@@ -91,6 +91,17 @@ es peor que no opinar:
   en `deck.css` (`--dark`, dentro de `.ix-deck`). El código lo admite: *"Tokens mirror
   lib/tokens.ts"*, *"if you change one, change the other"*. Hoy cuadran. Si cambia un color de
   marca, **los decks no se enteran**. Al tocar color en el deck, contrastar con `lib/tokens.ts`.
+- **La portada está redibujada a mano en el preview social.** `app/deck/[id]/view/opengraph-image.tsx`
+  reconstruye la portada como PNG (lienzo 1280×720) con `next/og`/satori, porque satori no ejecuta
+  nuestro React/CSS: no puede reutilizar `components/deck/layouts/Cover.tsx` ni las reglas `.cover`
+  de `deck.css`. Es una **segunda fuente del diseño de la portada**: los valores (márgenes 108/56,
+  título serif 300 · 64px, scrim de dos gradientes, wordmark 217×28) están copiados de `deck.css`.
+  **Si cambia el diseño de la portada, cámbialo también aquí** o el preview deriva. Es una versión
+  **deliberadamente más simple** que la portada real: foto + scrim + wordmark + titular (+ subtítulo).
+  El **cliente NO se dibuja en la imagen** — va en el texto del OG (`description` = "Propuesta de
+  colaboración para {Cliente}"), lo que evita descargar y recolorear el SVG del logo del cliente. El
+  título tampoco encoge con `FitText`: hace wrap. Las fuentes viven en `app/deck/[id]/view/_fonts/`
+  (subset latin de IBM Plex, empaquetado para no depender de la red en runtime).
 
 ## El repo (dos remotos — importante)
 
