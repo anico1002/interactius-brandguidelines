@@ -16,7 +16,9 @@ export function LabClient() {
   // like /deck.
   return (
     <div style={{ position: 'fixed', inset: 0, zIndex: 50 }}>
-      <DeckStudio initialMd={LAB_MD} />
+      {/* previewClientLogo: a real client mark so the cover shows the logo case (not the name chip),
+          to review the client-logo sizing. Dev-only route, so it never ships. */}
+      <DeckStudio initialMd={LAB_MD} previewClientLogo="/preview/client-logo.svg" />
     </div>
   );
 }

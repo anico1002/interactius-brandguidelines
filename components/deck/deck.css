@@ -186,27 +186,25 @@ body.ix-viewer main{padding:0 !important; margin:0 !important;}
    as a block set left: that shape is the identity, and these titles get reused in social posts.
    Lines are worth spending on it. Both stop well short of the 1064px between the margins for the
    same reason: the block never crosses the slide. */
-.ix-deck .cover .lockup{position:absolute; left:var(--ml); bottom:128px; max-width:700px; z-index:4;}
+/* Bottom lockup as one bottom-anchored flow: title, subtitle and the client logo (or name chip)
+   stack with a single equal gap, so the logo's height pushes the text up and the spacing between
+   the three stays uniform. */
+.ix-deck .cover .lockup{position:absolute; left:var(--ml); bottom:56px; max-width:700px; z-index:4;
+  display:flex; flex-direction:column; align-items:flex-start; gap:24px;}
 .ix-deck .cover .lockup[data-measure="long"]{max-width:820px;}
 /* Title of a primary slide: same step as .statement h2 — the type scale calls this `title`. Was a
    hand-set 60px, which is on no step of the scale. */
 .ix-deck .cover h1{font-family:var(--serif); font-weight:300; font-size:var(--t-title); line-height:1.06; letter-spacing:-.01em; color:var(--warm-light);}
-.ix-deck .cover .sub{margin-top:24px; font:400 13px/1.6 var(--mono); color:var(--warm-light); opacity:.72; max-width:440px;}
-.ix-deck .cover .foot{position:absolute; left:var(--ml); bottom:52px; z-index:4; font:400 9px/1 var(--mono); letter-spacing:var(--track-label); color:var(--warm-light); opacity:.62;}
+.ix-deck .cover .sub{font:400 13px/1.6 var(--mono); color:var(--warm-light); opacity:.72; max-width:440px;}
+.ix-deck .cover .foot{font:400 9px/1 var(--mono); letter-spacing:var(--track-label); color:var(--warm-light); opacity:.62;}
 .ix-deck .cover .foot b{font-weight:500; opacity:1; background:rgba(245,242,237,.14); padding:3px 6px;}
-/* Client logo: takes the name chip's anchor. Sized to a 250x48 box with `contain`, so width leads
-   and nothing ever distorts. Matching the Interactius mark's height instead reads as half its
-   size — that mark is 217x28, near 8:1, and a chunkier logo at the same height comes out half as
-   long. 48px is the ceiling here (see the clearance note below).
-   Tinted white rather than detected: the scrim lays 92% ink over this corner (see .scrim), so the
+/* Client logo in the bottom lockup flow. WIDTH leads (fixed at 150px ≈ 0.7× the Interactius mark's
+   217px width — "more than half", which read too small); height is free so a chunkier logo sits
+   taller and pushes the text above it up, keeping the equal gap. No distortion (height:auto).
+   Tinted white rather than detected: the scrim lays ~92% ink over this corner (see .scrim), so the
    backdrop is dark whatever the photo — the same reason the Interactius mark is hardcoded to its
-   negative. The filter also normalises whatever the client sends (colour, positive, negative).
-   Note the clearance is the gap MINUS this box: .lockup at bottom:128px over a logo whose top
-   edge lands at 52+48=100px leaves 28px of air, not 76px. It read as touching at the old 108px,
-   which left 8px. The logo keeps its anchor at 52px, shared with .foot — the text moved up. */
-.ix-deck .cover .clientlogo{position:absolute; left:var(--ml); bottom:52px; z-index:4;
-  width:250px; max-height:30px; object-fit:contain; object-position:left bottom;
-  filter:brightness(0) invert(1);}
+   negative. The filter also normalises whatever the client sends (colour, positive, negative). */
+.ix-deck .cover .clientlogo{width:150px; height:auto; filter:brightness(0) invert(1);}
 
 /* 2 · Image + text split — image always on the RIGHT (left stays light for the tab) */
 .ix-deck .split .photo{position:absolute; right:0; top:0; bottom:0; width:var(--img-w);}

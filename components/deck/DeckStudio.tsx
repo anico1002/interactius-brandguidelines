@@ -105,7 +105,7 @@ type ModalState =
   | { kind: 'edit'; initial: Partial<MetaValues> & { client_name?: string | null } }
   | null;
 
-export function DeckStudio({ deckId, initialMd: initialMdProp }: { deckId?: string; initialMd?: string } = {}) {
+export function DeckStudio({ deckId, initialMd: initialMdProp, previewClientLogo }: { deckId?: string; initialMd?: string; previewClientLogo?: string } = {}) {
   const router = useRouter();
   // When addressed by /deck/[id] we load that deck on mount; start blank to avoid a
   // flash of the sample template. Standalone (no id) seeds `initialMd` if given (the /lab sandbox
@@ -145,7 +145,7 @@ export function DeckStudio({ deckId, initialMd: initialMdProp }: { deckId?: stri
   const dirty = useMemo(() => snap(md, meta) !== savedSnap, [md, meta, savedSnap]);
   /* Uploaded in DeckMetaModal (and defaulted per client): the cover shows it instead of the
      client name. Memoised because resolving the URL builds a Supabase client. */
-  const clientLogo = useMemo(() => publicLogoUrl(meta.logo_path), [meta.logo_path]);
+  const clientLogo = useMemo(() => publicLogoUrl(meta.logo_path) ?? previewClientLogo ?? null, [meta.logo_path, previewClientLogo]);
 
   // Restore the saved editor width, then keep it within [min, 50% of viewport].
   useEffect(() => {
