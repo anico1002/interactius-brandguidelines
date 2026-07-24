@@ -301,8 +301,11 @@ body.ix-viewer main{padding:0 !important; margin:0 !important;}
 .ix-deck .team .txt blockquote.quote{margin:0 0 13px; padding-left:12px; border-left:2px solid var(--warm-dark); font:400 13px/1.6 var(--mono); color:var(--dark);}
 .ix-deck .team .grid{position:absolute; right:40px; top:48px; width:720px; height:auto;}
 
-/* Fixed page · Clients (ref p.41) — image carries its own category labels; contained, not full-bleed */
+/* Fixed page · Clients (ref p.41) — 2026 logo wall (1645×880 contained), category NAMES removed from
+   the image and redrawn as translatable text (`.cat` = `.eyebrow`). The rule lines stay baked in the
+   image, so the overlay is text only. Name positions live in Clients.tsx. */
 .ix-deck .clients .logos{position:absolute; left:var(--ml); top:78px; width:calc(1280px - var(--ml) - var(--mr)); height:auto;}
+.ix-deck .clients .cat{position:absolute; z-index:2; white-space:nowrap;}
 
 /* Fixed pages with a pure-white right half (ref p.42–43), split at 43% */
 .ix-deck .budget .whitehalf, .ix-deck .accept .whitehalf{position:absolute; top:0; bottom:0; left:550px; right:0; background:var(--white);}

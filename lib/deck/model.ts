@@ -174,7 +174,7 @@ const SHOWS: Record<Slide['kind'], Shows> = {
   closing:       { subtitle: false, eyebrow: false, image: 0, body: 'url',    list: false, sections: false },
   manifesto:     { subtitle: true,  eyebrow: false, image: 0, body: 2,        list: false, sections: false },
   team:          { subtitle: true,  eyebrow: true,  image: 1, body: Infinity, list: true,  sections: true  },
-  clients:       { subtitle: false, eyebrow: false, image: 1, body: 0,        list: false, sections: false },
+  clients:       { subtitle: false, eyebrow: false, image: 1, body: 0,        list: true,  sections: false },
   budget:        { subtitle: false, eyebrow: false, image: 0, body: 0,        list: true,  sections: true },
   acceptance:    { subtitle: false, eyebrow: false, image: 1, body: 0,        list: false, sections: false },
   contexto:      { subtitle: false, eyebrow: true,  image: 0, body: Infinity, list: true,  sections: false },

@@ -51,8 +51,17 @@
       {
         "kind": "clients",
         "theme": "light",
+        "labels": [
+          "Productos financieros",
+          "Sector público",
+          "Retail-moda",
+          "Medios/deportes",
+          "Seguros",
+          "Educación",
+          "Otros"
+        ],
         "image": {
-          "src": "/presentaciones/clients.png",
+          "src": "/presentaciones/clients-grid.png",
           "alt": "Clientes de Interactius"
         }
       },
@@ -542,7 +551,8 @@
       },
       {
         "kind": "clients",
-        "theme": "light"
+        "theme": "light",
+        "labels": []
       },
       {
         "kind": "split",
@@ -756,7 +766,8 @@
       },
       {
         "kind": "clients",
-        "theme": "light"
+        "theme": "light",
+        "labels": []
       },
       {
         "kind": "contexto",

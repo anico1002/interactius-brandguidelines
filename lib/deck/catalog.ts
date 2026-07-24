@@ -170,7 +170,7 @@ const BASE: Omit<LayoutCatalogEntry, 'skeleton'>[] = [
   { marker: 'presupuesto', kind: 'budget',        name: 'Presupuesto',     slots: '## título, partidas (- Partida: importe), total, ### Condiciones' },
   { marker: 'manifiesto',  kind: 'manifesto',     name: 'Manifiesto',      slots: 'título (con / énfasis /) + subtítulo (default de marca)' },
   { marker: 'equipo',      kind: 'team',          name: 'Equipo',          slots: 'texto libre (párrafos, listas, citas, subtítulos · **negrita**/énfasis) + imagen' },
-  { marker: 'clientes',    kind: 'clients',       name: 'Clientes',        slots: 'imagen (opcional; default de marca)' },
+  { marker: 'clientes',    kind: 'clients',       name: 'Clientes',        slots: 'etiquetas de categoría (- lista, traducibles) + imagen de logos (defaults de marca)' },
   { marker: 'aceptacion',  kind: 'acceptance',    name: 'Aceptación',      slots: 'título, firmante (nombre/cargo/…), aviso, CTA, firma' },
   { marker: 'cierre',      kind: 'closing',       name: 'Cierre',          slots: 'título + url' },
 ];

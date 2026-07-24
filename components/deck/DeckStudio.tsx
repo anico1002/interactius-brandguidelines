@@ -105,11 +105,12 @@ type ModalState =
   | { kind: 'edit'; initial: Partial<MetaValues> & { client_name?: string | null } }
   | null;
 
-export function DeckStudio({ deckId }: { deckId?: string } = {}) {
+export function DeckStudio({ deckId, initialMd: initialMdProp }: { deckId?: string; initialMd?: string } = {}) {
   const router = useRouter();
   // When addressed by /deck/[id] we load that deck on mount; start blank to avoid a
-  // flash of the sample template. Standalone (no id) still seeds the sample.
-  const initialMd = deckId ? '' : SAMPLE;
+  // flash of the sample template. Standalone (no id) seeds `initialMd` if given (the /lab sandbox
+  // passes a deck of every layout), else the sample template.
+  const initialMd = deckId ? '' : (initialMdProp ?? SAMPLE);
   const [md, setMd] = useState(initialMd);
   const [meta, setMeta] = useState<DeckMeta>(EMPTY_META);
   const [currentDeckId, setCurrentDeckId] = useState<string | null>(null);

@@ -123,7 +123,10 @@ function buildSlide(m: BlockModel, kind: Slide['kind'], marker?: string): Slide 
       return { kind, theme: T('team'), content: content.length ? content : undefined, image: m.image };
     }
     case 'clients':
-      return { kind, theme: T('clients'), image: m.image };
+      // Category labels come from the block's list, in order — they map to the fixed slots the
+      // component draws over the logo wall. As markdown list items they translate with the deck.
+      // A marker-only block yields no list → the component fills in the canonical categories.
+      return { kind, theme: T('clients'), labels: m.items ?? [], image: m.image };
     case 'acceptance': {
       const signer: Signer = { name: m.meta['nombre'], role: m.meta['cargo'], company: m.meta['empresa'], nif: m.meta['nif'], address: m.meta['direccion'] };
       const hasSigner = Object.values(signer).some(Boolean);

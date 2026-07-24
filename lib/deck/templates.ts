@@ -30,7 +30,14 @@ Somos un **compañero**: cercano, implicado y enfocado en lo que realmente impor
 ---
 
 [ly: clientes]
-![Clientes de Interactius](/presentaciones/clients.png)
+- Productos financieros
+- Sector público
+- Retail-moda
+- Medios/deportes
+- Seguros
+- Educación
+- Otros
+![Clientes de Interactius](/presentaciones/clients-grid.png)
 
 ---
 

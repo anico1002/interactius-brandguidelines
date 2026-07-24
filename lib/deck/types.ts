@@ -34,7 +34,10 @@ type SlideVariant =
   // Brand pages: content is editable from the markdown; missing fields fall back to defaults.
   | { kind: 'manifesto'; theme: Theme; title?: string; subtitle?: string }
   | { kind: 'team'; theme: Theme; content?: RichNode[]; image?: ImageRef }
-  | { kind: 'clients'; theme: Theme; image?: ImageRef }
+  // Client logo wall: the category labels live as translatable text on top of the logo-wall image
+  // (the image no longer carries them), so they translate and stay in the system. Empty `labels`
+  // (a marker-only block) falls back to the canonical categories in the component.
+  | { kind: 'clients'; theme: Theme; labels: string[]; image?: ImageRef }
   | { kind: 'budget'; theme: Theme; title?: string; items: BudgetItem[]; total: string; conditions: string[]; conditionsLabel?: string }
   | { kind: 'acceptance'; theme: Theme; title?: string; signer?: Signer; note?: string; cta?: string; signatureImage?: ImageRef }
   // Keyword-mapped commercial sections (ref slides 22/29/31/32/35)
