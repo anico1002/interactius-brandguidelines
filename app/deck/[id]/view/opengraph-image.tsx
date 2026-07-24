@@ -1,6 +1,6 @@
 import { ImageResponse } from 'next/og';
-import { readFile } from 'node:fs/promises';
 import { getDeckShareMeta } from '@/lib/decks/shareMeta';
+import { SERIF_300_B64, MONO_400_B64, INTERACTIUS_SVG_B64 } from '@/lib/decks/ogAssets';
 
 /* Social preview image for a shared deck link: the presentation's OWN cover, recreated.
    This is a second rendering of the cover design (the first is components/deck/layouts/Cover.tsx
@@ -8,8 +8,11 @@ import { getDeckShareMeta } from '@/lib/decks/shareMeta';
    those values by hand. If the cover design changes, change it here too, or the preview drifts.
    Deliberately simpler than the real cover: background photo + scrim + Interactius wordmark +
    the big serif title (+ the cover subtitle). The CLIENT is not drawn here — it rides in the OG
-   description text ("Propuesta de colaboración para {Cliente}") instead, which avoids fetching and
-   recolouring the client's logo SVG. The title has no FitText shrink; it wraps. */
+   description text ("Propuesta de colaboración para {Cliente}") instead. The title has no FitText
+   shrink; it wraps.
+
+   Assets (fonts + wordmark) are inlined as base64 (lib/decks/ogAssets.ts): reading them from disk
+   500s on Netlify because the serverless bundle doesn't trace those files. Zero fs reads here. */
 
 export const runtime = 'nodejs';
 export const alt = 'Portada de la presentación';
@@ -21,19 +24,14 @@ const DARK = '#1C1A17';
 const WARM = '#F5F2ED';
 const SHORT_TITLE = 40; // Cover.tsx measure step
 
-const fontUrl = (file: string) => new URL(`./_fonts/${file}`, import.meta.url);
+const serif300 = Buffer.from(SERIF_300_B64, 'base64');
+const mono400 = Buffer.from(MONO_400_B64, 'base64');
+const interactiusUri = `data:image/svg+xml;base64,${INTERACTIUS_SVG_B64}`;
 
 export default async function Image({ params }: { params: Promise<{ id: string }> | { id: string } }) {
   const { id } = await Promise.resolve(params);
 
   try {
-    const [serif300, mono400, interactiusSvg] = await Promise.all([
-      readFile(fontUrl('ibm-plex-serif-latin-300-normal.ttf')),
-      readFile(fontUrl('ibm-plex-mono-latin-400-normal.ttf')),
-      readFile(new URL('../../../../public/logo/interactius-negativo.svg', import.meta.url), 'utf8'),
-    ]);
-    const interactiusUri = `data:image/svg+xml;base64,${Buffer.from(interactiusSvg).toString('base64')}`;
-
     const meta = await getDeckShareMeta(id).catch(() => null);
     const title = meta?.title?.trim() || 'Presentación';
     const subtitle = meta?.subtitle?.trim() || null;
@@ -77,8 +75,7 @@ export default async function Image({ params }: { params: Promise<{ id: string }
       },
     );
   } catch {
-    // Never break the client's link preview: fall back to the static brand OG image.
-    const png = await readFile(new URL('../../../../public/og-default.png', import.meta.url));
-    return new Response(new Uint8Array(png), { headers: { 'content-type': 'image/png' } });
+    // Never break the client's link preview: a plain dark canvas (no text → no font needed, no fs).
+    return new ImageResponse(<div style={{ display: 'flex', width: '100%', height: '100%', backgroundColor: DARK }} />, size);
   }
 }
