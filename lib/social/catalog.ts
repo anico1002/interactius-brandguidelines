@@ -27,11 +27,19 @@ const SKELETONS: Record<string, string> = {
      girado. Va comentado en el esqueleto porque las dos colocaciones son
      legítimas y la de Miradas es la que más se usa; quitarle el comentario
      es un gesto, acordarse de que existe no lo es. */
+  /* SIN `> slug:`, a propósito. Antes ponía `/Miradas/` escrito a mano y
+     eso firmaba como Miradas cualquier portada que se añadiera a un
+     carrusel de Insights o de Eventos.
+
+     No se cambia por otro valor: se quita. El slug de la pieza es el
+     primero que alguien declare y las demás tarjetas lo heredan, así que
+     una portada añadida se firma sola con lo que ya diga la pieza. Y si
+     la pieza no dice nada, no se pinta ninguno, que es la regla escrita
+     en `compile.ts`: firmar por defecto con algo que nadie eligió es peor
+     que no firmar. */
   portada: `# Titular de la portada
 
 ## Una línea que explica de qué va el carrusel
-
-> slug: /Miradas/
 
 ${IMG}`,
 
