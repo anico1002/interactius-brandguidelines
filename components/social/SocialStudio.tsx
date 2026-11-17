@@ -230,7 +230,9 @@ export function SocialStudio({
     setError(null);
     setExportando('Preparando la imagen…');
     try {
-      await exportCard(node, canvas, fileName(titulo, actual, total));
+      /* Un aviso no es un error: el PNG se ha descargado igual. Se
+         enseña en el mismo sitio porque es lo que hay que leer. */
+      setError(await exportCard(node, canvas, fileName(titulo, actual, total), actual));
     } catch (e) {
       setError(e instanceof Error ? e.message : 'No se ha podido generar el PNG.');
     } finally {
@@ -243,7 +245,7 @@ export function SocialStudio({
     setError(null);
     setExportando(`Generando ${lista.length} imágenes…`);
     try {
-      await exportAll(lista, canvas, titulo);
+      setError(await exportAll(lista, canvas, titulo));
     } catch (e) {
       setError(e instanceof Error ? e.message : 'No se ha podido generar el zip.');
     } finally {
