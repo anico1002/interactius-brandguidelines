@@ -4,7 +4,7 @@
 > con las personas del cliente que deben verlo: un enlace por entregable y usuario y contraseña por persona.
 > Es la única tool del workspace con superficie pública protegida: el cliente entra, pero solo a lo suyo.
 
-Estado: **implementado · pendiente de verificación en deploy preview y de aplicar la migración.** Plan por
+Estado: **implementado · migración aplicada · pendiente de verificación en deploy preview.** Plan por
 bloques en `docs/superpowers/plans/2026-11-18-deliv-r.md`.
 
 Prototipo: `deliv-r-prototype.html` en la raíz del repo. Es el contrato de interacción (ver
@@ -59,14 +59,18 @@ preview, PR y merge) lo hacen la usuaria y Carlos.
 
 **Requiere a Carlos (o acceso al proyecto de Supabase y a Netlify):**
 
-- Poner `SUPABASE_SERVICE_ROLE_KEY` en Netlify. Sin ella `/clientes` responde «Servicio no disponible.».
-- Aplicar la migración en el SQL Editor.
-- Pasar las comprobaciones posteriores (nueve, en `.superpowers/sdd/2026-11-18-deliv-r/post-apply-checklist.md`):
-  privilegios de las tablas, que la sesión de equipo no lea el hash, que anónimo no lea nada, que ninguna
-  política de `storage.objects` dé `select` sin filtro de bucket, bucket no público, hook de alta limitado
-  a `@interactius.com`, subida y borrado de Storage con sesión de equipo, y la service role.
-- Confirmar el plan de Supabase y fijar el límite real por archivo del bucket (hoy sin `file_size_limit`; el
-  límite de 100 MB es solo orientativo, sobre tamaños declarados).
+- ~~Poner `SUPABASE_SERVICE_ROLE_KEY` en Netlify.~~ Hecho el 18 de noviembre de 2026 (secreta; el plan de
+  Netlify no permite limitar el ámbito a Functions).
+- ~~Aplicar la migración en el SQL Editor.~~ Aplicada por Martina el 18 de noviembre de 2026. Comprobado con
+  consultas de solo lectura: RLS activa en las tres tablas; `anon` sin `select` en ninguna; el equipo lee
+  `email` pero no `hash` y no escribe en `deliv_usuarios`; bucket `deliv-r` no público; ninguna política de
+  `storage.objects` para `anon`/`public` sin filtro de bucket; las 14 cuentas de `auth.users` son
+  `@interactius.com`.
+- Quedan del checklist posterior (en el deploy preview): subida y borrado de Storage con sesión de equipo,
+  que la sesión de equipo reciba error al pedir `hash` por REST, y que los inicios de sesión anónimos estén
+  desactivados en Auth.
+- Plan de Supabase: **Free**, límite global de 50 MB por archivo. Falta un aviso en la subida para archivos
+  sueltos de más de 50 MB (hoy fallarían al subir); el límite de 100 MB por artefacto es solo orientativo.
 
 **Preguntas para Alberto:**
 
@@ -378,8 +382,8 @@ visor público de decks y los formularios públicos siguen abiertos; el catálog
 - Rama `feat/deliv-r`; commits `feat(delivr): … (bloque N)` en castellano y sin acentos.
 - **Netlify despliega `main` en cuanto llega el merge: no hay staging.** La verificación manual se hace en
   el deploy preview del PR, antes del merge.
-- Antes del merge: migración aplicada (aditiva), `DELIV_SESSION_SECRET` (hecho) y
-  `SUPABASE_SERVICE_ROLE_KEY` (pendiente, Carlos) en Netlify.
+- Antes del merge: migración aplicada (hecho), `DELIV_SESSION_SECRET` (hecho) y
+  `SUPABASE_SERVICE_ROLE_KEY` (hecho) en Netlify.
 - La tarjeta del catálogo se enciende (`href`) en el PR que cierra la tool.
 - Vuelta atrás: revertir el merge. La migración es aditiva; deshacerla es `drop` de las tres tablas y del
   bucket, y solo si no hay entregables reales.
