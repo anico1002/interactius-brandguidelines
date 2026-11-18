@@ -1,0 +1,547 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Deliv_r prototipo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Serif:wght@300;400&display=swap">
+<style>
+/* Prototipo de Deliv_r: equipo (workspace) y cliente (superficie publica /clientes).
+   Valores de lib/tokens.ts, lib/typeScale.ts (body-sm 13, caption 10, title-sm 24, title 32) y lib/motion.ts
+   (hover-wipe cubic-bezier(.45,0,.15,1), 700 ms). Todo es simulado: no hay backend. */
+:root{
+  color-scheme: light;
+  --dark:#1C1A17; --white:#FFFFFF; --grey:#E8E6E3; --warm-light:#F5F2ED; --warm-dark:#E0DAD2;
+  --ash:#75706B; --ash-dark:#46433F; --bordeaux:#99335F; --brick:#C24B36;
+  --mono:'IBM Plex Mono', ui-monospace, Menlo, monospace;
+  --serif:'IBM Plex Serif', Georgia, serif;
+  --h:40px;
+  --ease:cubic-bezier(.45,0,.15,1);
+}
+*{box-sizing:border-box}
+html,body{background:var(--warm-light);color:var(--dark)}
+body{font:400 13px/1.5 var(--mono);font-style:normal;margin:0}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--dark);outline-offset:3px}
+[hidden]{display:none!important}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+
+/* cabecera del workspace */
+header.top{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:8px;padding:10px 16px;
+  border-bottom:1px solid var(--warm-dark);background:var(--warm-light);flex-wrap:wrap}
+.mark{display:inline-flex;align-items:center;text-decoration:none;cursor:pointer}
+.mark svg{display:block;width:20px;height:20px}
+.divider{width:1px;height:18px;background:var(--warm-dark);flex-shrink:0;margin:0 4px}
+.wordmark{display:block;height:22px;width:auto;cursor:pointer}
+.spacer{margin-left:auto}
+.user{display:flex;align-items:center;gap:14px;font:400 11px/1 var(--mono);color:var(--ash)}
+.logout{appearance:none;border:1px solid var(--warm-dark);background:var(--white);color:var(--ash);padding:7px 12px;
+  font:500 10px/1 var(--mono);letter-spacing:.06em;text-transform:uppercase;white-space:nowrap}
+.search{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(380px,42%)}
+.sfield{display:flex;align-items:center;gap:8px;width:100%;height:var(--h);padding:0 12px;border:1px solid var(--warm-dark);background:var(--white)}
+.sfield input{flex:1;min-width:0;appearance:none;border:0;outline:0;background:transparent;font:400 13px/1.2 var(--mono)}
+@media (max-width:760px){.search{position:static;transform:none;width:100%;order:5}.user .em{display:none}}
+
+main.ws{padding:40px 16px 120px;max-width:1100px;margin:0 auto}
+@media (min-width:700px){main.ws{padding-inline:32px}}
+.intro{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:12px 28px;margin-bottom:36px}
+.intro h1{font:300 32px/1.1 var(--serif);margin:0}
+.intro .acts{display:flex;flex-wrap:wrap;gap:12px 28px;align-items:center}
+h2.sec{font:500 10px/1.4 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--ash);margin:0 0 6px;padding-bottom:10px;border-bottom:1px solid var(--dark)}
+section.client{margin-bottom:40px}
+.arow{display:grid;grid-template-columns:minmax(0,1fr) 70px 110px 110px;gap:4px 16px;align-items:center;min-height:var(--h);padding:8px 0;
+  border-bottom:1px solid var(--warm-dark);cursor:pointer;background:none;border-left:0;border-right:0;border-top:0;width:100%;text-align:left}
+.arow:hover .t{text-decoration:underline;text-underline-offset:4px}
+.arow .t{font:500 13px/1.35 var(--mono);overflow-wrap:anywhere}
+.arow .m{font:400 11px/1.3 var(--mono);color:var(--ash);font-variant-numeric:tabular-nums}
+.arow .m.r{text-align:right}
+@media (max-width:620px){.arow{grid-template-columns:1fr auto;}.arow .t{grid-column:1/-1}.arow .m.r{text-align:left}}
+.empty{max-width:520px;margin:40px 0}
+.empty p{margin:0 0 20px;color:var(--ash-dark)}
+
+/* enlaces CTA: subrayado + hover-wipe (izquierda a derecha, 700 ms) */
+.link{appearance:none;border:0;background:none;padding:0;position:relative;display:inline-flex;align-items:center;min-height:var(--h);
+  color:var(--dark);font:500 13px/1.2 var(--mono);text-decoration:none;cursor:pointer}
+.link span{position:relative;display:inline-block;padding-bottom:3px}
+.link span::after{content:'';position:absolute;left:0;right:0;bottom:0;height:1px;background:currentColor;transform:scaleX(1);transform-origin:left;pointer-events:none}
+.link:hover span::after,.link:focus-visible span::after{animation:wipe .7s var(--ease) forwards}
+.link.danger{color:var(--bordeaux)}
+.link.small{font-size:12px;min-height:32px}
+.link[disabled],.link[aria-disabled="true"]{opacity:.3;cursor:not-allowed}
+.link[disabled]:hover span::after{animation:none}
+@keyframes wipe{0%{transform:scaleX(0)}100%{transform:scaleX(1)}}
+.lrow{display:flex;flex-wrap:wrap;align-items:center;gap:0 28px;min-height:var(--h)}
+
+/* formularios */
+.form{max-width:640px}
+.lab{display:block;font:500 10px/1.4 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--ash);margin-bottom:6px}
+.inp{display:block;width:100%;height:var(--h);padding:0 12px;border:1px solid var(--warm-dark);background:var(--white);font:400 13px/1.4 var(--mono);border-radius:0}
+.inp:focus{border-color:var(--dark);outline:0}
+.inp.bad{border-color:var(--bordeaux)}
+.field{margin-bottom:22px;position:relative}
+.hint{font:400 11px/1.5 var(--mono);color:var(--ash);margin-top:6px}
+.hint b{font-weight:600;color:var(--dark)}
+.bad-t{color:var(--bordeaux)}
+.sugg{display:flex;flex-wrap:wrap;gap:0 18px;margin-top:2px}
+.pick{border:1px dashed var(--ash);background:var(--white);padding:14px 16px;display:grid;gap:0}
+.pick .lrow{min-height:36px}
+.tablewrap{overflow-x:auto;border-top:1px solid var(--dark)}
+table{border-collapse:collapse;width:100%;min-width:560px;font:400 12px/1.4 var(--mono)}
+th{font:500 10px/1.4 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--ash);text-align:left;padding:10px 12px 8px 0;border-bottom:1px solid var(--warm-dark);white-space:nowrap}
+td{padding:4px 12px 4px 0;height:var(--h);border-bottom:1px solid var(--warm-dark);vertical-align:middle;font-variant-numeric:tabular-nums}
+td.n,th.n{text-align:right}
+tr.total td{font-weight:600;border-bottom:0}
+.warnbox{border:1px solid var(--bordeaux);color:var(--bordeaux);padding:12px 14px;margin:14px 0;display:grid;gap:4px;font:400 12px/1.6 var(--mono)}
+.warnbox b{font-weight:600}
+.warnbox .lrow{margin-top:4px}
+.progress{height:4px;background:var(--warm-dark);margin:10px 0 6px}
+.progress i{display:block;height:100%;width:0;background:var(--dark);transition:width .2s linear}
+.state{font:500 12px/1.4 var(--mono)}
+
+/* ficha */
+.title-sm{font:400 24px/1.15 var(--serif);margin:0}
+.ficha h1{font:300 32px/1.1 var(--serif);margin:0 0 6px;overflow-wrap:anywhere}
+.eyebrow{font:500 10px/1.4 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--ash)}
+.block{margin-top:44px}
+.block h2{font:400 24px/1.15 var(--serif);margin:0 0 16px}
+.linkrow{display:flex;flex-wrap:wrap;gap:6px 24px;align-items:center}
+.linkbox{flex:1 1 320px;min-width:0;height:var(--h);display:flex;align-items:center;padding:0 12px;border:1px solid var(--warm-dark);background:var(--white);font:400 12px/1 var(--mono);overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.giverow{display:flex;flex-wrap:wrap;gap:6px 24px;align-items:center}
+.giverow .inp{flex:1 1 260px;width:auto}
+.creds{border:1px solid var(--dark);background:var(--white);padding:16px;margin-top:16px;max-width:640px}
+.creds dl{display:grid;grid-template-columns:auto 1fr;gap:6px 18px;margin:0 0 6px;align-items:center}
+.creds dt{font:500 10px/1.6 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--ash)}
+.creds dd{margin:0;font:500 13px/1.4 var(--mono);overflow-wrap:anywhere;min-height:24px}
+.note{font:400 11px/1.6 var(--mono);color:var(--ash-dark);border-left:2px solid var(--warm-dark);padding-left:10px;margin:8px 0}
+.info{font:400 12px/1.6 var(--mono);border-left:2px solid var(--dark);padding-left:10px;margin:14px 0;max-width:640px}
+.delbox{border:1px solid var(--bordeaux);padding:14px;margin-top:14px;max-width:640px}
+.delbox p{margin:0 0 10px;color:var(--bordeaux)}
+.pw{font-weight:600;letter-spacing:.02em}
+.recover{border:1px solid var(--dark);background:var(--white);padding:14px 16px;margin:8px 0 14px;max-width:640px}
+.recover ul{margin:6px 0 0;padding-left:18px}
+.back{margin-bottom:22px}
+
+/* cliente: superficie publica */
+.cl{display:flex;min-height:calc(100dvh - 40px);flex-direction:column;padding:0 24px}
+.cl main{width:100%;max-width:400px;margin:0 auto;flex:1;display:flex;flex-direction:column;justify-content:center;padding:64px 0}
+.cl .brand{display:flex;align-items:center;gap:12px;margin-bottom:56px}
+.cl .brand svg{width:32px;height:32px;flex-shrink:0}
+.cl .brand span{font:500 10px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:rgba(28,26,23,.7)}
+.cl h1{font:300 32px/1.1 var(--serif);margin:0}
+.cl p.lead{margin:16px 0 0;color:rgba(28,26,23,.7)}
+.cl form{margin-top:40px;display:flex;flex-direction:column;gap:24px}
+.cl footer{width:100%;max-width:400px;margin:0 auto;padding:24px 0;font:400 10px/1.4 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:rgba(28,26,23,.5)}
+.cl .err{margin:0;color:var(--bordeaux);border-left:2px solid var(--bordeaux);padding-left:12px}
+.cl .link.block{margin-top:4px}
+
+.viewer{display:flex;flex-direction:column;height:calc(100dvh - 40px)}
+.vbar{height:32px;flex-shrink:0;background:var(--dark);color:var(--warm-light);display:flex;align-items:center;justify-content:space-between;gap:16px;padding:0 16px;font:400 11px/1 var(--mono)}
+.vbar .l{display:flex;align-items:center;gap:8px;min-width:0}
+.vbar .l svg{width:16px;height:16px;flex-shrink:0;outline:1px solid rgba(245,242,237,.4)}
+.vbar .l .sep{opacity:.4}
+.vbar .l .tt{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.vbar .r{display:flex;align-items:center;gap:16px;flex-shrink:0}
+.vbar .em{opacity:.6}
+.vbar .link{color:var(--warm-light);min-height:32px;font-size:11px;font-weight:400}
+@media (max-width:560px){.vbar .em{display:none}}
+.vframe{flex:1;overflow:auto;background:var(--white)}
+.mock{max-width:860px;margin:0 auto;padding:36px 20px 60px}
+.mock .ph{font:500 10px/1.4 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--ash)}
+.mock h1{font:300 32px/1.1 var(--serif);margin:10px 0 14px}
+.mock p{max-width:62ch;margin:0 0 14px;color:var(--ash-dark)}
+.mock .tabs{display:flex;gap:18px;border-bottom:1px solid var(--warm-dark);margin:26px 0 18px;flex-wrap:wrap}
+.mock .tabs span{padding:8px 0;font:500 12px/1 var(--mono);color:var(--ash)}
+.mock .tabs span.on{color:var(--dark);border-bottom:2px solid var(--dark)}
+.mock .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.mock .card{background:var(--grey);aspect-ratio:4/3;padding:12px;font:500 11px/1.3 var(--mono);display:flex;align-items:flex-end}
+.pdfwrap{background:#8a8681;min-height:100%;padding:18px 12px 40px;display:flex;flex-direction:column;align-items:center;gap:14px}
+.pdftool{width:min(640px,100%);background:var(--ash-dark);color:var(--warm-light);font:400 11px/1 var(--mono);padding:10px 12px;display:flex;justify-content:space-between}
+.pdfpage{width:min(640px,100%);aspect-ratio:1/1.414;background:var(--white);padding:9% 9%;display:flex;flex-direction:column;gap:10px}
+.pdfpage h1{font:300 28px/1.1 var(--serif);margin:0 0 8px}
+.pdfpage i{display:block;height:7px;background:var(--grey)}
+
+/* barra del prototipo */
+.sim{position:fixed;left:0;right:0;bottom:0;z-index:100;background:var(--ash-dark);color:var(--warm-light);
+  padding:8px 16px calc(8px + env(safe-area-inset-bottom,0px));display:flex;gap:6px;flex-wrap:wrap;align-items:center;font:500 10px/1 var(--mono);letter-spacing:.04em;max-height:40vh;overflow:auto}
+.sim strong{text-transform:uppercase;letter-spacing:.1em;margin-right:6px;font-weight:600}
+.sim button{appearance:none;border:1px solid rgba(245,242,237,.35);background:transparent;color:var(--warm-light);padding:6px 8px;font:500 10px/1 var(--mono)}
+.sim button[aria-pressed="true"]{background:var(--warm-light);color:var(--dark)}
+.simsep{width:1px;height:16px;background:rgba(245,242,237,.35);margin:0 4px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head><body>
+<div id="app"></div>
+
+<div class="sim" role="region" aria-label="Controles del prototipo">
+  <strong>Prototipo</strong>
+  <button data-go="gal">Galería</button>
+  <button data-go="galempty">Galería vacía</button>
+  <button data-go="nuevo">Nuevo artefacto</button>
+  <button data-go="ficha">Ficha</button>
+  <button data-go="users">Usuarios</button>
+  <span class="simsep" aria-hidden="true"></span>
+  <button data-go="login">Login</button>
+  <button data-go="loginerr">Login error</button>
+  <button data-go="loginlock">Login bloqueado</button>
+  <button data-go="visorhtml">Visor HTML</button>
+  <button data-go="visorpdf">Visor PDF</button>
+  <button data-go="noaccess">Sin acceso</button>
+  <span class="simsep" aria-hidden="true"></span>
+  <button data-go="reset">Restablecer</button>
+</div>
+
+<script>
+(() => {
+const $=(s,el=document)=>el.querySelector(s);
+const esc=(t)=>String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const fold=(t)=>t.normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase();
+const slugify=(t)=>fold(t).replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'');
+const RESERVED=['login','logout','admin','archivos'];
+const HOST='brand.interactius.com';
+const TEAM='equipo@interactius.com';
+const TODAY='18 nov 2026';
+const ALPHA='abcdefghijkmnpqrstuvwxyz23456789';
+const rnd=(n)=>Array.from({length:n},()=>ALPHA[Math.random()*ALPHA.length|0]).join('');
+const genPass=()=>[rnd(4),rnd(4),rnd(4),rnd(4)].join('-');
+const fmt=(mb)=>mb.toFixed(1).replace('.',',')+' MB';
+
+const ISO='<svg viewBox="0 0 362 362" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="interactius"><path d="M0 0H362V362H0V0Z" fill="#1C1A17"/><path d="M0 362L0 181.968L362 181.968L362 362L0 362Z" fill="#F5F2ED"/><path d="M0 362V181.968H2V360H360V181.968H362V362Z" fill="#1C1A17"/><rect x="140.025" y="181.968" width="80.0143" height="80.0143" transform="rotate(-90 140.025 181.968)" fill="#F5F2ED"/><path d="M140.025 261.982L140.025 181.968L220.04 181.968L220.04 261.982L140.025 261.982Z" fill="#1C1A17"/></svg>';
+const WORD='<svg class="wordmark" viewBox="0 0 205 80" role="img" aria-label="Deliv_r"><text x="0" y="49" font-family="\'IBM Plex Mono\', ui-monospace, monospace" font-weight="600" font-size="40" letter-spacing="0.05em" fill="#1C1A17">Deliv<tspan fill="#C24B36">_</tspan>r</text></svg>';
+const SEARCH='<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#75706B" stroke-width="1.4" aria-hidden="true"><circle cx="7" cy="7" r="4.5"/><line x1="10.5" y1="10.5" x2="14" y2="14" stroke-linecap="round"/></svg>';
+
+/* ───────── datos simulados ───────── */
+function seed(){
+  return {
+    arts:[
+      {id:'a1',pub:'h7k2p9xq4m',cliente:'cliente-ejemplo',nombre:'Cliente Ejemplo',titulo:'Informe del taller',tipo:'html',fecha:'12 nov 2026',version:1,
+        accesos:[{email:'ana@cliente.test',por:'equipo@interactius.com',cuando:'12 nov 2026',ultimo:'17 nov 2026'},{email:'luis@cliente.test',por:'otro@interactius.com',cuando:'13 nov 2026',ultimo:'nunca'}]},
+      {id:'a2',pub:'t4n8wrb3cq',cliente:'cliente-ejemplo',nombre:'Cliente Ejemplo',titulo:'Prototipo de app',tipo:'html',fecha:'5 nov 2026',version:2,
+        accesos:[{email:'ana@cliente.test',por:'otro@interactius.com',cuando:'6 nov 2026',ultimo:'14 nov 2026'},{email:'pau@cliente.test',por:'equipo@interactius.com',cuando:'6 nov 2026',ultimo:'9 nov 2026'}]},
+      {id:'a3',pub:'m2x6dkf9ae',cliente:'otro-cliente',nombre:'Otro Cliente',titulo:'Resumen trimestral',tipo:'pdf',fecha:'28 oct 2026',version:1,
+        accesos:[{email:'marta@otro.test',por:'otro@interactius.com',cuando:'29 oct 2026',ultimo:'3 nov 2026'}]},
+    ],
+    users:{
+      'ana@cliente.test':{activo:true,ultimo:'17 nov 2026'},
+      'luis@cliente.test':{activo:true,ultimo:'nunca'},
+      'pau@cliente.test':{activo:false,ultimo:'9 nov 2026'},
+      'marta@otro.test':{activo:true,ultimo:'3 nov 2026'},
+    }
+  };
+}
+let D=seed();
+const st={screen:'gal',cur:'a1',q:'',cred:null,giveMsg:null,delOpen:false,replacing:false,repMsg:null,
+  nuevo:null,userPw:{},recover:null,fails:0,viewFrom:'ficha'};
+function newNuevo(){return {cli:'',tit:'',file:null,confirmClaude:false,asking:false,uploading:false,pct:0}}
+
+const art=(id)=>D.arts.find(a=>a.id===id);
+const link=(a)=>`${HOST}/clientes/${a.cliente}/${a.pub}`;
+const nPers=(a)=>a.accesos.length;
+const userArts=(email)=>D.arts.filter(a=>a.accesos.some(x=>x.email===email));
+
+/* ───────── cabecera ───────── */
+function header(searchHtml=''){
+  return `<header class="top">
+    <a class="mark" data-go="gal" title="Ir al workspace" aria-label="Ir al workspace">${ISO}</a>
+    <span class="divider" aria-hidden="true"></span>
+    <a data-go="gal" aria-label="Deliv_r">${WORD}</a>
+    <span class="spacer"></span>
+    <div class="user"><span class="em">${TEAM}</span><button class="logout" type="button" data-go="login">Cerrar sesión</button></div>
+    ${searchHtml}
+  </header>`;
+}
+const L=(label,attrs='',cls='')=>`<button type="button" class="link ${cls}" ${attrs}><span>${label}</span></button>`;
+
+/* ───────── galería ───────── */
+function listHtml(){
+  const q=fold(st.q.trim());
+  const filtering=q.length>=3;
+  let arts=D.arts.filter(a=>!filtering||fold(a.titulo+' '+a.nombre).includes(q));
+  if(!arts.length) return `<div class="empty"><p>${filtering?'Ningún artefacto coincide con la búsqueda.':'Todavía no hay artefactos.'}</p></div>`;
+  const groups=[];arts.forEach(a=>{let g=groups.find(g=>g.c===a.cliente);if(!g){g={c:a.cliente,n:a.nombre,items:[]};groups.push(g)}g.items.push(a)});
+  return groups.map(g=>`<section class="client"><h2 class="sec">${esc(g.n.toUpperCase())} · ${g.items.length}</h2>
+    ${g.items.map(a=>`<button type="button" class="arow" data-open="${a.id}">
+      <span class="t">${esc(a.titulo)}</span><span class="m">${a.tipo.toUpperCase()}</span><span class="m">${a.fecha}</span><span class="m r">${nPers(a)} ${nPers(a)===1?'persona':'personas'}</span></button>`).join('')}</section>`).join('');
+}
+function galeria(empty){
+  const sf=`<div class="search"><div class="sfield">${SEARCH}<input id="q" type="search" placeholder="Buscar por título o cliente" aria-label="Buscar por título o cliente" autocomplete="off" value="${esc(st.q)}"></div></div>`;
+  return header(sf)+`<main class="ws">
+    <div class="intro"><h1>Entregables</h1><div class="acts">${L('Nuevo artefacto','data-go="nuevo"')}${L('Usuarios','data-go="users"')}</div></div>
+    ${empty?`<div class="empty"><p>Aún no has publicado ningún entregable. Sube un HTML o un PDF exportado de claude.ai y compártelo con tu cliente.</p>${L('Nuevo artefacto','data-go="nuevo"')}</div>`:`<div id="list">${listHtml()}</div>`}
+  </main>`;
+}
+
+/* ───────── nuevo artefacto ───────── */
+const FILES={
+  html:{name:'hack-the-wallet.html',tipo:'html',claude:false,rows:[['index.html',3.1,.4,'imágenes incrustadas extraídas'],['imagenes/portada.png',9.4,.8,'WebP'],['imagenes/equipo.jpg',6.2,.6,'WebP'],['fuentes/plex-mono.woff2',.2,.2,'']]},
+  claude:{name:'prototipo-app.html',tipo:'html',claude:true,rows:[['index.html',1.8,.3,'imágenes incrustadas extraídas'],['imagenes/flujo.png',4.4,.5,'WebP']]},
+  pdf:{name:'future-thinking-digest-q3.pdf',tipo:'pdf',claude:false,rows:[['future-thinking-digest-q3.pdf',10.4,10.4,'sin recompresión']]},
+  zip:{name:'prototipo-app.zip',tipo:'zip',claude:false,rows:[['index.html',.3,.3,''],['assets/demo.mp4',12.1,12.1,'sin recompresión'],['assets/pantallas.png',4.2,.5,'WebP']]},
+};
+/* Textos exactos de docs/features/deliv-r.md § Alcance (informe de peso). */
+const ADV_PDF='Expórtalo con la opción de reducir tamaño. En Mac: Vista Previa › Exportar › Filtro Quartz › Reducir tamaño de archivo.';
+const ADV_VID='Si es solo audio, expórtalo como M4A o MP3. Si es vídeo, expórtalo a 720p.';
+function clientInfo(){
+  const raw=st.nuevo.cli.trim(),slug=slugify(raw);
+  const ex=D.arts.find(a=>a.cliente===slug);
+  const bad=RESERVED.includes(slug);
+  return {raw,slug,ex,bad,nombre:ex?ex.nombre:raw};
+}
+function reportHtml(){
+  const n=st.nuevo,f=n.file;if(!f) return '';
+  const ex=FILES[f];
+  const tO=ex.rows.reduce((s,r)=>s+r[1],0),tF=ex.rows.reduce((s,r)=>s+r[2],0);
+  const big=ex.rows.filter(r=>r[2]>5);
+  return `<div class="block" style="margin-top:28px"><div class="eyebrow" style="margin-bottom:8px">Informe de peso · ${esc(ex.name)}</div>
+    <div class="tablewrap"><table><thead><tr><th>Archivo</th><th class="n">Original</th><th class="n">Final</th><th>Tratamiento</th></tr></thead><tbody>
+    ${ex.rows.map(r=>`<tr><td style="${r[2]>5?'color:var(--bordeaux)':''}">${esc(r[0])}</td><td class="n">${fmt(r[1])}</td><td class="n" style="${r[2]>5?'color:var(--bordeaux);font-weight:600':''}">${fmt(r[2])}</td><td style="color:var(--ash)">${esc(r[3])}</td></tr>`).join('')}
+    <tr class="total"><td>Total</td><td class="n">${fmt(tO)}</td><td class="n">${fmt(tF)}</td><td></td></tr></tbody></table></div>
+    ${big.map(r=>`<div class="warnbox" role="alert"><b>${esc(r[0])} · ${fmt(r[2])}</b><span>${r[0].endsWith('.pdf')?ADV_PDF:ADV_VID}</span></div>`).join('')}
+    ${ex.claude?`<div class="warnbox" role="alert"><b>Usa funciones de Claude</b><span>Este HTML llama a funciones que solo existen dentro de claude.ai. Fuera de allí esas partes pueden aparecer vacías para tu cliente.</span></div>`:''}
+  </div>`;
+}
+function actionsHtml(){
+  const n=st.nuevo,ci=clientInfo();
+  if(n.uploading) return `<div class="block" style="margin-top:28px"><div class="state">Subiendo · <span id="pct">${n.pct}</span> %</div><div class="progress"><i id="bar" style="width:${n.pct}%"></i></div></div>`;
+  const ok=ci.raw&&ci.slug&&!ci.bad&&n.tit.trim()&&n.file;
+  if(n.asking) return `<div class="warnbox" role="alert" style="margin-top:22px"><b>Confirma la publicación</b><span>El archivo usa funciones de Claude. Publícalo solo si has comprobado que se ve bien sin ellas.</span>
+    <div class="lrow">${L('Publicar igualmente','data-act="confirm-claude" style="color:var(--bordeaux)"')}${L('Elegir otro archivo','data-act="cancel-claude"')}</div></div>`;
+  return `<div class="lrow" style="margin-top:28px">${L('Publicar',`data-act="publish" ${ok?'':'disabled'}`)}${L('Cancelar','data-go="gal"')}</div>`;
+}
+function suggHtml(){
+  const ci=clientInfo(),names=[...new Map(D.arts.map(a=>[a.cliente,a.nombre]))];
+  const m=names.filter(([s,n])=>!ci.raw||fold(n).includes(fold(ci.raw))||s.includes(ci.slug)).filter(([s])=>s!==ci.slug);
+  return `<div class="sugg" id="sugg">${m.map(([s,n])=>`<button type="button" class="link small" data-cli="${esc(n)}"><span>${esc(n)}</span></button>`).join('')}</div>
+    <div class="hint" id="slugline">${ci.bad?`<span class="bad-t">Ese nombre está reservado. Usa otro.</span>`:ci.slug?`Dirección: /clientes/<b>${ci.slug}</b>/${ci.ex?' · cliente existente':' · cliente nuevo'}`:'Escribe el cliente o elige uno de los existentes.'}</div>`;
+}
+function nuevo(){
+  if(!st.nuevo) st.nuevo=newNuevo();
+  const n=st.nuevo,ci=clientInfo();
+  return header()+`<main class="ws"><div class="form">
+    <div class="back">${L('Volver a la galería','data-go="gal"','small')}</div>
+    <div class="intro" style="margin-bottom:28px"><h1>Nuevo artefacto</h1></div>
+    <div class="field"><label class="lab" for="cli">Cliente</label>
+      <input id="cli" class="inp ${ci.bad?'bad':''}" autocomplete="off" value="${esc(n.cli)}" placeholder="Cliente Ejemplo">
+      <div id="suggwrap">${suggHtml()}</div></div>
+    <div class="field"><label class="lab" for="tit">Título</label>
+      <input id="tit" class="inp" autocomplete="off" value="${esc(n.tit)}" placeholder="Informe del taller"></div>
+    <div class="field"><span class="lab">Archivo</span>
+      <div class="pick"><div class="hint" style="margin:0 0 6px">Un .html, .pdf o .zip con index.html en la raíz. Hasta 100 MB por artefacto.</div>
+        ${n.file?`<div class="lrow"><span class="state">${esc(FILES[n.file].name)}</span>${L('Quitar','data-act="unpick"','small')}</div>`:
+        `<div class="lrow">${L('Elegir HTML de ejemplo','data-pick="html"','small')}${L('HTML con funciones de Claude','data-pick="claude"','small')}${L('Elegir PDF de ejemplo','data-pick="pdf"','small')}${L('Elegir ZIP de ejemplo','data-pick="zip"','small')}</div>
+        <div class="hint" style="margin:2px 0 0">Prototipo: los archivos son simulados.</div>`}
+      </div></div>
+    <div id="report">${reportHtml()}</div>
+    <div id="actions">${actionsHtml()}</div>
+  </div></main>`;
+}
+function patchNuevo(){
+  $('#suggwrap').innerHTML=suggHtml();
+  const ci=clientInfo();$('#cli').classList.toggle('bad',ci.bad);
+  $('#actions').innerHTML=actionsHtml();
+}
+function startUpload(){
+  const n=st.nuevo;n.uploading=true;n.pct=0;$('#actions').innerHTML=actionsHtml();
+  const t=setInterval(()=>{
+    n.pct=Math.min(100,n.pct+8+(Math.random()*10|0));
+    const b=$('#bar'),p=$('#pct');if(b)b.style.width=n.pct+'%';if(p)p.textContent=n.pct;
+    if(n.pct>=100){clearInterval(t);setTimeout(()=>{
+      const ci=clientInfo(),f=FILES[n.file];
+      const a={id:'a'+Date.now(),pub:rnd(10),cliente:ci.slug,nombre:ci.nombre,titulo:n.tit.trim(),tipo:f.tipo==='pdf'?'pdf':'html',fecha:TODAY,version:1,accesos:[]};
+      D.arts.push(a);st.cur=a.id;st.nuevo=null;st.cred=null;st.giveMsg=null;go('ficha');
+    },350)}
+  },260);
+}
+
+/* ───────── ficha ───────── */
+function fichaAccesos(a){
+  if(!a.accesos.length) return `<p class="note">Nadie tiene acceso todavía. Da acceso a una persona con su correo.</p>`;
+  return `<div class="tablewrap"><table><thead><tr><th>Persona</th><th>Dado por</th><th>Cuándo</th><th>Último acceso</th><th></th></tr></thead><tbody>
+  ${a.accesos.map(x=>`<tr><td>${esc(x.email)}</td><td style="color:var(--ash)">${esc(x.por)}</td><td>${x.cuando}</td><td>${x.ultimo}</td><td>${L('Revocar',`data-revoke="${esc(x.email)}"`,'small danger')}</td></tr>`).join('')}</tbody></table></div>`;
+}
+function credsHtml(a){
+  const c=st.cred;if(!c) return '';
+  return `<div class="creds" role="status"><div class="eyebrow" style="margin-bottom:10px">Credenciales de ${esc(c.email)}</div>
+    <dl><dt>Enlace</dt><dd>https://${link(a)}</dd><dt>Usuario</dt><dd>${esc(c.email)}</dd><dt>Contraseña</dt><dd class="pw">${esc(c.pass)}</dd></dl>
+    <div class="note">Solo se muestra ahora. Envíala por un canal distinto al del enlace.</div>
+    <div class="lrow">${L('Copiar datos','data-copy="creds"')}${L('Cerrar','data-act="close-creds"')}</div></div>`;
+}
+function ficha(){
+  const a=art(st.cur);if(!a){st.screen='gal';return galeria()}
+  return header()+`<main class="ws ficha" style="max-width:860px">
+    <div class="back">${L('Volver a la galería','data-go="gal"','small')}</div>
+    <div class="eyebrow">${esc(a.nombre)} · ${a.tipo.toUpperCase()} · versión ${a.version} · publicado ${a.fecha}</div>
+    <h1 style="margin-top:8px">${esc(a.titulo)}</h1>
+    <div class="block" style="margin-top:28px"><div class="linkrow"><div class="linkbox" id="lbox" title="https://${link(a)}">https://${link(a)}</div>
+      ${L('Copiar enlace','data-copy="link"')}${L('Ver','data-view="1"')}</div></div>
+
+    <div class="block"><h2>Dar acceso</h2>
+      <div class="giverow"><input id="mail" class="inp" type="email" placeholder="ana@cliente.test" aria-label="Correo de la persona" autocomplete="off">${L('Dar acceso','data-act="give"')}</div>
+      <div id="giveout">${st.giveMsg?`<p class="info" role="status">${esc(st.giveMsg)}</p>`:''}${credsHtml(a)}</div></div>
+
+    <div class="block"><h2>Accesos · ${nPers(a)}</h2><div id="acc">${fichaAccesos(a)}</div></div>
+
+    <div class="block"><h2>Archivo</h2>
+      <div class="lrow">${L('Sustituir archivo','data-act="replace"')}</div>
+      <div id="repout">${st.replacing?`<div class="state">Subiendo · <span id="pct">0</span> %</div><div class="progress" style="max-width:640px"><i id="bar"></i></div>`:''}${st.repMsg?`<p class="info" role="status">${esc(st.repMsg)}</p>`:''}</div>
+      <p class="note" style="max-width:640px">El enlace no cambia. Las personas con acceso ven la versión nueva en su siguiente carga.</p></div>
+
+    <div class="block"><h2>Borrar</h2>
+      <div class="lrow">${L('Borrar artefacto','data-act="del-open"','danger')}</div>
+      ${st.delOpen?`<div class="delbox"><p>Se borrarán el archivo y los ${nPers(a)} accesos. No se puede deshacer. Escribe el título para confirmar.</p>
+        <div class="hint" style="margin:0 0 8px;color:var(--ash-dark)">${esc(a.titulo)}</div>
+        <input id="deltit" class="inp" autocomplete="off" aria-label="Título para confirmar" style="margin-bottom:6px">
+        <div class="lrow">${L('Borrar definitivamente','data-act="del-do" id="delbtn" disabled','danger')}${L('Cancelar','data-act="del-cancel"')}</div></div>`:''}</div>
+  </main>`;
+}
+function copyFlash(btn,done='Copiado'){
+  const s=$('span',btn),orig=btn.dataset.orig||s.textContent;btn.dataset.orig=orig;s.textContent=done;
+  clearTimeout(btn._t);btn._t=setTimeout(()=>{s.textContent=orig},1500);
+}
+function clip(text){try{navigator.clipboard&&navigator.clipboard.writeText(text)}catch(e){}}
+
+/* ───────── usuarios ───────── */
+function usersScreen(){
+  const emails=Object.keys(D.users);
+  return header()+`<main class="ws"><div class="back">${L('Volver a la galería','data-go="gal"','small')}</div>
+    <div class="intro"><h1>Usuarios de cliente</h1></div>
+    <div class="tablewrap"><table style="min-width:680px"><thead><tr><th>Correo</th><th class="n">Artefactos</th><th>Último acceso</th><th>Estado</th><th></th></tr></thead><tbody>
+    ${emails.map(e=>{const u=D.users[e],n=userArts(e).length;return `<tr><td>${esc(e)}</td><td class="n">${n}</td><td>${u.ultimo}</td>
+      <td style="${u.activo?'':'color:var(--bordeaux)'}">${u.activo?'Activo':'Desactivado'}</td>
+      <td><div class="lrow" style="gap:0 20px;min-height:32px">${u.activo?L('Regenerar contraseña',`data-regen="${esc(e)}"`,'small')+L('Desactivar',`data-deact="${esc(e)}"`,'small danger'):L('Reactivar',`data-react="${esc(e)}"`,'small')}</div></td></tr>
+      ${st.userPw[e]?`<tr><td colspan="5" style="height:auto;padding:10px 0"><div class="creds" role="status" style="margin:0"><div class="eyebrow" style="margin-bottom:8px">Contraseña nueva de ${esc(e)}</div>
+        <dl><dt>Usuario</dt><dd>${esc(e)}</dd><dt>Contraseña</dt><dd class="pw">${st.userPw[e]}</dd></dl>
+        <div class="note">Solo se muestra ahora. La sesión que tuviera abierta vuelve al login. Envíala por un canal distinto al del enlace.</div>
+        <div class="lrow">${L('Copiar datos',`data-copypw="${esc(e)}"`)}${L('Cerrar',`data-closepw="${esc(e)}"`)}</div></div></td></tr>`:''}
+      ${st.recover===e?`<tr><td colspan="5" style="height:auto;padding:10px 0"><div class="recover"><div class="eyebrow">Al reactivar a ${esc(e)} recupera acceso a</div>
+        <ul>${userArts(e).map(a=>`<li>${esc(a.titulo)} <span style="color:var(--ash)">· ${esc(a.nombre)}</span></li>`).join('')||'<li>Ningún artefacto.</li>'}</ul>
+        <div class="note">Se genera una contraseña nueva y se muestra una sola vez.</div>
+        <div class="lrow">${L('Confirmar reactivación',`data-reactdo="${esc(e)}"`)}${L('Cancelar','data-act="react-cancel"')}</div></div></td></tr>`:''}`}).join('')}
+    </tbody></table></div></main>`;
+}
+
+/* ───────── cliente ───────── */
+function marco(inner){
+  return `<div class="cl"><main><div class="brand">${ISO}<span>Área de clientes</span></div>${inner}</main><footer>Interactius · Actitud liminal</footer></div>`;
+}
+function login(err){
+  const msg=err==='cred'?'Usuario o contraseña incorrectos.':err==='lock'?'Demasiados intentos. Prueba de nuevo en unos minutos.':'';
+  return marco(`<h1>Acceso privado</h1>
+    <p class="lead">Introduce el usuario y la contraseña que te ha enviado Interactius.</p>
+    <form id="lform" autocomplete="off">
+      <label><span class="lab">Usuario</span><input class="inp" id="lu" type="email" value="${err?'ana@cliente.test':''}" placeholder="ana@cliente.test"></label>
+      <label><span class="lab">Contraseña</span><input class="inp" id="lp" type="password" value="${err?'••••••••••':''}" placeholder="k7f3-q9xm-2pab-r4dz"></label>
+      ${msg?`<p class="err" role="alert">${msg}</p>`:''}
+      <div>${L('Entrar','data-act="enter"')}</div>
+      <div class="hint" style="margin:0">Prototipo: con la contraseña «mal» se ve el error; tres fallos seguidos, el bloqueo.</div>
+    </form>`);
+}
+function viewer(kind){
+  const a=art('a1'),isPdf=kind==='pdf',cur=isPdf?art('a3'):art(st.cur&&art(st.cur).tipo!=='pdf'?st.cur:'a1');
+  const title=isPdf?art('a3').titulo:cur.titulo;
+  const email=st.viewFrom==='ficha'?TEAM:(isPdf?'marta@otro.test':'ana@cliente.test');
+  const body=isPdf?`<div class="pdfwrap"><div class="pdftool"><span>${esc(title)}.pdf</span><span>1 / 12</span></div>
+      <div class="pdfpage"><h1>${esc(title)}</h1><i style="width:90%"></i><i style="width:96%"></i><i style="width:82%"></i><i style="width:94%"></i><i style="width:60%"></i><div style="height:24px"></div><i style="width:96%"></i><i style="width:88%"></i><i style="width:92%"></i><i style="width:70%"></i></div></div>`
+    :`<div class="mock"><div class="ph">Contenido de ejemplo del artefacto · iframe sandbox</div>
+      <h1>${esc(title)}</h1><p>Aquí aparece el entregable publicado por el equipo, tal como lo exportó claude.ai. Es del cliente o de quien lo creó y no se audita.</p>
+      <div class="tabs"><span class="on">Resumen</span><span>Hallazgos</span><span>Siguientes pasos</span></div>
+      <div class="cards"><div class="card">Hallazgo 01</div><div class="card">Hallazgo 02</div><div class="card">Hallazgo 03</div></div></div>`;
+  return `<div class="viewer"><header class="vbar"><span class="l">${ISO}<span class="sep">|</span><span class="tt">${esc(title)}</span></span>
+    <span class="r"><span class="em">${email}</span>${L('Cerrar sesión','data-go="login"','small')}</span></header>
+    <div class="vframe">${body}</div></div>`;
+}
+function noaccess(){
+  return marco(`<h1>No tienes acceso a este contenido.</h1>
+    <p class="lead">Tu usuario no tiene permiso para este enlace. Pide a Interactius que te lo dé o entra con otra cuenta.</p>
+    <div style="margin-top:32px">${L('Cerrar sesión','data-go="login"')}</div>`);
+}
+
+/* ───────── render ───────── */
+const KEY={gal:'gal',galempty:'galempty',nuevo:'nuevo',ficha:'ficha',users:'users',login:'login',loginerr:'loginerr',loginlock:'loginlock',visorhtml:'visorhtml',visorpdf:'visorpdf',noaccess:'noaccess'};
+function render(){
+  const s=st.screen,app=$('#app');
+  app.innerHTML=({
+    gal:()=>galeria(false),galempty:()=>galeria(true),nuevo,ficha,users:usersScreen,
+    login:()=>login(''),loginerr:()=>login('cred'),loginlock:()=>login('lock'),
+    visorhtml:()=>viewer('html'),visorpdf:()=>viewer('pdf'),noaccess
+  })[s]();
+  document.querySelectorAll('.sim [data-go]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.go===s));
+  const top=s==='visorhtml'||s==='visorpdf'||/^login|noaccess/.test(s)?0:0;window.scrollTo(0,top);
+}
+function go(s){
+  if(s==='reset'){D=seed();Object.assign(st,{screen:'gal',cur:'a1',q:'',cred:null,giveMsg:null,delOpen:false,replacing:false,repMsg:null,nuevo:null,userPw:{},recover:null,fails:0});render();return}
+  if(s==='nuevo') st.nuevo=newNuevo();
+  if(s==='ficha'&&!art(st.cur)) st.cur=D.arts[0]?D.arts[0].id:'';
+  if(s==='ficha'&&!D.arts.length){s='gal'}
+  if(s!=='ficha'){st.cred=null;st.giveMsg=null;st.delOpen=false;st.repMsg=null}
+  if(s==='gal'&&!D.arts.length) s='galempty';
+  if(s==='login'||s==='loginerr'||s==='loginlock') st.fails=0;
+  if(s==='visorhtml'||s==='visorpdf'){ if(!st.viewFrom) st.viewFrom='sim'; }
+  st.screen=s;render();
+}
+
+/* ───────── eventos ───────── */
+document.addEventListener('click',e=>{
+  const t=e.target.closest('[data-go],[data-open],[data-pick],[data-cli],[data-act],[data-copy],[data-view],[data-revoke],[data-regen],[data-deact],[data-react],[data-reactdo],[data-copypw],[data-closepw]');
+  if(!t) return;
+  if(t.dataset.go){ if(t.closest('.sim')&&/^visor/.test(t.dataset.go)) st.viewFrom='sim'; return go(t.dataset.go) }
+  if(t.dataset.open){st.cur=t.dataset.open;return go('ficha')}
+  if(t.dataset.pick){st.nuevo.file=t.dataset.pick;st.nuevo.asking=false;return render()}
+  if(t.dataset.cli){st.nuevo.cli=t.dataset.cli;$('#cli').value=t.dataset.cli;return patchNuevo()}
+  if(t.dataset.view){st.viewFrom='ficha';return go(art(st.cur).tipo==='pdf'?'visorpdf':'visorhtml')}
+  if(t.dataset.copy==='link'){clip('https://'+link(art(st.cur)));return copyFlash(t)}
+  if(t.dataset.copy==='creds'){const a=art(st.cur);clip(`Enlace: https://${link(a)}\nUsuario: ${st.cred.email}\nContraseña: ${st.cred.pass}`);return copyFlash(t)}
+  if(t.dataset.copypw){clip(`Usuario: ${t.dataset.copypw}\nContraseña: ${st.userPw[t.dataset.copypw]}`);return copyFlash(t)}
+  if(t.dataset.closepw){delete st.userPw[t.dataset.closepw];return render()}
+  if(t.dataset.revoke){const a=art(st.cur);a.accesos=a.accesos.filter(x=>x.email!==t.dataset.revoke);
+    $('#acc').innerHTML=fichaAccesos(a);
+    [...document.querySelectorAll('.block h2')].find(h=>h.textContent.startsWith('Accesos')).textContent='Accesos · '+nPers(a);return}
+  if(t.dataset.regen){st.userPw[t.dataset.regen]=genPass();st.recover=null;return render()}
+  if(t.dataset.deact){D.users[t.dataset.deact].activo=false;delete st.userPw[t.dataset.deact];return render()}
+  if(t.dataset.react){st.recover=t.dataset.react;return render()}
+  if(t.dataset.reactdo){const m=t.dataset.reactdo;D.users[m].activo=true;st.userPw[m]=genPass();st.recover=null;return render()}
+  const act=t.dataset.act;
+  if(act==='unpick'){st.nuevo.file=null;st.nuevo.asking=false;return render()}
+  if(act==='cancel-claude'){st.nuevo.file=null;st.nuevo.asking=false;return render()}
+  if(act==='confirm-claude'){st.nuevo.confirmClaude=true;st.nuevo.asking=false;return startUpload()}
+  if(act==='publish'){const n=st.nuevo;if(t.disabled)return;
+    if(FILES[n.file].claude&&!n.confirmClaude){n.asking=true;return $('#actions').innerHTML=actionsHtml()}
+    return startUpload()}
+  if(act==='close-creds'){st.cred=null;return render()}
+  if(act==='give'){
+    const a=art(st.cur),inp=$('#mail'),m=inp.value.trim().toLowerCase();
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(m)){st.cred=null;st.giveMsg='Escribe un correo válido.';return render()}
+    const out=$('#giveout');out.innerHTML='<p class="info state">Dando acceso</p>';
+    setTimeout(()=>{
+      const u=D.users[m];
+      if(u&&a.accesos.some(x=>x.email===m)){st.cred=null;st.giveMsg=`Ya tenía cuenta y ya tenía acceso a este artefacto. Su contraseña no ha cambiado.`}
+      else if(u){a.accesos.push({email:m,por:TEAM,cuando:TODAY,ultimo:'nunca'});st.cred=null;st.giveMsg=`Ya tenía cuenta. Se le ha dado acceso a este artefacto y conserva su contraseña actual.`}
+      else{D.users[m]={activo:true,ultimo:'nunca'};a.accesos.push({email:m,por:TEAM,cuando:TODAY,ultimo:'nunca'});st.cred={email:m,pass:genPass()};st.giveMsg=null}
+      render();
+    },600);return}
+  if(act==='replace'){if(st.replacing)return;st.replacing=true;st.repMsg=null;render();let p=0;
+    const tm=setInterval(()=>{p=Math.min(100,p+14);const b=$('#bar'),pc=$('#pct');if(b)b.style.width=p+'%';if(pc)pc.textContent=p;
+      if(p>=100){clearInterval(tm);const a=art(st.cur);a.version++;st.replacing=false;st.repMsg=`Archivo sustituido. Es la versión ${a.version} y el enlace sigue siendo el mismo.`;if(st.screen==='ficha')render()}},220);return}
+  if(act==='del-open'){st.delOpen=true;return render()}
+  if(act==='del-cancel'){st.delOpen=false;return render()}
+  if(act==='del-do'){if(t.disabled)return;D.arts=D.arts.filter(x=>x.id!==st.cur);st.delOpen=false;return go(D.arts.length?'gal':'galempty')}
+  if(act==='react-cancel'){st.recover=null;return render()}
+  if(act==='enter'){
+    const p=($('#lp')||{}).value||'';
+    if(p.trim().toLowerCase()==='mal'){st.fails++;if(st.fails>=3){st.screen='loginlock'}else{st.screen='loginerr'}return render()}
+    st.fails=0;st.viewFrom='cliente';return go('visorhtml')}
+});
+document.addEventListener('input',e=>{
+  const t=e.target;
+  if(t.id==='q'){st.q=t.value;const l=$('#list');if(l)l.innerHTML=listHtml()}
+  else if(t.id==='cli'){st.nuevo.cli=t.value;patchNuevo()}
+  else if(t.id==='tit'){st.nuevo.tit=t.value;$('#actions').innerHTML=actionsHtml()}
+  else if(t.id==='deltit'){const a=art(st.cur);$('#delbtn').disabled=t.value.trim()!==a.titulo}
+});
+document.addEventListener('keydown',e=>{
+  if(e.key==='Enter'&&e.target.id==='mail'){e.preventDefault();document.querySelector('[data-act="give"]').click()}
+  if(e.key==='Enter'&&e.target.closest&&e.target.closest('#lform')){e.preventDefault();document.querySelector('[data-act="enter"]').click()}
+});
+render();
+})();
+</script>
+</body></html>

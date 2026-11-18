@@ -22,6 +22,10 @@ se mueve nunca: sus enlaces ya están enviados.
 | `/workspace/dsmak_r/[id]` | Editor de un design system |
 | `/workspace/img_r` | Banco de imágenes: galería, subida, búsqueda y filtros |
 | `/workspace/img_r/[id]` | La galería con el detalle de una imagen abierto (modal con URL propia) |
+| `/workspace/deliv_r` | Entregables: listado por cliente, buscador, estado vacío |
+| `/workspace/deliv_r/nuevo` | Subida de un artefacto (con `?id=<uuid>`, sustituye el archivo de uno existente) |
+| `/workspace/deliv_r/[id]` | Ficha de un artefacto: enlace, accesos, sustituir y borrar |
+| `/workspace/deliv_r/usuarios` | Usuarios de cliente: contraseña, desactivar y reactivar |
 
 Todo `/workspace/*` lo protege [middleware.ts](../../middleware.ts): **sin sesión de equipo**
 —sesión Y cuenta `@interactius.com`, ver [workspace-login-google.md](workspace-login-google.md)—
@@ -37,6 +41,7 @@ callback, que por fuerza llega sin sesión porque la está creando. Todo lleva
 | `/deck/[id]/view/opengraph-image` | Preview social del visor | Cacheado por WhatsApp, Slack y demás |
 | `/forms/f/[id]` | Formulario público | Recoge respuestas reales; el id vive además en `responses.form_id` |
 | `/forms/api/submit` | Envío de respuestas | Contrato del formulario público |
+| `/clientes/<cliente>/<public_id>` | Entregable de Deliv_r tras el login de cliente | Es el enlace que recibe el cliente; no se puede mover |
 | `/timer` | Herramienta pública | — |
 | `/`, `/es`, `/en`, `/ca` | Web de marca | — |
 

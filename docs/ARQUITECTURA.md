@@ -128,3 +128,20 @@ Netlify con `@netlify/plugin-nextjs` ([netlify.toml](../netlify.toml)); build `n
 - **Sin cursivas** y **sin `!`/`…`**: son reglas de marca forzadas por CSS y por el validador.
 - **Determinismo en decks.** El generador no usa IA en runtime; el mismo Markdown produce siempre el mismo deck (ver [PRESENTACIONES.md](PRESENTACIONES.md)).
 - **Assets generados** (`AI-Kit.zip`, formas SVG) se regeneran con scripts; no se editan a mano.
+
+## 11. Deliv_r (entregables privados)
+
+Tool del workspace con dos superficies. La **del equipo** (`app/workspace/deliv_r/**` y `app/api/deliv_r/**`)
+va detrás de la sesión de Google `@interactius.com` que ya exige el middleware. La **pública**
+(`app/clientes/**`) queda fuera de next-intl y de `/workspace`: login propio de cliente (correo y contraseña
+generada, sesión en cookie `__Host-deliv_clientes` firmada con HMAC) y visor del entregable, que se sirve
+desde el servidor con tokens de 15 minutos. Detalle en [features/deliv-r.md](features/deliv-r.md).
+
+- **Datos:** tablas `deliv_artefactos`, `deliv_usuarios` y `deliv_accesos` con RLS (anónimo no toca nada) y
+  bucket privado `deliv-r` (`<public_id>/v<version>/<ruta>`). El equipo sube directo a Storage con URLs
+  firmadas; el repositorio (`lib/deliv/repo.ts`) tiene implementación de Supabase y de memoria para los tests.
+- **Frontera de la service role:** `SUPABASE_SERVICE_ROLE_KEY` solo se usa en `lib/deliv/servidor.ts`
+  (`server-only`) y la importan la superficie pública, las rutas que tocan usuarios y las páginas
+  `app/workspace/deliv_r/**/page.tsx`, estas últimas tras comprobar al equipo. El equipo no puede leer
+  `deliv_usuarios.hash`. Un test falla si la clave aparece en otro fichero.
+- **Fail-closed:** sin `DELIV_SESSION_SECRET` o sin la clave, `/clientes` responde «Servicio no disponible.».
