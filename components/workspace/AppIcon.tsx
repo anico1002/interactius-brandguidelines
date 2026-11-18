@@ -179,20 +179,20 @@ const ICONS: Record<string, ReactElement> = {
     <svg viewBox="0 0 400 400" fill="none" aria-hidden="true" focusable="false" className="ixw-tile__icon">
       {/* Estructura secundaria: las piezas de la tira de publicaciones */}
       <g stroke="#B0B5B0" strokeWidth="6" strokeLinecap="square" strokeLinejoin="miter">
-        <path d="M105 75H225V265H105V75Z" />
-        <path d="M237 75H357V265H237V75Z" />
+        <path d="M88.9 95.5H220.9V304.5H88.9V95.5Z" />
+        <path d="M234.1 95.5H366.1V304.5H234.1V95.5Z" />
       </g>
 
       {/* Estructura principal: la publicación activa y su imagen */}
       <g stroke="#1C1A17" strokeWidth="7" strokeLinecap="square" strokeLinejoin="miter">
-        <path d="M55 105H205V255H55V105Z" />
-        <path d="M55 215L105 165L135 195L165 170L205 210" />
+        <path d="M33.9 128.5H198.9V293.5H33.9V128.5Z" />
+        <path d="M33.9 249.5L88.9 194.5L121.9 227.5L154.9 200L198.9 244" />
       </g>
 
       {/* Acento: añadir una pieza nueva */}
       <g stroke="#10B981" strokeWidth="7" strokeLinecap="square" strokeLinejoin="miter">
-        <path d="M284 88H344V148H284V88Z" fill="#10B981" fillOpacity="0.15" />
-        <path d="M304 108H324M314 98V118" />
+        <path d="M285.8 109.8H351.8V175.8H285.8V109.8Z" fill="#10B981" fillOpacity="0.15" />
+        <path d="M307.8 131.8H329.8M318.8 120.8V142.8" />
       </g>
     </svg>
   ),
