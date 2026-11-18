@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation';
 import { supabaseBrowser } from '@/lib/supabase/client';
 import { infoCliente, pendientes, pesoLegible, rutaEnBucket, tratamiento, type ClienteExistente } from '@/lib/deliv/informe';
 import { optimizarArtefacto, type FilaPeso } from '@/lib/deliv/optimizar';
-import { clasificar, detectarAvisos, type ArchivoSubida } from '@/lib/deliv/subida';
+import { archivoDemasiadoGrande, clasificar, detectarAvisos, type ArchivoSubida } from '@/lib/deliv/subida';
 import type { TipoArtefacto } from '@/lib/deliv/tipos';
 import { optimizadorImagenNavegador } from '../optimizador-imagen';
 import { Accion, Enlace } from './Cabecera';
@@ -75,6 +75,8 @@ export function Subida({
       const c = clasificar(f.name, datos);
       if (!c.ok) { setError(c.error); return; }
       const o = await optimizarArtefacto(c.archivos, optimizadorImagenNavegador);
+      const grande = archivoDemasiadoGrande(o.archivos.map((a) => ({ ruta: a.ruta, bytes: a.datos.length })));
+      if (grande) { setError(grande); return; }
       setPrep({
         nombre: f.name, tipo: c.tipo, entrada: c.entrada, archivos: o.archivos, informe: o.informe,
         total: o.total, incrustadas: o.archivos.length !== c.archivos.length,
@@ -238,7 +240,7 @@ export function Subida({
 
         <div className="dc-campo">
           <span className="dc-etiqueta">Archivo</span>
-          <p className="dq-nota">Un .html, .pdf o .zip con index.html en la raíz. Hasta 100 MB por artefacto.</p>
+          <p className="dq-nota">Un .html, .pdf o .zip con index.html en la raíz. Hasta 100 MB por artefacto y 50 MB por archivo.</p>
           <input
             ref={entrada} type="file" accept=".html,.htm,.pdf,.zip" hidden aria-label="Archivo del artefacto"
             onChange={(e) => void elegir(e.target.files?.[0])}

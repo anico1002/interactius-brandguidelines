@@ -1,6 +1,6 @@
 import { DelivNoDisponible } from './config.ts'
 import { ErrorDeliv } from './operaciones.ts'
-import { LIMITE_TOTAL, rutaArchivoSegura } from './subida.ts'
+import { archivoDemasiadoGrande, LIMITE_TOTAL, rutaArchivoSegura } from './subida.ts'
 import type { Artefacto, TipoArtefacto } from './tipos.ts'
 
 /*
@@ -95,6 +95,8 @@ export function validarRutas(rutas: unknown, tamanos?: unknown): string[] {
       total += t
     }
     if (total > LIMITE_TOTAL) throw new ErrorDeliv('El contenido supera el límite de 100 MB por artefacto.')
+    const grande = archivoDemasiadoGrande(rutas.map((r, i) => ({ ruta: r as string, bytes: tamanos[i] as number })))
+    if (grande) throw new ErrorDeliv(grande)
   }
   return rutas as string[]
 }

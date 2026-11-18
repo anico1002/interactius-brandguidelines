@@ -69,8 +69,8 @@ preview, PR y merge) lo hacen la usuaria y Carlos.
 - Quedan del checklist posterior (en el deploy preview): subida y borrado de Storage con sesión de equipo,
   que la sesión de equipo reciba error al pedir `hash` por REST, y que los inicios de sesión anónimos estén
   desactivados en Auth.
-- Plan de Supabase: **Free**, límite global de 50 MB por archivo. Falta un aviso en la subida para archivos
-  sueltos de más de 50 MB (hoy fallarían al subir); el límite de 100 MB por artefacto es solo orientativo.
+- Plan de Supabase: **Free**, límite global de 50 MB por archivo. La subida lo comprueba antes de empezar
+  (`LIMITE_ARCHIVO` en `lib/deliv/subida.ts`, en el navegador y en la API); si se pasa a Pro, subirlo ahí.
 
 **Preguntas para Alberto:**
 

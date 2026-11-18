@@ -113,3 +113,12 @@ test('zip con ruta absoluta o con barra invertida', () => {
     assert.equal(r.ok, false, mala)
   }
 })
+
+test('archivoDemasiadoGrande: avisa del primer archivo de más de 50 MB', async () => {
+  const { archivoDemasiadoGrande, LIMITE_ARCHIVO } = await import('../subida.ts')
+  assert.equal(archivoDemasiadoGrande([{ ruta: 'a.pdf', bytes: LIMITE_ARCHIVO }]), null)
+  assert.equal(
+    archivoDemasiadoGrande([{ ruta: 'a.png', bytes: 10 }, { ruta: 'vídeo.mp4', bytes: 60 * 1024 * 1024 }]),
+    '«vídeo.mp4» pesa 60,0 MB y el límite por archivo es de 50 MB. Comprímelo o divídelo antes de subirlo.',
+  )
+})

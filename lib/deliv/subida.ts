@@ -3,6 +3,16 @@ import { unzipSync } from 'fflate'
 import type { TipoArtefacto } from './tipos.ts'
 
 export const LIMITE_TOTAL = 100 * 1024 * 1024
+/** Límite de Supabase Storage por archivo en el plan Free. Si se pasa a Pro, subirlo aquí. */
+export const LIMITE_ARCHIVO = 50 * 1024 * 1024
+
+/** Mensaje para el primer archivo que supera LIMITE_ARCHIVO, o null si todos caben. */
+export function archivoDemasiadoGrande(archivos: { ruta: string; bytes: number }[]): string | null {
+  const g = archivos.find((a) => a.bytes > LIMITE_ARCHIVO)
+  if (!g) return null
+  const mb = (g.bytes / (1024 * 1024)).toFixed(1).replace('.', ',')
+  return `«${g.ruta}» pesa ${mb} MB y el límite por archivo es de 50 MB. Comprímelo o divídelo antes de subirlo.`
+}
 
 export interface ArchivoSubida {
   ruta: string

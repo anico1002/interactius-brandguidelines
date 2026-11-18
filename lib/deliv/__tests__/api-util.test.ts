@@ -148,3 +148,9 @@ test('decidirPublicacion: avisos sin y con aceptacion; recibe los presentes', as
   const ok = await decidirPublicacion(base({ subidos, leerAvisos, aceptarAvisos: true }))
   assert.deepEqual(ok, { accion: 'publicar', version: 1, tipo: 'html', entrada: 'index.html', avisos: ['aviso'] })
 })
+
+test('validarRutas rechaza un archivo suelto de más de 50 MB aunque el total quepa', async () => {
+  const { validarRutas } = await import('../api-util.ts')
+  assert.throws(() => validarRutas(['a.pdf'], [51 * 1024 * 1024]), /límite por archivo es de 50 MB/)
+  assert.deepEqual(validarRutas(['a.pdf', 'b.pdf'], [40 * 1024 * 1024, 40 * 1024 * 1024]), ['a.pdf', 'b.pdf'])
+})
