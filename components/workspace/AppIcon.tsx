@@ -173,26 +173,28 @@ const ICONS: Record<string, ReactElement> = {
     </svg>
   ),
 
-  /* SocialMak_r, noviembre de 2026. Original de diseño en 100×100, escalado a la retícula de 400 (×4).
-     Trazo principal 7 y secundario 6: es la proporción del original (1,75 / 1,5). */
+  /* SocialMak_r, noviembre de 2026. Original de diseño en 100×100 (versión revisada por Martina),
+     escalado a la retícula de 400 (×4). El original trae trazo 1,25 (5 a esta escala); se deja en 6
+     como el resto, por la regla del trazo de .ixw-tile__icon en workspace.css. */
   socialmakr: (
     <svg viewBox="0 0 400 400" fill="none" aria-hidden="true" focusable="false" className="ixw-tile__icon">
       {/* Estructura secundaria: las piezas de la tira de publicaciones */}
       <g stroke="#B0B5B0" strokeWidth="6" strokeLinecap="square" strokeLinejoin="miter">
-        <path d="M105 75H225V265H105V75Z" />
-        <path d="M237 75H357V265H237V75Z" />
+        <path d="M105 88H225V278H105V88Z" />
+        <path d="M245 88H365V278H245V88Z" />
       </g>
 
-      {/* Estructura principal: la publicación activa y su imagen */}
-      <g stroke="#1C1A17" strokeWidth="7" strokeLinecap="square" strokeLinejoin="miter">
-        <path d="M55 105H205V255H55V105Z" />
-        <path d="M55 215L105 165L135 195L165 170L205 210" />
+      {/* Estructura principal: la publicación activa y su imagen. El relleno tapa la pieza de atrás;
+          va con el fondo de la tarjeta, no con blanco a mano. */}
+      <g stroke="#1C1A17" strokeWidth="6" strokeLinecap="square" strokeLinejoin="miter">
+        <path d="M37 161H187V311H37V161Z" style={{ fill: "var(--c-white)" }} />
+        <path d="M36 272L86 222L116 252L146 227L186 267" />
       </g>
 
       {/* Acento: añadir una pieza nueva */}
-      <g stroke="#10B981" strokeWidth="7" strokeLinecap="square" strokeLinejoin="miter">
-        <path d="M284 88H344V148H284V88Z" fill="#10B981" fillOpacity="0.15" />
-        <path d="M304 108H324M314 98V118" />
+      <g stroke="#10B981" strokeWidth="6" strokeLinecap="square" strokeLinejoin="miter">
+        <path d="M276 153H336V213H276V153Z" fill="#10B981" fillOpacity="0.15" />
+        <path d="M296 173H316M306 163V183" />
       </g>
     </svg>
   ),
