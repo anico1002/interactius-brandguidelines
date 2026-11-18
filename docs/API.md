@@ -2,7 +2,7 @@
 
 > Endpoints públicos del manual de marca. Todos viven bajo el dominio de producción
 > `https://brand.interactius.com` y en local bajo `http://localhost:3000`.
-> No requieren autenticación.
+> Los públicos no requieren autenticación; las de Deliv_r, al final, sí.
 
 Estas rutas quedan **fuera** del routing de idioma (ver [middleware.ts](../middleware.ts)): se sirven sin prefijo de locale.
 
@@ -138,3 +138,85 @@ Exclusiones: las claves de chrome/UI (`menu.*`, `chrome.*`, `ui.*`), las que cit
 ```bash
 curl -s http://localhost:3000/api/eval/manual | jq '.summary'
 ```
+
+---
+
+## `/api/deliv_r/*` (Deliv_r)
+
+APIs internas de la tool Deliv_r. **Sí requieren autenticación**: sesión de Google del equipo (`@interactius.com`),
+y `Origin` igual al host (o `Origin` nulo con `Sec-Fetch-Site: same-origin`). Todas son `no-store`, JSON y
+quedan fuera del routing de idioma. Fuente: [app/api/deliv_r](../app/api/deliv_r).
+
+Errores comunes: `403 { ok: false, mensaje: "Origen no permitido." }`, `401 { ok: false, mensaje: "No autenticado." }`,
+`400 { ok: false, mensaje }` para datos no válidos y `503 { ok: false, mensaje }` si falta una clave o falla el
+servicio. Los enlaces que devuelven son relativos (`/clientes/<cliente>/<id>`).
+
+| Endpoint | Método | Para qué |
+|----------|--------|----------|
+| `/api/deliv_r/artefactos` | POST | Crea el borrador y da las URL de subida |
+| `/api/deliv_r/artefactos/:id` | DELETE | Borra ficha, accesos y archivos |
+| `/api/deliv_r/artefactos/:id/version` | POST | URL de subida para la versión siguiente |
+| `/api/deliv_r/artefactos/:id/publicar` | POST | Publica la versión subida |
+| `/api/deliv_r/artefactos/:id/accesos` | POST | Da acceso a una persona (la crea si no existe) |
+| `/api/deliv_r/artefactos/:id/accesos/:email` | DELETE | Revoca un acceso |
+| `/api/deliv_r/usuarios/:email/password` | POST | Regenera la contraseña |
+| `/api/deliv_r/usuarios/:email/desactivar` | POST | Desactiva a la persona |
+| `/api/deliv_r/usuarios/:email/reactivar` | POST | Vista previa y reactivación |
+
+### `POST /api/deliv_r/artefactos`
+
+```jsonc
+// Petición
+{ "clienteNombre": "Cliente Ejemplo", "cliente": "cliente-ejemplo" /* opcional, slug */, "titulo": "Informe",
+  "tipo": "html" /* o "pdf" */, "entrada": "index.html",
+  "rutas": ["index.html", "img/a.webp"], "tamanos": [1200, 3400] /* bytes, mismo orden */ }
+// Respuesta
+{ "id": "<uuid>", "version": 1, "subidas": [ /* una URL firmada por ruta, para subir directo al bucket */ ] }
+```
+
+`entrada` debe estar en `rutas`; el total declarado no puede pasar de 100 MB.
+
+### `POST /api/deliv_r/artefactos/:id/version`
+
+Petición `{ tipo, entrada, rutas, tamanos }`. Respuesta `{ id, version, subidas }` con `version` = la actual + 1.
+No guarda nada: la ficha cambia al publicar. Falla si la ficha actual no está publicada («Publica primero la
+versión actual.»). Borra antes lo que hubiera en el prefijo de esa versión.
+
+### `POST /api/deliv_r/artefactos/:id/publicar`
+
+Petición `{ "version": 1, "rutas": [...], "aceptarAvisos"?: true, "tipo"?, "entrada"? }`. Las rutas se repiten
+siempre; `tipo` y `entrada` solo en una versión nueva.
+
+| Caso | Respuesta |
+|------|-----------|
+| Faltan archivos por subir | `409 { ok: false, faltan: ["ruta", ...] }` |
+| Hay avisos sin aceptar | `200 { publicado: false, avisos: [...] }`; se repite con `aceptarAvisos: true` |
+| Publicado | `200 { publicado: true, enlace }`; en un reemplazo se borra la versión anterior |
+
+### `POST /api/deliv_r/artefactos/:id/accesos`
+
+Petición `{ "email": "persona@cliente.test" }`. Respuesta
+`{ ok: true, email, nuevo, password, enlace, titulo }`. `password` solo viene si la persona es nueva (`null`
+en otro caso) y no se puede volver a ver. Dar acceso dos veces no cambia nada. Falla si el artefacto no está
+publicado o la persona está desactivada.
+
+### `DELETE /api/deliv_r/artefactos/:id/accesos/:email`
+
+Respuesta `{ ok: true, revocado: boolean }`. El correo va codificado en la URL.
+
+### `DELETE /api/deliv_r/artefactos/:id`
+
+Respuesta `{ ok: true }`.
+
+### `POST /api/deliv_r/usuarios/:email/password`
+
+Respuesta `{ password }`, visible una sola vez. Las sesiones abiertas de esa persona dejan de valer.
+
+### `POST /api/deliv_r/usuarios/:email/desactivar`
+
+Respuesta `{ ok: true }`. Conserva sus accesos; sin contraseña no entra.
+
+### `POST /api/deliv_r/usuarios/:email/reactivar`
+
+Sin cuerpo, o sin `confirmar: true`: `{ recupera: [{ id, titulo }] }` con lo que volvería a ver. Con
+`{ "confirmar": true }`: `{ password }`, visible una sola vez. Solo vale para usuarios desactivados.

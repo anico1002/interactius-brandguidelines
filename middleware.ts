@@ -9,7 +9,7 @@ const intl = createMiddleware(routing);
 
 /* Editor-only APIs that require a team session. Public APIs (/api/sign, /api/brand.json)
    are intentionally left open — the client-facing deck viewer depends on them. */
-const EDITOR_API = ['/api/decks', '/api/clients', '/api/images', '/api/translate', '/api/rewrite', '/api/eval', '/api/forms', '/api/design-systems', '/api/social'];
+const EDITOR_API = ['/api/decks', '/api/clients', '/api/images', '/api/translate', '/api/rewrite', '/api/eval', '/api/forms', '/api/design-systems', '/api/social', '/api/deliv_r'];
 const isEditorApi = (p: string) => EDITOR_API.some((base) => p === base || p.startsWith(base + '/'));
 
 /* Páginas de /workspace alcanzables sin sesión: son la propia puerta de entrada.
@@ -24,6 +24,33 @@ const isPublicViewer = (p: string) => /^\/deck\/[^/]+\/view(\/|$)/.test(p);
 
 export default async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
+
+  // -1) Zona de clientes de Deliv_r (`app/clientes/`). Va PRIMERO: fuera de next-intl, sin
+  //     reescrituras ni paso a minúsculas (los tokens de archivo de la ruta distinguen
+  //     mayúsculas). La autenticación la hacen las propias rutas: aquí solo cabeceras de
+  //     privacidad y, si hay sesión de equipo, su refresco (ver abajo). `same-origin` y no `no-referrer`: con no-referrer
+  //     Chrome manda `Origin: null` en el POST del login y el control de CSRF lo rechaza.
+  if (pathname === '/clientes' || pathname.startsWith('/clientes/')) {
+    /* Refresco de la sesión de EQUIPO (Google), no autorización: el visor la lee con getUser()
+       desde un Server Component, que no puede escribir cookies. Sin esto, un access token
+       caducado se refresca en el servidor, el navegador se queda con el refresh token viejo y
+       Supabase puede revocar la familia entera (el miembro del equipo acaba deslogueado). Solo
+       si llega una cookie `sb-` y nunca en /clientes/archivos (lo pide el iframe, sin cookie útil).
+       Si el refresco falla, se sigue sin él: la autorización la hacen las propias rutas. */
+    let response = NextResponse.next();
+    const conSesionEquipo = request.cookies.getAll().some((c) => c.name.startsWith('sb-'));
+    if (conSesionEquipo && !pathname.startsWith('/clientes/archivos/')) {
+      try {
+        response = (await updateSession(request)).response;
+      } catch (e) {
+        console.error('[deliv] refresco de sesion de equipo', e);
+      }
+    }
+    response.headers.set('X-Robots-Tag', 'noindex, nofollow');
+    response.headers.set('Cache-Control', 'private, no-store');
+    response.headers.set('Referrer-Policy', 'same-origin');
+    return response;
+  }
 
   // 0) Rutas antiguas → nuevas, antes que cualquier otra cosa. 308 conserva el método,
   //    así que el POST de cerrar sesión sigue funcionando desde una pestaña vieja.

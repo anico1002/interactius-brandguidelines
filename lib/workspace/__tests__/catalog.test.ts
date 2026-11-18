@@ -74,6 +74,7 @@ test('appsIn respeta el orden de declaración', () => {
     'dsmakr',
     'imgr',
     'socialmakr',
+    'delivr',
   ]);
   assert.deepEqual(appsIn('links').map((a) => a.id), ['starmeapp', 'timer']);
 });
@@ -87,6 +88,12 @@ test('las herramientas que ya existen apuntan a sus rutas reales', () => {
   assert.equal(byId.get('imgr')?.href, '/workspace/img_r');
   assert.equal(byId.get('timer')?.href, '/timer');
   assert.equal(byId.get('socialmakr')?.href, '/workspace/socialmak_r');
+});
+
+test('Deliv_r: tarjeta encendida con su wordmark', () => {
+  const d = APPS.find((a) => a.id === 'delivr');
+  assert.equal(d?.href, '/workspace/deliv_r');
+  assert.deepEqual(d?.wordmark, { before: 'Deliv', after: 'r' });
 });
 
 test('la ruta de cada herramienta replica el guiño de su wordmark', () => {

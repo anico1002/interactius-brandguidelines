@@ -87,6 +87,14 @@ export const APPS: AppEntry[] = [
     description: 'Imágenes para redes',
     wordmark: { before: 'SocialMak', after: 'r' },
   },
+  {
+    id: 'delivr',
+    label: 'Deliv_r',
+    group: 'tools',
+    href: '/workspace/deliv_r',
+    description: 'Entregables para clientes',
+    wordmark: { before: 'Deliv', after: 'r' },
+  },
 ];
 
 /* Los grupos, en el orden en el que se pintan. El título es el del wireframe. */
