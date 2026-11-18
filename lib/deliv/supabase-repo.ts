@@ -355,6 +355,28 @@ export async function descargar(
   return { datos: await data.arrayBuffer(), tipoMime: tipoMime(ruta) }
 }
 
+/**
+ * URL firmada de Storage para un archivo del artefacto, o null si no existe. Con `descargar`, Storage
+ * responde con Content-Disposition: attachment y ese nombre. Caduca a los 15 min, como el token de
+ * archivo que la autoriza.
+ */
+export async function urlFirmada(
+  sb: SupabaseClient,
+  id: string,
+  version: number,
+  ruta: string,
+  descargar: string | null,
+): Promise<string | null> {
+  const { data, error } = await sb.storage
+    .from(BUCKET)
+    .createSignedUrl(rutaObjeto(id, version, ruta), 15 * 60, descargar ? { download: descargar } : undefined)
+  if (error) {
+    if (esNoEncontrado(error)) return null
+    throw fallo('storage.createSignedUrl', error)
+  }
+  return data.signedUrl
+}
+
 export async function leerTexto(sb: SupabaseClient, id: string, version: number, ruta: string): Promise<string | null> {
   const d = await descargar(sb, id, version, ruta)
   return d ? new TextDecoder().decode(d.datos) : null

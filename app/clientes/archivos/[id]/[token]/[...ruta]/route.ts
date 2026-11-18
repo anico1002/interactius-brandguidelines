@@ -3,7 +3,8 @@ import { verificarTokenArchivo } from '@/lib/deliv/file-tokens';
 import { CABECERAS_PRIVADAS, CSP_ARTEFACTO, noDisponible, rutaSegura } from '@/lib/deliv/http';
 import { ID_ARTEFACTO_RE } from '@/lib/deliv/ids';
 import { clienteServicio } from '@/lib/deliv/servidor';
-import { crearRepoSupabase, descargar } from '@/lib/deliv/supabase-repo';
+import { entregaExterna } from '@/lib/deliv/subida';
+import { crearRepoSupabase, descargar, urlFirmada } from '@/lib/deliv/supabase-repo';
 
 export const dynamic = 'force-dynamic';
 
@@ -50,6 +51,15 @@ export async function GET(
           'Content-Security-Policy': "frame-ancestors 'self'",
         },
       });
+    }
+
+    // Descargables y vídeo: redirección a una URL firmada de Storage (ver entregaExterna).
+    const entrega = entregaExterna(rutaArchivo);
+    if (entrega) {
+      const nombre = rutaArchivo.slice(rutaArchivo.lastIndexOf('/') + 1);
+      const url = await urlFirmada(sb, art.id, art.version, rutaArchivo, entrega === 'descarga' ? nombre : null);
+      if (!url) return noEncontrado();
+      return new Response(null, { status: 302, headers: { ...CABECERAS_PRIVADAS, Location: url } });
     }
 
     const archivo = await descargar(sb, art.id, art.version, rutaArchivo);

@@ -336,6 +336,10 @@ MODIFICADO
   `Location` relativa. `Referrer-Policy: same-origin` en `/clientes`.
 - Archivos: token HMAC de 15 min en la ruta. HTML con `CSP: sandbox …; frame-ancestors 'self'`; PDF con
   `Content-Disposition: inline`, `nosniff` y `frame-ancestors 'self'`.
+- Descargables dentro de un HTML (PDF, `.md`, Office, ZIP, audio) y vídeo: tras validar el token, la ruta
+  redirige (302) a una URL firmada de Storage de 15 min (`entregaExterna` en `lib/deliv/subida.ts`). Los
+  descargables llevan `Content-Disposition: attachment`. Motivos: el iframe tiene origen opaco y no respeta
+  el atributo `download`, y las funciones de Netlify no sirven respuestas de más de ~20 MB.
 - Fail-closed: sin `DELIV_SESSION_SECRET` (≥ 32 caracteres) o sin `SUPABASE_SERVICE_ROLE_KEY`,
   `/clientes` responde «Servicio no disponible.» y no autentica a nadie.
 - `noindex`, `Disallow: /clientes`, fuera del sitemap. Ningún archivo de cliente en el repo, que es público.
