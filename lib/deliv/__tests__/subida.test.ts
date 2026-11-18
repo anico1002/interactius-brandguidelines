@@ -122,3 +122,14 @@ test('archivoDemasiadoGrande: avisa del primer archivo de más de 50 MB', async 
     '«vídeo.mp4» pesa 60,0 MB y el límite por archivo es de 50 MB. Comprímelo o divídelo antes de subirlo.',
   )
 })
+
+test('entregaExterna: descargables, vídeo y el resto', async () => {
+  const { entregaExterna } = await import('../subida.ts')
+  assert.equal(entregaExterna('archivos/Digest.PDF'), 'descarga')
+  assert.equal(entregaExterna('prompts/1-contexto.md'), 'descarga')
+  assert.equal(entregaExterna('podcast.m4a'), 'descarga')
+  assert.equal(entregaExterna('video/intro.mp4'), 'directo')
+  for (const r of ['index.html', 'css/app.css', 'img/a.webp', 'fonts/x.woff2', 'app.js']) {
+    assert.equal(entregaExterna(r), null, r)
+  }
+})

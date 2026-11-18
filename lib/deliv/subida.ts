@@ -55,6 +55,25 @@ export function extension(ruta: string): string {
   return i <= 0 ? '' : base.slice(i).toLowerCase()
 }
 
+/*
+ * Cómo se entrega cada archivo de un artefacto HTML que no se pinta dentro de la página.
+ * · 'descarga': PDF, documentos, audio. El iframe del artefacto tiene origen opaco, así que el
+ *   atributo `download` del enlace no se respeta y el archivo se abriría dentro del marco. Se
+ *   redirige a una URL firmada de Storage con Content-Disposition: attachment.
+ * · 'directo': vídeo. Puede pasar del límite de respuesta de las funciones de Netlify (~20 MB) y
+ *   necesita peticiones por rangos; se redirige a la URL firmada sin forzar la descarga.
+ * · null: todo lo demás (HTML, CSS, JS, imágenes, fuentes) se sirve desde nuestro dominio.
+ */
+const DESCARGA = new Set(['.pdf', '.md', '.txt', '.csv', '.doc', '.docx', '.xls', '.xlsx', '.ppt', '.pptx', '.zip', '.mp3', '.m4a', '.wav'])
+const DIRECTO = new Set(['.mp4', '.webm', '.mov'])
+
+export function entregaExterna(ruta: string): 'descarga' | 'directo' | null {
+  const ext = extension(ruta)
+  if (DESCARGA.has(ext)) return 'descarga'
+  if (DIRECTO.has(ext)) return 'directo'
+  return null
+}
+
 export function tipoMime(ruta: string): string {
   return MIME[extension(ruta)] ?? 'application/octet-stream'
 }
