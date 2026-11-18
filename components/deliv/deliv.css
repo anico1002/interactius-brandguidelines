@@ -171,6 +171,8 @@
 .dq-dar .dc-input { flex: 1 1 260px; width: auto; }
 .dq-info { font: 400 12px/1.6 var(--dc-mono); border-left: 2px solid var(--c-dark); padding-left: 10px; margin: 14px 0; max-width: 640px; }
 .dq-nota { font: 400 11px/1.6 var(--dc-mono); color: var(--c-ash-dark); border-left: 2px solid var(--c-warm-dark); padding-left: 10px; margin: 8px 0; max-width: 640px; }
+.dq-soltar { outline: 1px dashed transparent; outline-offset: 8px; transition: outline-color 200ms; }
+.dq-soltar.is-encima { outline-color: var(--c-ash-dark); }
 .dq-error { margin: 14px 0; max-width: 640px; }
 .dq-creds { border: 1px solid var(--c-dark); background: var(--c-white); padding: 16px; margin-top: 16px; max-width: 640px; }
 .dq-creds dl { display: grid; grid-template-columns: auto 1fr; gap: 6px 18px; margin: 0 0 6px; align-items: center; }

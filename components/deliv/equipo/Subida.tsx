@@ -52,6 +52,7 @@ export function Subida({
   const [faltan, setFaltan] = useState<string[] | null>(null);
   const [avisos, setAvisos] = useState<string[] | null>(null);
   const [confirmando, setConfirmando] = useState(false);
+  const [arrastrando, setArrastrando] = useState(false);
   const borrador = useRef<Borrador | null>(null);
 
   const ci = useMemo(() => infoCliente(cliente, clientes), [cliente, clientes]);
@@ -238,9 +239,18 @@ export function Subida({
           </>
         )}
 
-        <div className="dc-campo">
+        <div
+          className={`dc-campo dq-soltar${arrastrando ? ' is-encima' : ''}`}
+          onDragOver={(e) => { if (ocupado) return; e.preventDefault(); setArrastrando(true); }}
+          onDragLeave={(e) => { if (!e.currentTarget.contains(e.relatedTarget as Node | null)) setArrastrando(false); }}
+          onDrop={(e) => {
+            e.preventDefault(); setArrastrando(false);
+            if (!ocupado) void elegir(e.dataTransfer.files?.[0]);
+          }}
+        >
           <span className="dc-etiqueta">Archivo</span>
-          <p className="dq-nota">Un .html, .pdf o .zip con index.html en la raíz. Hasta 100 MB por artefacto y 50 MB por archivo.</p>
+          <p className="dq-nota">Un .html, .pdf o .zip con index.html en la raíz. Hasta 100 MB por artefacto y 50 MB por archivo. Puedes arrastrarlo aquí.</p>
+          <p className="dq-nota">Desde Claude: abre el artefacto, menú ··· → Descargar, y arrastra aquí el .html descargado. El enlace de Claude no sirve: Claude no deja leer su contenido desde fuera.</p>
           <input
             ref={entrada} type="file" accept=".html,.htm,.pdf,.zip" hidden aria-label="Archivo del artefacto"
             onChange={(e) => void elegir(e.target.files?.[0])}
