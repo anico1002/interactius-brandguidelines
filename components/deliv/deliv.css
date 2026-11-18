@@ -109,7 +109,8 @@
 .dc-barra__email { opacity: 0.6; }
 .dc-barra .dc-link { color: var(--c-warm-light); min-height: 32px; font-size: 11px; font-weight: 400; }
 @media (max-width: 560px) { .dc-barra__email { display: none; } }
-.dc-marco form { margin: 0; }
+/* Solo el form de «Cerrar sesión»: el del login lleva su propio margen (.dc-form). */
+.dc-marco form:not(.dc-form) { margin: 0; }
 .dc-barra form { margin: 0; display: inline-flex; }
 .dc-frame { display: block; width: 100%; flex: 1; border: 0 solid transparent; background: var(--c-white); }
 
