@@ -173,26 +173,28 @@ const ICONS: Record<string, ReactElement> = {
     </svg>
   ),
 
-  /* SocialMak_r, noviembre de 2026. Original de diseño en 100×100, escalado a la retícula de 400 (×4).
-     Trazo principal 7 y secundario 6: es la proporción del original (1,75 / 1,5). */
+  /* SocialMak_r, noviembre de 2026. Original de diseño en 100×100 (versión revisada por Martina),
+     escalado a la retícula de 400 (×4). El original trae trazo 1,25 (5 a esta escala); se deja en 6
+     como el resto, por la regla del trazo de .ixw-tile__icon en workspace.css. */
   socialmakr: (
     <svg viewBox="0 0 400 400" fill="none" aria-hidden="true" focusable="false" className="ixw-tile__icon">
       {/* Estructura secundaria: las piezas de la tira de publicaciones */}
       <g stroke="#B0B5B0" strokeWidth="6" strokeLinecap="square" strokeLinejoin="miter">
-        <path d="M88.9 95.5H220.9V304.5H88.9V95.5Z" />
-        <path d="M234.1 95.5H366.1V304.5H234.1V95.5Z" />
+        <path d="M105 88H225V278H105V88Z" />
+        <path d="M245 88H365V278H245V88Z" />
       </g>
 
-      {/* Estructura principal: la publicación activa y su imagen */}
-      <g stroke="#1C1A17" strokeWidth="7" strokeLinecap="square" strokeLinejoin="miter">
-        <path d="M33.9 128.5H198.9V293.5H33.9V128.5Z" />
-        <path d="M33.9 249.5L88.9 194.5L121.9 227.5L154.9 200L198.9 244" />
+      {/* Estructura principal: la publicación activa y su imagen. El relleno tapa la pieza de atrás;
+          va con el fondo de la tarjeta, no con blanco a mano. */}
+      <g stroke="#1C1A17" strokeWidth="6" strokeLinecap="square" strokeLinejoin="miter">
+        <path d="M37 161H187V311H37V161Z" style={{ fill: "var(--c-white)" }} />
+        <path d="M36 272L86 222L116 252L146 227L186 267" />
       </g>
 
       {/* Acento: añadir una pieza nueva */}
-      <g stroke="#10B981" strokeWidth="7" strokeLinecap="square" strokeLinejoin="miter">
-        <path d="M285.8 109.8H351.8V175.8H285.8V109.8Z" fill="#10B981" fillOpacity="0.15" />
-        <path d="M307.8 131.8H329.8M318.8 120.8V142.8" />
+      <g stroke="#10B981" strokeWidth="6" strokeLinecap="square" strokeLinejoin="miter">
+        <path d="M276 153H336V213H276V153Z" fill="#10B981" fillOpacity="0.15" />
+        <path d="M296 173H316M306 163V183" />
       </g>
     </svg>
   ),
