@@ -1,5 +1,6 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
 
+import { claveStorage, rutaDesdeClave } from './clave-storage.ts'
 import { mapConLimite } from './concurrencia.ts'
 import type { RepoDeliv } from './repo.ts'
 import { rutaArchivoSegura, tipoMime } from './subida.ts'
@@ -275,11 +276,11 @@ export function prefijoVersion(id: string, version: number): string {
   return `${prefijoArtefacto(id)}v${version}/`
 }
 
-/** `<uuid>/v<version>/<ruta>`, con la ruta validada como en la subida. */
+/** `<uuid>/v<version>/<clave>`: ruta validada como en la subida y codificada con claveStorage(). */
 export function rutaObjeto(id: string, version: number, ruta: string): string {
   const segura = rutaArchivoSegura(ruta)
   if (!segura) throw new Error('deliv_r: ruta no valida')
-  return prefijoVersion(id, version) + segura
+  return prefijoVersion(id, version) + claveStorage(segura)
 }
 
 /** Todas las rutas de objeto bajo `prefijo` (que acaba en '/'), recorriendo subcarpetas. */
@@ -325,7 +326,7 @@ export async function urlsDeSubida(
 /** Rutas relativas a `<id>/v<version>/` que ya estan en el bucket. */
 export async function archivosSubidos(sb: SupabaseClient, id: string, version: number): Promise<Set<string>> {
   const prefijo = prefijoVersion(id, version)
-  return new Set((await listarRecursivo(sb, prefijo)).map((r) => r.slice(prefijo.length)))
+  return new Set((await listarRecursivo(sb, prefijo)).map((r) => rutaDesdeClave(r.slice(prefijo.length))))
 }
 
 /**

@@ -2,6 +2,7 @@ import assert from 'node:assert/strict'
 import { test } from 'node:test'
 
 import { infoCliente, pendientes, pesoLegible, rutaEnBucket, tratamiento } from '../informe.ts'
+import { rutaObjeto } from '../supabase-repo.ts'
 
 const existentes = [
   { slug: 'cliente-ejemplo', nombre: 'Cliente Ejemplo' },
@@ -37,6 +38,14 @@ test('infoCliente: sugerencias por nombre sin acentos', () => {
 
 test('rutaEnBucket', () => {
   assert.equal(rutaEnBucket('abc', 2, 'assets/a.png'), 'abc/v2/assets/a.png')
+})
+
+test('rutaEnBucket del navegador coincide con rutaObjeto del servidor, también con tildes', () => {
+  const id = '0b0c4e7e-6f5a-4c1e-9d2b-3a4f5e6d7c8b'
+  for (const r of ['index.html', 'Diseño – propuesta.pdf', 'imágenes/Ñandú.png']) {
+    assert.equal(rutaEnBucket(id, 1, r), rutaObjeto(id, 1, r))
+  }
+  assert.equal(rutaEnBucket(id, 1, 'Diseño.pdf'), `${id}/v1/Dise@c3@b1o.pdf`)
 })
 
 test('pendientes y reservado', () => {

@@ -1,3 +1,4 @@
+import { claveStorage } from './clave-storage.ts'
 import { SLUGS_RESERVADOS, slugDesdeNombre, validarSlugCliente } from './slug.ts'
 
 const MB = 1024 * 1024
@@ -45,9 +46,9 @@ export function infoCliente(texto: string, existentes: ClienteExistente[]): Info
   return { crudo, slug, error, reservado, existente, nombre: existente ? existente.nombre : crudo, sugerencias }
 }
 
-/** Ruta del objeto en el bucket: `<id>/v<version>/<ruta>` (espejo de rutaObjeto del servidor). */
+/** Clave del objeto en el bucket: `<id>/v<version>/<clave>` (espejo de rutaObjeto del servidor). */
 export function rutaEnBucket(id: string, version: number, ruta: string): string {
-  return `${id}/v${version}/${ruta}`
+  return `${id}/v${version}/${claveStorage(ruta)}`
 }
 
 /** Rutas que aún no se han subido, en el orden original. */
