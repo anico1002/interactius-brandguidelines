@@ -147,6 +147,56 @@ const ICONS: Record<string, ReactElement> = {
       </g>
     </svg>
   ),
+  /* Deliv_r, noviembre de 2026. Original de diseño en 75×75, escalado a la retícula de 400 (×16/3).
+     Trazo principal 7 y secundario 6: es la proporción del original (1,3125 / 1,125). */
+  delivr: (
+    <svg viewBox="0 0 400 400" fill="none" aria-hidden="true" focusable="false" className="ixw-tile__icon">
+      {/* Estructura secundaria: el documento de atrás y sus líneas de texto */}
+      <g stroke="#B0B5B0" strokeWidth="6" strokeLinecap="square" strokeLinejoin="miter">
+        <path d="M105 65H225L265 105V290H105V65Z" />
+        <path d="M225 65V105H265" />
+        <path d="M120 175H195M120 205H195M120 235H175" />
+      </g>
+
+      {/* Estructura principal: el entregable */}
+      <g stroke="#1C1A17" strokeWidth="7" strokeLinecap="square" strokeLinejoin="miter">
+        <path d="M75 90H195L235 130V320H75V90Z" />
+        <path d="M195 90V130H235" />
+      </g>
+
+      {/* Acento: el envío al cliente */}
+      <g stroke="#FF6B6B" strokeWidth="7" strokeLinecap="square" strokeLinejoin="miter">
+        <path d="M251 153H311L346 188V248H251V153Z" fill="#FF6B6B" fillOpacity="0.15" />
+        <path d="M274 220L313 181" />
+        <path d="M292 181H313V202" />
+      </g>
+    </svg>
+  ),
+
+  /* SocialMak_r, noviembre de 2026. Original de diseño en 100×100, escalado a la retícula de 400 (×4).
+     Trazo principal 7 y secundario 6: es la proporción del original (1,75 / 1,5). */
+  socialmakr: (
+    <svg viewBox="0 0 400 400" fill="none" aria-hidden="true" focusable="false" className="ixw-tile__icon">
+      {/* Estructura secundaria: las piezas de la tira de publicaciones */}
+      <g stroke="#B0B5B0" strokeWidth="6" strokeLinecap="square" strokeLinejoin="miter">
+        <path d="M105 75H225V265H105V75Z" />
+        <path d="M237 75H357V265H237V75Z" />
+      </g>
+
+      {/* Estructura principal: la publicación activa y su imagen */}
+      <g stroke="#1C1A17" strokeWidth="7" strokeLinecap="square" strokeLinejoin="miter">
+        <path d="M55 105H205V255H55V105Z" />
+        <path d="M55 215L105 165L135 195L165 170L205 210" />
+      </g>
+
+      {/* Acento: añadir una pieza nueva */}
+      <g stroke="#10B981" strokeWidth="7" strokeLinecap="square" strokeLinejoin="miter">
+        <path d="M284 88H344V148H284V88Z" fill="#10B981" fillOpacity="0.15" />
+        <path d="M304 108H324M314 98V118" />
+      </g>
+    </svg>
+  ),
+
 };
 
 export function AppIcon({ id }: { id: string }) {

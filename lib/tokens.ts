@@ -61,8 +61,12 @@ export const toolIconAccents: { app: string; hex: string; note: string }[] = [
      que él pueda revocarla sin reconstruir el porqué. Aviso dado y asumido: a 72 px el magenta queda
      cerca del coral de DeckMak_r (#FF6B6B). Alcance: AppIcon.tsx y nada más. */
   { app: 'imgr',     hex: '#EC4899', note: 'Magenta — la imagen y el revelado' },
-  /* Deliv_r, noviembre de 2026. Decisión de MARTINA; comparte el magenta de IMG_r a propósito. */
-  { app: 'delivr',   hex: '#EC4899', note: 'Magenta — compartido con IMG_r' },
+  /* Deliv_r, noviembre de 2026. Decisión de MARTINA al recibir el icono definitivo: coral, compartido
+     con DeckMak_r a propósito (sustituye al magenta provisional). Aviso dado y asumido: dos
+     herramientas con el mismo acento en la misma rejilla. */
+  { app: 'delivr',   hex: '#FF6B6B', note: 'Coral — compartido con DeckMak_r' },
+  /* SocialMak_r, noviembre de 2026. Decisión de MARTINA; comparte el verde de FormMak_r a propósito. */
+  { app: 'socialmakr', hex: '#10B981', note: 'Verde — compartido con FormMak_r' },
 ];
 
 export const typography = {

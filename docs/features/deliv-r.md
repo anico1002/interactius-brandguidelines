@@ -157,7 +157,7 @@ un producto nuevo; el código de seguridad se porta, no se reinventa.
 |---|---|---|
 | Nombre y ruta | Deliv_r · `/workspace/deliv_r` · ficha `/workspace/deliv_r/[id]` · `/workspace/deliv_r/nuevo` · `/workspace/deliv_r/usuarios` | Decidido por Martina. Como IMG_r, el sufijo `Mak_r` no encaja: la tool entrega, no fabrica |
 | Entrada en el catálogo | id `delivr`, wordmark `{ before: 'Deliv', after: 'r' }`, descripción «Entregables para clientes», al final de `tools`, tarjeta encendida (`href`) | Nació apagada (`href: null`) y se encendió en el bloque 10, al cerrar la tool |
-| Acento del icono | magenta `#EC4899`, compartido con IMG_r | Decisión de **Martina**, noviembre de 2026. Compartir acento está permitido (ReWrit_r y DSMak_r ya comparten el cian). Alcance: `AppIcon.tsx` |
+| Acento del icono | coral `#FF6B6B`, compartido con DeckMak_r | Decisión de **Martina**, noviembre de 2026, al llegar el icono definitivo (sustituye al magenta provisional). Compartir acento está permitido (ReWrit_r y DSMak_r ya comparten el cian). Alcance: `AppIcon.tsx` |
 | Acceso del equipo | sesión de equipo (`@interactius.com`), `noindex` | Lo da `middleware.ts` para todo `/workspace/*` |
 | Superficie pública | `/clientes/<cliente>/<id>`, fuera de `/workspace` y de next-intl | Es la URL que se manda al cliente: no se mueve nunca |
 | Acceso del cliente | usuario (su correo) y contraseña generada, propios de Deliv_r | Los clientes no pueden ser usuarios de Supabase Auth: el alta está limitada a `@interactius.com` |
@@ -286,7 +286,7 @@ NUEVO
 MODIFICADO
   lib/workspace/catalog.ts            entrada delivr (tarjeta encendida con href)
   lib/workspace/__tests__/catalog.test.ts
-  lib/tokens.ts                       toolIconAccents: delivr magenta, con nota
+  lib/tokens.ts                       toolIconAccents: delivr coral, con nota
   middleware.ts                       /clientes fuera de i18n; /api/deliv_r en EDITOR_API
   app/robots.ts                       Disallow: /clientes
   docs/features/urls-workspace.md     rutas nuevas
@@ -312,7 +312,7 @@ MODIFICADO
 - **CTA como enlace subrayado** con el `hover-wipe` de `lib/motion.ts` («Entrar», «Dar acceso», «Copiar
   enlace», «Ver», «Revocar», «Publicar»), no botones con relleno. Los campos de texto mantienen su caja.
 - **Alertas y errores en Burdeos**, su `uiRole`.
-- **Icono:** magenta de `toolIconAccents`, solo en `AppIcon.tsx`.
+- **Icono:** coral de `toolIconAccents`, solo en `AppIcon.tsx`.
 - Lo que hay **dentro** del artefacto es del cliente o del equipo que lo creó: no se audita contra
   `lib/tokens.ts`.
 

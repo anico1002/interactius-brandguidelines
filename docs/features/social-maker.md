@@ -622,11 +622,15 @@ en blanco: con saltos blandos se tragarían el párrafo dentro del titular.
 
 ---
 
+## Icono
+
+Icono definitivo de diseño en noviembre de 2026, con acento **verde `#10B981`**, compartido con
+FormMak_r. Decisión de **Martina**; está declarado en `toolIconAccents` de `lib/tokens.ts` y dibujado en
+`components/workspace/AppIcon.tsx`. Este documento pedía que lo decidieran Alberto o Carlos: queda
+anotado para que lo revisen si quieren.
+
 ## Pendiente
 
-- **Acento del icono.** `toolIconAccents` en `lib/tokens.ts` no declara ninguno para `socialmakr`,
-  así que la tarjeta del dispatcher sale con su wordmark y sin icono. Añadir un color ahí es una
-  decisión de marca: la toman Alberto o Carlos, no el código.
 - **Galería de imágenes** para cambiar foto y fondo desde la interfaz, como en el Deck Maker.
 - **Resincronizar el equipo** cuando cambie en la web. No hay forma automática de enterarse: los
   dos repositorios no se hablan.
