@@ -12,7 +12,7 @@ export function Marco({ children }: { children: React.ReactNode }) {
         </div>
         {children}
       </main>
-      <footer className="dc-pie">Interactius · Actitud liminal</footer>
+      <footer className="dc-pie">©2012–{new Date().getFullYear()} Interactius · Actitud Liminal</footer>
     </div>
   );
 }

@@ -49,14 +49,14 @@
 .dc-titulo { font: 300 32px/1.1 var(--dc-serif); margin: 0; }
 .dc-lead { margin: 16px 0 0; color: color-mix(in srgb, var(--c-dark) 70%, transparent); }
 .dc-pie {
-  width: 100%; max-width: 400px; margin: 0 auto; padding: 24px 0;
+  width: 100%; max-width: 400px; margin: 0 auto; padding: 24px 0; text-align: center;
   font: 400 10px/1.4 var(--dc-mono); letter-spacing: 0.14em; text-transform: uppercase;
   color: color-mix(in srgb, var(--c-dark) 50%, transparent);
 }
 .dc-acciones { margin-top: 32px; }
 
 /* ── Formulario ── */
-.dc-form { margin-top: 40px; display: flex; flex-direction: column; gap: 24px; }
+.dc-form { margin-top: 56px; display: flex; flex-direction: column; gap: 24px; }
 .dc-campo { display: block; }
 .dc-etiqueta {
   display: block; margin-bottom: 6px;
