@@ -35,6 +35,12 @@ export function crearRepoEnMemoria(): RepoDeliv {
     async guardarArtefacto(a) {
       artefactos.set(a.id, copiaArtefacto(a))
     },
+    async renombrarArtefacto(id, titulo) {
+      const a = artefactos.get(id)
+      if (!a) return false
+      artefactos.set(id, { ...a, titulo })
+      return true
+    },
     async borrarArtefacto(id) {
       artefactos.delete(id)
       for (const [k, v] of accesos) if (v.artefactoId === id) accesos.delete(k)

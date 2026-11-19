@@ -134,7 +134,8 @@ un producto nuevo; el código de seguridad se porta, no se reinventa.
   - PDF: «Expórtalo con la opción de reducir tamaño. En Mac: Vista Previa › Exportar › Filtro Quartz ›
     Reducir tamaño de archivo.»
   - imagen que no se ha podido reducir: «Usa imágenes de 2400 px como máximo.»
-- Ficha del artefacto: enlace con «Copiar enlace» y «Ver», dar acceso a una persona, tabla de accesos con
+- Ficha del artefacto: «Cambiar nombre» junto al título (el enlace no cambia; el cliente ve el título nuevo en
+  su siguiente carga), enlace con «Copiar enlace» y «Ver», dar acceso a una persona, tabla de accesos con
   revocar, sustituir el archivo (el enlace no cambia), borrar.
 - Usuarios de cliente: a qué artefactos tiene acceso cada persona, último acceso, regenerar contraseña,
   desactivar y reactivar.

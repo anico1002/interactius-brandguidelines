@@ -8,6 +8,8 @@ export interface RepoDeliv {
   listarArtefactos(): Promise<Artefacto[]>
   /** Upsert. */
   guardarArtefacto(a: Artefacto): Promise<void>
+  /** Solo cambia el titulo; false si el artefacto no existe. */
+  renombrarArtefacto(id: string, titulo: string): Promise<boolean>
   /** Borra tambien sus accesos. */
   borrarArtefacto(id: string): Promise<void>
   /** Email normalizado. */

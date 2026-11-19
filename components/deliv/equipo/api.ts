@@ -8,7 +8,7 @@ export type Resultado<T> = { ok: true; datos: T } | { ok: false; mensaje: string
 /* Llama a una API de /api/deliv_r. Los errores del servidor traen `mensaje`; si no, el genérico. */
 export async function enviar<T = Record<string, unknown>>(
   url: string,
-  metodo: 'POST' | 'DELETE',
+  metodo: 'POST' | 'PATCH' | 'DELETE',
   cuerpo?: unknown,
 ): Promise<Resultado<T>> {
   try {

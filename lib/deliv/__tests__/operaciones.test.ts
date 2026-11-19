@@ -15,6 +15,7 @@ import {
   publicar,
   reactivar,
   regenerarPassword,
+  renombrar,
   resumenEquipo,
   revocar,
 } from '../operaciones.ts'
@@ -239,4 +240,19 @@ test('darAcceso registra autoria', async () => {
   await darAcceso(repo, id, 'ana@cliente.test', 'otro@interactius.com', T0)
   assert.equal((await repo.leerUsuario('ana@cliente.test'))!.creadoPor, 'otro@interactius.com')
   assert.equal((await repo.leerAcceso(id, 'ana@cliente.test'))!.concedidoPor, 'otro@interactius.com')
+})
+
+test('renombrar cambia solo el titulo, recortado', async () => {
+  const { repo, id } = await publicado()
+  const antes = await repo.leerArtefacto(id)
+  assert.equal(await renombrar(repo, id, '  Informe final  '), 'Informe final')
+  const despues = await repo.leerArtefacto(id)
+  assert.deepEqual(despues, { ...antes, titulo: 'Informe final' })
+})
+
+test('renombrar rechaza titulo vacio y artefacto inexistente', async () => {
+  const { repo, id } = await publicado()
+  await assert.rejects(renombrar(repo, id, '   '), ErrorDeliv)
+  await assert.rejects(renombrar(repo, '00000000-0000-4000-8000-000000000000', 'X'), ErrorDeliv)
+  assert.equal((await repo.leerArtefacto(id))?.titulo, 'Informe')
 })

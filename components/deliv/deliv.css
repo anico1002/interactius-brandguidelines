@@ -159,6 +159,11 @@
 .dq-vacio p { margin: 0 0 20px; color: var(--c-ash-dark); }
 .dq-eyebrow { font: 500 10px/1.4 var(--dc-mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--c-ash); }
 .dq-h1 { font: 300 32px/1.1 var(--dc-serif); margin: 8px 0 6px; overflow-wrap: anywhere; }
+.dq-titulo { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 24px; }
+.dq-titulo .dq-h1 { flex: 0 1 auto; min-width: 0; }
+.dq-titulo--editando { display: block; margin: 8px 0 6px; }
+/* Mismo tamaño y peso que .dq-h1: editar no cambia el aspecto del título. */
+.dq-titulo__input { height: auto; padding: 6px 12px; font: 300 32px/1.1 var(--dc-serif); margin-bottom: 8px; }
 .dq-bloque { margin-top: 44px; }
 .dq-bloque h2 { font: 400 24px/1.15 var(--dc-serif); margin: 0 0 16px; }
 .dq-volver { margin-bottom: 22px; }
