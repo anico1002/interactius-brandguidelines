@@ -97,6 +97,14 @@ export async function publicar(
   return p
 }
 
+/** Cambia el titulo. No toca enlace, version ni accesos. */
+export async function renombrar(repo: RepoDeliv, id: string, tituloBruto: string): Promise<string> {
+  const titulo = tituloBruto.trim()
+  if (!titulo) throw new ErrorDeliv('El título no puede quedar vacío.')
+  if (!(await repo.renombrarArtefacto(id, titulo))) throw new ErrorDeliv('El artefacto no existe.')
+  return titulo
+}
+
 export async function borrar(repo: RepoDeliv, id: string): Promise<void> {
   await repo.borrarArtefacto(id)
 }

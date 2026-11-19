@@ -154,6 +154,7 @@ servicio. Los enlaces que devuelven son relativos (`/clientes/<cliente>/<id>`).
 | Endpoint | Método | Para qué |
 |----------|--------|----------|
 | `/api/deliv_r/artefactos` | POST | Crea el borrador y da las URL de subida |
+| `/api/deliv_r/artefactos/:id` | PATCH | Cambia el título |
 | `/api/deliv_r/artefactos/:id` | DELETE | Borra ficha, accesos y archivos |
 | `/api/deliv_r/artefactos/:id/version` | POST | URL de subida para la versión siguiente |
 | `/api/deliv_r/artefactos/:id/publicar` | POST | Publica la versión subida |
@@ -175,6 +176,12 @@ servicio. Los enlaces que devuelven son relativos (`/clientes/<cliente>/<id>`).
 ```
 
 `entrada` debe estar en `rutas`; el total declarado no puede pasar de 100 MB.
+
+### `PATCH /api/deliv_r/artefactos/:id`
+
+Petición `{ titulo }`. Respuesta `{ titulo }`, ya recortado. Solo actualiza la columna `titulo`: no toca el
+enlace, la versión ni los accesos. Título vacío → «El título no puede quedar vacío.»; artefacto inexistente →
+«El artefacto no existe.».
 
 ### `POST /api/deliv_r/artefactos/:id/version`
 

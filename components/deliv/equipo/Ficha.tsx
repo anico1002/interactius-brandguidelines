@@ -7,6 +7,7 @@ import { ConfirmarBorrado } from './ConfirmarBorrado';
 import { CopiarEnlace } from './CopiarEnlace';
 import { DarAcceso } from './DarAcceso';
 import { TablaAccesos, type FilaAcceso } from './TablaAccesos';
+import { Titulo } from './Titulo';
 
 export interface DatosFicha {
   id: string;
@@ -86,7 +87,7 @@ export function Ficha({ datos, accesos }: { datos: DatosFicha; accesos: FilaAcce
       <div className="dq-eyebrow">
         {datos.clienteNombre} · {datos.tipo.toUpperCase()} · versión {datos.version} · publicado {datos.publicado}
       </div>
-      <h1 className="dq-h1">{datos.titulo}</h1>
+      <Titulo artefactoId={datos.id} titulo={datos.titulo} />
 
       <div className="dq-bloque" style={{ marginTop: 28 }}>
         <div className="dq-enlace">

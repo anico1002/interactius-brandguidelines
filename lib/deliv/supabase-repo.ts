@@ -188,6 +188,12 @@ export function crearRepoSupabase(sb: SupabaseClient): RepoDeliv {
       const { error } = await artefactos().upsert(filaDesdeArtefacto(a), { onConflict: 'id' })
       if (error) throw fallo('guardarArtefacto', error)
     },
+    async renombrarArtefacto(id, titulo) {
+      // Solo la columna titulo: no pisa una publicacion que llegue a la vez (guardarArtefacto es un upsert entero).
+      const { data, error } = await artefactos().update({ titulo }).eq('id', id).select('id')
+      if (error) throw fallo('renombrarArtefacto', error)
+      return (data ?? []).length > 0
+    },
     async borrarArtefacto(id) {
       // deliv_accesos.artefacto_id es `on delete cascade`.
       const { error } = await artefactos().delete().eq('id', id)
