@@ -114,9 +114,9 @@ export const typeScale: readonly TypeScaleEntry[] = [
     weights: [400, 500, 600],
     sample: 'EYEBROW · LABEL',
     usage: {
-      es: 'Eyebrows, etiquetas, notas técnicas y elementos auxiliares de interfaz.',
-      en: 'Eyebrows, labels, technical notes and auxiliary interface elements.',
-      ca: 'Eyebrows, etiquetes, notes tècniques i elements auxiliars d\'interfície.',
+      es: 'Eyebrows, rótulos, notas técnicas y elementos auxiliares de interfaz. En mayúsculas (eyebrows, rótulos) el tracking sube a 0,08em; en tipo de frase se queda en 0,04em.',
+      en: 'Eyebrows, labels, technical notes and auxiliary interface elements. In capitals (eyebrows, labels) tracking rises to 0.08em; in sentence case it stays at 0.04em.',
+      ca: 'Eyebrows, rètols, notes tècniques i elements auxiliars d\'interfície. En majúscules (eyebrows, rètols) el tracking puja a 0,08em; en tipus de frase es queda a 0,04em.',
     },
   },
 ];

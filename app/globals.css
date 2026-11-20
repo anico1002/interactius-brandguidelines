@@ -14,6 +14,8 @@
   --c-opal: #B0B5B0;
   --c-bordeaux: #99335F;
   --c-emerald: #5999A6;
+  --c-error: #B4402E;    /* funcional: solo estado */
+  --c-success: #1E763B;  /* funcional: solo estado */
 
   /* Layout */
   --sidebar-w: 0px;

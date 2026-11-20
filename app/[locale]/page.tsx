@@ -11,6 +11,8 @@ import { SectionUsosIncorrectos } from '@/components/sections/SectionUsosIncorre
 import { SectionTipografia } from '@/components/sections/SectionTipografia';
 import { SectionSistemaTexto } from '@/components/sections/SectionSistemaTexto';
 import { SectionColor } from '@/components/sections/SectionColor';
+import { SectionIconos } from '@/components/sections/SectionIconos';
+import { SectionInterfaz } from '@/components/sections/SectionInterfaz';
 import { SectionUniversoVisual } from '@/components/sections/SectionUniversoVisual';
 import { SectionSistemaGrafico } from '@/components/sections/SectionSistemaGrafico';
 import { SectionAplicaciones } from '@/components/sections/SectionAplicaciones';
@@ -33,6 +35,8 @@ export default async function Page({ params }: { params: Promise<{ locale: strin
       <SectionTipografia />
       <SectionSistemaTexto />
       <SectionColor />
+      <SectionIconos />
+      <SectionInterfaz />
       <SectionUniversoVisual />
       <SectionSistemaGrafico />
       <SectionAplicaciones />

@@ -1,0 +1,577 @@
+/* Interactius UI kit — clases canónicas de interfaz (`.ixu-*`). Sección 11 · Componentes.
+
+   Espejo de lib/ui.ts: si cambia un valor allí, cambia aquí. Ningún hex: los colores son los
+   --c-* de globals.css, servidos a través de tokens semánticos --ui-*.
+
+   Cada estado tiene dos disparadores: el real (:hover, :active, :focus-visible, aria-*) y una
+   clase forzada (.is-hover, .is-pressed, .is-focus, .is-disabled, .is-loading) para poder
+   mostrarlo quieto en la documentación. Las dos rutas pintan exactamente lo mismo. */
+
+:root {
+  /* Tokens semánticos */
+  --ui-surface-page: var(--c-warm-light);
+  --ui-surface: var(--c-white);
+  --ui-surface-hover: var(--c-warm-light);
+  --ui-surface-pressed: var(--c-warm-dark);
+  --ui-border: var(--c-warm-dark);          /* filete estructural: divisores, tarjetas, cabecera */
+  --ui-border-control: var(--c-ash);        /* filete de control: lo que se toca (WCAG 1.4.11, 4,9:1) */
+  --ui-border-strong: var(--c-dark);
+  --ui-text: var(--c-dark);
+  --ui-text-muted: var(--c-ash);
+  --ui-text-secondary: var(--c-ash-dark);   /* texto del terciario en reposo: deja Ash libre para el desactivado */
+  --ui-inverse: var(--c-dark);
+  --ui-inverse-hover: var(--c-ash-dark);
+  --ui-inverse-pressed: color-mix(in srgb, var(--c-dark), var(--c-warm-light) 32%); /* #615F5B · Warm Light encima 5,7:1 */
+  --ui-text-inverse: var(--c-warm-light);
+  --ui-critical: var(--c-error);
+  --ui-critical-subtle: rgba(180, 64, 46, 0.06);
+  --ui-success: var(--c-success);
+  --ui-success-subtle: rgba(30, 118, 59, 0.06);
+  --ui-focus: var(--c-dark);
+  --ui-scrim: rgba(28, 26, 23, 0.28);
+  /* Terciario: tinte de Dark en vez de un color sólido. Va sobre White o sobre Warm Light, y
+     entre Warm Dark y Ash la paleta no tiene un paso más: el tinte da hover < pulsado en las dos. */
+  --ui-tint-hover: rgba(28, 26, 23, 0.08);
+  --ui-tint-pressed: rgba(28, 26, 23, 0.16);
+
+  /* Desactivado: el control pierde el filete de control y pasa al estructural */
+  --ui-disabled-surface: var(--c-warm-light);
+  --ui-disabled-fill: var(--c-warm-dark);     /* seleccionado y marcado: el estado no se pierde */
+  --ui-disabled-border: var(--c-warm-dark);
+  --ui-disabled-text: rgba(28, 26, 23, 0.4);  /* Dark 40%: ~2,5:1. El único texto del sistema por
+                                                  debajo de 3:1, así que ningún botón activo se le parece
+                                                  (el texto activo más claro es Ash, 4,4:1). */
+
+  /* Medidas */
+  --ui-h-xs: 24px;
+  --ui-h-sm: 28px;
+  --ui-h-md: 36px;
+  --ui-h-lg: 48px;
+
+  /* Tipografía y movimiento */
+  --ui-mono: var(--font-ibm-plex-mono), ui-monospace, monospace;
+  --ui-t-hover: 200ms;
+  --ui-t-state: 300ms;
+}
+
+/* ── Foco: ver «Foco» al final del archivo (va detrás de todos los estados para ganarles). */
+
+/* ── Desactivado: ver «Desactivado» al final del archivo (detrás de hover y seleccionado). */
+
+/* ── Botón ─────────────────────────────────────────────────────────────────── */
+.ixu-btn {
+  appearance: none;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: var(--ui-h-md);
+  padding: 0 14px;
+  border: 1px solid transparent;
+  border-radius: 0;
+  font: 500 12px/1 var(--ui-mono);
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  text-decoration: none;
+  cursor: pointer;
+  overflow: hidden;
+  transition: background-color var(--ui-t-hover) var(--ease), border-color var(--ui-t-hover) var(--ease), color var(--ui-t-hover) var(--ease);
+}
+.ixu-btn:active, .ixu-btn.is-pressed { transition: none; }
+.ixu-btn--sm { height: var(--ui-h-sm); padding: 0 10px; }
+.ixu-btn--lg { height: var(--ui-h-lg); padding: 0 20px; }
+.ixu-btn--block { width: 100%; }
+
+/* Primario */
+.ixu-btn--primary { background: var(--ui-inverse); border-color: var(--ui-inverse); color: var(--ui-text-inverse); }
+.ixu-btn--primary:hover, .ixu-btn--primary.is-hover { background: var(--ui-inverse-hover); border-color: var(--ui-inverse-hover); }
+.ixu-btn--primary:active, .ixu-btn--primary.is-pressed { background: var(--ui-inverse-pressed); border-color: var(--ui-inverse-pressed); transition: none; }
+
+/* Secundario */
+.ixu-btn--secondary { background: var(--ui-surface); border-color: var(--ui-border-control); color: var(--ui-text); }
+.ixu-btn--secondary:hover, .ixu-btn--secondary.is-hover { background: linear-gradient(var(--ui-tint-hover), var(--ui-tint-hover)) var(--ui-surface); border-color: var(--ui-border-strong); }
+.ixu-btn--secondary:active, .ixu-btn--secondary.is-pressed { background: linear-gradient(var(--ui-tint-pressed), var(--ui-tint-pressed)) var(--ui-surface); border-color: var(--ui-border-strong); transition: none; }
+
+/* Terciario */
+.ixu-btn--ghost { background: transparent; color: var(--ui-text-secondary); }
+.ixu-btn--ghost:hover, .ixu-btn--ghost.is-hover { background: var(--ui-tint-hover); color: var(--ui-text); }
+.ixu-btn--ghost:active, .ixu-btn--ghost.is-pressed { background: var(--ui-tint-pressed); color: var(--ui-text); transition: none; }
+
+/* Crítico */
+.ixu-btn--danger { background: var(--ui-surface); border-color: var(--ui-critical); color: var(--ui-critical); }
+.ixu-btn--danger:hover, .ixu-btn--danger.is-hover { background: var(--ui-critical-subtle); }
+.ixu-btn--danger:active, .ixu-btn--danger.is-pressed { background: var(--ui-critical); color: var(--c-white); transition: none; }
+
+/* Seleccionado (conmutables): inversión */
+.ixu-btn[aria-pressed='true'],
+.ixu-icon-btn[aria-pressed='true'],
+.ixu-chip[aria-pressed='true'],
+.ixu-seg > button[aria-checked='true'] {
+  background: var(--ui-inverse);
+  border-color: var(--ui-inverse);
+  color: var(--ui-text-inverse);
+  transition-duration: var(--ui-t-state);
+}
+
+/* Cargando: el macrón recorre la base */
+.ixu-btn[aria-busy='true'], .ixu-btn.is-loading { pointer-events: none; cursor: progress; }
+.ixu-btn[aria-busy='true']::after, .ixu-btn.is-loading::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 40%;
+  height: 2px;
+  background: currentColor;
+  animation: ixu-macron 1.1s cubic-bezier(0.45, 0, 0.15, 1) infinite;
+}
+@keyframes ixu-macron {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(250%); }
+}
+
+/* ── Botón de icono ────────────────────────────────────────────────────────── */
+.ixu-icon-btn {
+  appearance: none;
+  display: inline-grid;
+  place-items: center;
+  width: var(--ui-h-md);
+  height: var(--ui-h-md);
+  padding: 0;
+  border: 1px solid var(--ui-border-control);
+  border-radius: 0;
+  background: var(--ui-surface);
+  color: var(--ui-text);
+  cursor: pointer;
+  transition: background-color var(--ui-t-hover) var(--ease), border-color var(--ui-t-hover) var(--ease), color var(--ui-t-hover) var(--ease);
+}
+.ixu-icon-btn--sm { width: var(--ui-h-sm); height: var(--ui-h-sm); }
+.ixu-icon-btn:hover, .ixu-icon-btn.is-hover { background: linear-gradient(var(--ui-tint-hover), var(--ui-tint-hover)) var(--ui-surface); border-color: var(--ui-border-strong); }
+.ixu-icon-btn:active, .ixu-icon-btn.is-pressed { background: linear-gradient(var(--ui-tint-pressed), var(--ui-tint-pressed)) var(--ui-surface); border-color: var(--ui-border-strong); transition: none; }
+.ixu-icon-btn--ghost { background: transparent; border-color: transparent; color: var(--ui-text-secondary); }
+.ixu-icon-btn--ghost:hover, .ixu-icon-btn--ghost.is-hover { background: var(--ui-tint-hover); border-color: transparent; color: var(--ui-text); }
+.ixu-icon-btn--ghost:active, .ixu-icon-btn--ghost.is-pressed { background: var(--ui-tint-pressed); border-color: transparent; color: var(--ui-text); transition: none; }
+
+/* ── Campo (texto, buscador, desplegable) ─────────────────────────────────── */
+.ixu-label {
+  display: block;
+  margin-bottom: 8px;
+  font: 500 10px/1.2 var(--ui-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ui-text-muted);
+}
+
+.ixu-field {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: var(--ui-h-md);
+  padding: 0 14px;
+  border: 1px solid var(--ui-border-control);
+  border-radius: 0;
+  background: var(--ui-surface);
+  color: var(--ui-text-muted);
+  transition: border-color var(--ui-t-hover) var(--ease), box-shadow var(--ui-t-hover) var(--ease);
+}
+.ixu-field--lg { height: var(--ui-h-lg); padding: 0 20px; }
+.ixu-field:hover, .ixu-field.is-hover { border-color: var(--ui-border-strong); }
+/* Foco del campo: el filete sube a 2px (1px de borde + 1px interior). Sin desplazar el contenido. */
+/* Foco del campo = la misma regla que los botones: :focus-visible. El navegador ya lo activa al
+   hacer clic en un campo de texto (vas a escribir y tienes que ver dónde), y en un desplegable
+   solo con teclado (el clic ya se ve: abre la lista). */
+.ixu-field:has(:focus-visible), button.ixu-field:focus-visible, .ixu-field.is-focus { border-color: var(--ui-border-strong); box-shadow: inset 0 0 0 1px var(--ui-border-strong); }
+/* Error: 2px desde el reposo. Ash y Error tienen casi la misma luminancia (1,15:1): con 1px solo
+   cambiaría el tono, y el color no puede ser la única señal (WCAG 1.4.1). */
+.ixu-field[aria-invalid='true'], .ixu-field.is-error { border-color: var(--ui-critical); box-shadow: inset 0 0 0 1px var(--ui-critical); }
+/* Error con foco: el filete ya está a 2px y no se puede engrosar más, así que el foco se separa
+   2px, como en los controles rellenos. */
+.ixu-field[aria-invalid='true']:has(:focus-visible), .ixu-field.is-error.is-focus { border-color: var(--ui-critical); box-shadow: inset 0 0 0 1px var(--ui-critical); outline: 2px solid var(--ui-focus); outline-offset: 2px; }
+
+.ixu-field input,
+.ixu-field select,
+.ixu-field__value {
+  flex: 1;
+  min-width: 0;
+  appearance: none;
+  border: 0;
+  outline: none; /* el foco lo dibuja el contenedor (:has(:focus-visible)): nunca se pierde */
+  padding: 0;
+  background: transparent;
+  color: var(--ui-text);
+  font: 400 12px/1.5 var(--ui-mono);
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+/* Cursor de escritura: solo para documentar el foco en la guía (un <input> real ya lo pinta). */
+.ixu-field__caret {
+  display: inline-block;
+  width: 1px;
+  height: 14px;
+  margin-left: 1px;
+  vertical-align: -2px;
+  background: var(--ui-text);
+  animation: ixu-caret 1.06s steps(1) infinite;
+}
+@keyframes ixu-caret { 50% { opacity: 0; } }
+.ixu-field input::placeholder { color: var(--ui-text-muted); opacity: 1; }
+.ixu-field svg { flex-shrink: 0; }
+/* Desplegado (aria-expanded): filete de 2px como el foco y la flecha gira. La lista es un .ixu-menu
+   que cuelga 6px por debajo, alineado a la izquierda y como mínimo del ancho del campo. */
+.ixu-field--select > svg:last-child { transition: transform var(--ui-t-state) var(--ease); }
+.ixu-field[aria-expanded='true'], .ixu-field.is-open { border-color: var(--ui-border-strong); box-shadow: inset 0 0 0 1px var(--ui-border-strong); }
+.ixu-field[aria-expanded='true'] > svg:last-child, .ixu-field.is-open > svg:last-child { transform: rotate(180deg); }
+.ixu-dropdown { position: relative; display: inline-flex; flex-direction: column; }
+.ixu-dropdown > .ixu-menu { position: absolute; top: calc(100% + 6px); left: 0; z-index: 20; min-width: 100%; }
+/* Solo para documentar: la lista en flujo, para que no tape la fila siguiente de la matriz. */
+.ixu-dropdown--inline { gap: 6px; }
+.ixu-dropdown--inline > .ixu-menu { position: static; }
+/* Un <button> como campo: hereda la caja del campo, sin estilos de botón. */
+button.ixu-field { appearance: none; font: inherit; cursor: pointer; }
+button.ixu-field:focus-visible { outline: none; } /* su foco es el filete de 2px, como el resto de campos */
+
+.ixu-message {
+  margin-top: 8px;
+  font: 400 12px/1.5 var(--ui-mono);
+  color: var(--ui-text-muted);
+}
+.ixu-message--error { color: var(--ui-critical); }
+.ixu-message--success { color: var(--ui-success); }
+
+/* ── Casilla y opción ─────────────────────────────────────────────────────── */
+.ixu-check {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  font: 400 12px/1.5 var(--ui-mono);
+  color: var(--ui-text);
+}
+.ixu-check input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.ixu-check__box {
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  border: 1px solid var(--ui-border-control);
+  background: var(--ui-surface);
+  color: var(--ui-text-inverse);
+  transition: background-color var(--ui-t-state) var(--ease), border-color var(--ui-t-hover) var(--ease);
+}
+.ixu-check__box svg { opacity: 0; }
+.ixu-check:hover .ixu-check__box, .ixu-check.is-hover .ixu-check__box { border-color: var(--ui-border-strong); }
+.ixu-check input:checked + .ixu-check__box,
+.ixu-check.is-checked .ixu-check__box { background: var(--ui-inverse); border-color: var(--ui-inverse); }
+.ixu-check input:checked + .ixu-check__box svg,
+.ixu-check.is-checked .ixu-check__box svg { opacity: 1; }
+
+.ixu-check--radio .ixu-check__box { border-radius: 50%; }
+.ixu-check--radio input:checked + .ixu-check__box,
+.ixu-check--radio.is-checked .ixu-check__box { background: var(--ui-surface); border-color: var(--ui-border-strong); }
+.ixu-check--radio .ixu-check__box::after {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--ui-inverse);
+  transform: scale(0);
+  transition: transform var(--ui-t-state) var(--ease);
+}
+.ixu-check--radio input:checked + .ixu-check__box::after,
+.ixu-check--radio.is-checked .ixu-check__box::after { transform: scale(1); }
+
+/* ── Chip de filtro ───────────────────────────────────────────────────────── */
+.ixu-chip {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: var(--ui-h-sm);
+  padding: 0 10px;
+  border: 1px solid var(--ui-border-control);
+  border-radius: 0;
+  background: var(--ui-surface);
+  color: var(--ui-text-muted);
+  font: 500 12px/1 var(--ui-mono);
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition: background-color var(--ui-t-hover) var(--ease), border-color var(--ui-t-hover) var(--ease), color var(--ui-t-hover) var(--ease);
+}
+.ixu-chip:hover, .ixu-chip.is-hover { background: linear-gradient(var(--ui-tint-hover), var(--ui-tint-hover)) var(--ui-surface); border-color: var(--ui-border-strong); color: var(--ui-text); }
+.ixu-chip:active, .ixu-chip.is-pressed { background: linear-gradient(var(--ui-tint-pressed), var(--ui-tint-pressed)) var(--ui-surface); border-color: var(--ui-border-strong); color: var(--ui-text); transition: none; }
+
+/* Chip con lista: el valor elegido y la flecha del sistema, que gira al desplegarse (mismo
+   «Desplegado» que el campo). Mientras filtra (aria-pressed) queda invertido con el nombre. */
+.ixu-chip--list > svg { flex-shrink: 0; transition: transform var(--ui-t-state) var(--ease); }
+.ixu-chip--list[aria-expanded='true'], .ixu-chip--list.is-open { border-color: var(--ui-border-strong); box-shadow: inset 0 0 0 1px var(--ui-border-strong); color: var(--ui-text); }
+.ixu-chip--list[aria-expanded='true'] > svg, .ixu-chip--list.is-open > svg { transform: rotate(180deg); }
+
+/* ── Segmentado ───────────────────────────────────────────────────────────── */
+.ixu-seg { display: inline-flex; }
+.ixu-seg > button {
+  appearance: none;
+  flex: 1;
+  min-width: 48px;
+  height: var(--ui-h-sm);
+  padding: 0 10px;
+  border: 1px solid var(--ui-border-control);
+  border-radius: 0;
+  background: var(--ui-surface);
+  color: var(--ui-text-muted);
+  font: 500 10px/1 var(--ui-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background-color var(--ui-t-state) var(--ease), color var(--ui-t-hover) var(--ease);
+}
+.ixu-seg > button + button { margin-left: -1px; }
+.ixu-seg--md > button { height: var(--ui-h-md); padding: 0 14px; }
+.ixu-seg > button:hover, .ixu-seg > button.is-hover { background: linear-gradient(var(--ui-tint-hover), var(--ui-tint-hover)) var(--ui-surface); color: var(--ui-text); }
+
+/* ── Menú ─────────────────────────────────────────────────────────────────── */
+.ixu-menu {
+  min-width: 220px;
+  background: var(--ui-surface);
+  border: 1px solid var(--ui-border-strong);
+}
+.ixu-menu__item {
+  appearance: none;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: var(--ui-h-md);
+  padding: 0 14px;
+  border: 0;
+  border-bottom: 1px solid var(--ui-border);
+  background: var(--ui-surface);
+  color: var(--ui-text);
+  text-align: left;
+  font: 500 12px/1 var(--ui-mono);
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition: background-color var(--ui-t-hover) var(--ease);
+}
+.ixu-menu__item:last-child { border-bottom: 0; }
+.ixu-menu__item:hover, .ixu-menu__item.is-hover { background: var(--ui-tint-hover); }
+.ixu-menu__item:active, .ixu-menu__item.is-pressed { background: var(--ui-tint-pressed); }
+.ixu-menu__item:focus-visible, .ixu-menu__item.is-focus { background: var(--ui-tint-hover); outline: 2px solid var(--ui-focus); outline-offset: -2px; }
+.ixu-menu__item[aria-selected='true'], .ixu-menu__item[aria-current='true'] { background: var(--ui-inverse); color: var(--ui-text-inverse); }
+
+/* ── Etiqueta y badge (xs) ────────────────────────────────────────────────── */
+.ixu-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: var(--ui-h-xs);
+  padding: 0 8px;
+  border: 1px solid var(--ui-border);
+  background: var(--ui-surface);
+  color: var(--ui-text);
+  font: 400 12px/1 var(--ui-mono);
+}
+.ixu-tag button { appearance: none; border: 0; padding: 0; background: transparent; color: var(--ui-text-muted); font: inherit; cursor: pointer; }
+/* Área de 16×16 alrededor del glifo de 10: más fácil de pulsar y con sitio para el anillo de foco
+   sin pegarse al texto. El margen negativo compensa, así la etiqueta casi no crece. */
+.ixu-tag button { display: inline-grid; place-items: center; width: 16px; height: 16px; margin-right: -4px; transition: color var(--ui-t-hover) var(--ease); }
+.ixu-tag button:hover, .ixu-tag button.is-hover { color: var(--ui-text); }
+/* La × no tiene filete que engrosar: su foco es un anillo de 2px en el borde de su área de 16 */
+.ixu-tag button:focus-visible, .ixu-tag button.is-focus { outline: 2px solid var(--ui-focus); outline-offset: -2px; color: var(--ui-text); }
+
+.ixu-badge {
+  display: inline-flex;
+  align-items: center;
+  height: var(--ui-h-xs);
+  padding: 0 8px;
+  border: 1px solid var(--ui-text-muted);
+  color: var(--ui-text-muted);
+  font: 500 10px/1 var(--ui-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.ixu-badge--on { background: var(--ui-inverse); border-color: var(--ui-inverse); color: var(--ui-text-inverse); }
+
+/* ── Superficies ──────────────────────────────────────────────────────────── */
+.ixu-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 56px;
+  padding: 0 16px;
+  border-bottom: 1px solid var(--ui-border);
+  background: var(--ui-surface-page);
+}
+.ixu-title {
+  font: 600 13px/1.3 var(--ui-mono);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ui-text);
+}
+
+.ixu-scrim { background: var(--ui-scrim); }
+.ixu-dialog {
+  width: min(560px, 100%);
+  padding: 32px;
+  background: var(--ui-surface-page);
+  border: 1px solid var(--ui-border-strong);
+}
+.ixu-dialog .ixu-title { margin: 0 0 16px; }
+.ixu-dialog__body { margin: 0 0 32px; font: 400 12px/1.5 var(--ui-mono); color: var(--ui-text); }
+.ixu-dialog__actions { display: flex; justify-content: flex-end; gap: 8px; }
+
+.ixu-tooltip {
+  display: inline-flex;
+  align-items: center;
+  height: var(--ui-h-xs);
+  padding: 0 8px;
+  background: var(--ui-inverse);
+  color: var(--ui-text-inverse);
+  font: 400 12px/1 var(--ui-mono);
+  white-space: nowrap;
+}
+/* Sobre una superficie oscura se invierte: la norma pide contraste con lo que tiene debajo */
+.ixu-tooltip--light { background: var(--ui-surface-page); color: var(--ui-text); }
+
+.ixu-card {
+  border: 1px solid var(--ui-border);
+  background: var(--ui-surface);
+  color: var(--ui-text);
+  text-decoration: none;
+  transition: transform var(--ui-t-state) var(--ease), box-shadow var(--ui-t-state) var(--ease), border-color var(--ui-t-hover) var(--ease);
+}
+a.ixu-card:hover, button.ixu-card:hover, .ixu-card.is-hover {
+  border-color: var(--ui-border-strong);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(28, 26, 23, 0.16); /* la única sombra del sistema */
+}
+/* Foco: el hover y el filete a 2px, como el resto de controles con superficie */
+a.ixu-card:focus-visible, button.ixu-card:focus-visible, .ixu-card.is-focus {
+  outline: none;
+  border-color: var(--ui-focus);
+  transform: translateY(-2px);
+  box-shadow: inset 0 0 0 1px var(--ui-focus), 0 6px 18px rgba(28, 26, 23, 0.16);
+}
+
+.ixu-alert {
+  padding: 12px 16px;
+  border: 1px solid var(--ui-critical);
+  background: var(--ui-critical-subtle);
+  color: var(--ui-critical);
+  font: 400 12px/1.5 var(--ui-mono);
+}
+.ixu-alert--success { border-color: var(--ui-success); background: var(--ui-success-subtle); color: var(--ui-success); }
+.ixu-alert--neutral { border-color: var(--ui-border); background: var(--ui-surface-page); color: var(--ui-text); }
+/* Toast: confirmación que se va sola (3s), abajo al centro */
+.ixu-toast {
+  display: inline-flex;
+  align-items: center;
+  padding: 12px 16px;
+  background: var(--ui-inverse);
+  color: var(--ui-text-inverse);
+  font: 400 12px/1.5 var(--ui-mono);
+}
+
+/* ── Desactivado ───────────────────────────────────────────────────────────────
+   Sin opacidad: tokens explícitos, idénticos sobre White y sobre Warm Light. El control
+   pierde su filete de control (Ash, «se toca») y pasa al estructural (Warm Dark, «no se
+   toca»); el texto baja a Dark 40%, por debajo de cualquier texto activo. Todos los botones desactivados se ven
+   igual: sin acción no hay jerarquía, y un relleno Warm Dark ya significa «bajo el puntero»
+   (hover del terciario). Solo conserva relleno —Warm Dark— lo que lleva un estado que no se
+   puede perder: seleccionado y casilla marcada.
+   Preferir aria-disabled a disabled: sigue en el orden de tabulación y se anuncia. */
+.ixu-btn:is(:disabled, .is-disabled, [aria-disabled='true']),
+.ixu-icon-btn:is(:disabled, .is-disabled, [aria-disabled='true']),
+.ixu-chip:is(:disabled, .is-disabled, [aria-disabled='true']),
+.ixu-seg > button:is(:disabled, .is-disabled, [aria-disabled='true']),
+.ixu-field:is(.is-disabled, :has(:disabled), [aria-disabled='true']) {
+  background: var(--ui-disabled-surface);
+  border-color: var(--ui-disabled-border);
+  color: var(--ui-disabled-text);
+  cursor: not-allowed;
+}
+.ixu-field:is(.is-disabled, :has(:disabled)) :is(input, select, .ixu-field__value) { color: var(--ui-disabled-text); cursor: not-allowed; }
+/* Estado que no se pierde: seleccionado y marcado conservan relleno */
+.ixu-btn[aria-pressed='true']:is(:disabled, .is-disabled, [aria-disabled='true']),
+.ixu-icon-btn[aria-pressed='true']:is(:disabled, .is-disabled, [aria-disabled='true']),
+.ixu-chip[aria-pressed='true']:is(:disabled, .is-disabled, [aria-disabled='true']),
+.ixu-seg > button[aria-checked='true']:is(:disabled, .is-disabled, [aria-disabled='true']) {
+  background: var(--ui-disabled-fill);
+  border-color: var(--ui-disabled-fill);
+}
+/* Terciarios y filas de menú: sin superficie ni filete; solo el texto se apaga */
+.ixu-btn--ghost:is(:disabled, .is-disabled, [aria-disabled='true']),
+.ixu-icon-btn--ghost:is(:disabled, .is-disabled, [aria-disabled='true']) { background: transparent; border-color: transparent; }
+.ixu-menu__item:is(:disabled, .is-disabled, [aria-disabled='true']) { background: transparent; color: var(--ui-disabled-text); cursor: not-allowed; }
+/* Casilla y opción */
+.ixu-check:is(.is-disabled, :has(:disabled)) { color: var(--ui-disabled-text); cursor: not-allowed; }
+.ixu-check:is(.is-disabled, :has(:disabled)) .ixu-check__box { background: var(--ui-disabled-surface); border-color: var(--ui-disabled-border); }
+.ixu-check:not(.ixu-check--radio):is(.is-disabled, :has(:disabled)):is(.is-checked, :has(:checked)) .ixu-check__box {
+  background: var(--ui-disabled-fill); border-color: var(--ui-disabled-fill); color: var(--ui-disabled-text);
+}
+.ixu-check--radio:is(.is-disabled, :has(:disabled)) .ixu-check__box::after { background: var(--ui-disabled-text); }
+/* Un desactivado no reacciona al puntero (el nativo, además, no recibe foco) */
+.ixu-btn:is(:disabled, .is-disabled), .ixu-icon-btn:is(:disabled, .is-disabled), .ixu-chip:is(:disabled, .is-disabled),
+.ixu-seg > button:is(:disabled, .is-disabled), .ixu-menu__item:is(:disabled, .is-disabled),
+.ixu-field.is-disabled, .ixu-check.is-disabled { pointer-events: none; }
+
+/* ── Foco: el foco engrosa el filete ──────────────────────────────────────────
+   Foco = aspecto de hover + filete de 2px hacia dentro (sin halo). Es el mismo lenguaje
+   que el campo. Ash → Dark en 2px da 3,5:1 (WCAG 2.4.13 pide 3:1).
+   Excepción: un control relleno (primario, seleccionado, casilla marcada) no tiene un
+   filete que se pueda engrosar —Dark sobre Dark no se ve—, así que su filete se separa 2px.
+   Solo con teclado (:focus-visible); el ratón no lo ve nunca. */
+.ixu-btn:focus-visible, .ixu-btn.is-focus,
+.ixu-icon-btn:focus-visible, .ixu-icon-btn.is-focus,
+.ixu-chip:focus-visible, .ixu-chip.is-focus,
+.ixu-seg > button:focus-visible, .ixu-seg > button.is-focus,
+.ixu-check input:focus-visible + .ixu-check__box, .ixu-check.is-focus .ixu-check__box {
+  outline: none;
+  position: relative;
+  z-index: 1;
+  border-color: var(--ui-focus);
+  box-shadow: inset 0 0 0 1px var(--ui-focus);
+  color: var(--ui-text);
+}
+/* Con superficie: además, el tinte de su hover */
+.ixu-btn--secondary:focus-visible, .ixu-btn--secondary.is-focus,
+.ixu-icon-btn:not(.ixu-icon-btn--ghost):focus-visible, .ixu-icon-btn:not(.ixu-icon-btn--ghost).is-focus,
+.ixu-chip:focus-visible, .ixu-chip.is-focus,
+.ixu-seg > button:focus-visible, .ixu-seg > button.is-focus { background: linear-gradient(var(--ui-tint-hover), var(--ui-tint-hover)) var(--ui-surface); }
+/* Terciario: además, el fondo de su hover */
+.ixu-btn--ghost:focus-visible, .ixu-btn--ghost.is-focus,
+.ixu-icon-btn--ghost:focus-visible, .ixu-icon-btn--ghost.is-focus { background: var(--ui-tint-hover); }
+/* Crítico: el filete de 2px es Error, como el campo con error */
+.ixu-btn--danger:focus-visible, .ixu-btn--danger.is-focus {
+  background: var(--ui-critical-subtle);
+  border-color: var(--ui-critical);
+  box-shadow: inset 0 0 0 1px var(--ui-critical);
+  color: var(--ui-critical);
+}
+/* Rellenos: el filete se separa 2px */
+.ixu-btn--primary:focus-visible, .ixu-btn--primary.is-focus,
+.ixu-btn[aria-pressed='true']:focus-visible, .ixu-btn[aria-pressed='true'].is-focus,
+.ixu-icon-btn[aria-pressed='true']:focus-visible, .ixu-icon-btn[aria-pressed='true'].is-focus,
+.ixu-chip[aria-pressed='true']:focus-visible, .ixu-chip[aria-pressed='true'].is-focus,
+.ixu-seg > button[aria-checked='true']:focus-visible, .ixu-seg > button[aria-checked='true'].is-focus,
+.ixu-check:not(.ixu-check--radio) input:checked:focus-visible + .ixu-check__box,
+.ixu-check:not(.ixu-check--radio).is-checked.is-focus .ixu-check__box {
+  background: var(--ui-inverse);
+  border-color: var(--ui-inverse);
+  box-shadow: none;
+  outline: 2px solid var(--ui-focus);
+  outline-offset: 2px;
+  color: var(--ui-text-inverse);
+}
+.ixu-btn--primary:focus-visible, .ixu-btn--primary.is-focus { background: var(--ui-inverse-hover); border-color: var(--ui-inverse-hover); }
+
+@media (prefers-reduced-motion: reduce) {
+  .ixu-btn, .ixu-icon-btn, .ixu-chip, .ixu-seg > button, .ixu-field, .ixu-check__box,
+  .ixu-check__box::after, .ixu-menu__item, .ixu-card, .ixu-tag button { transition: none; }
+  .ixu-card:hover, .ixu-card.is-hover, .ixu-card:focus-visible, .ixu-card.is-focus { transform: none; }
+  .ixu-btn[aria-busy='true']::after, .ixu-btn.is-loading::after { animation-duration: 2.4s; }
+  .ixu-field__caret { animation: none; }
+}

@@ -9,6 +9,8 @@ export type SectionId =
   | 'tipografia'
   | 'sistema-texto'
   | 'color'
+  | 'iconos'
+  | 'componentes'
   | 'universo-visual'
   | 'sistema-grafico'
   | 'aplicaciones'
@@ -32,9 +34,11 @@ export const sections: SectionDef[] = [
   { id: 'tipografia',        num: '08', label: { es: 'Tipografía',       en: 'Typography',     ca: 'Tipografia' } },
   { id: 'sistema-texto',     num: '09', label: { es: 'Sistema de texto', en: 'Type system',    ca: 'Sistema de text' } },
   { id: 'color',             num: '10', label: { es: 'Color',            en: 'Colour',         ca: 'Color' } },
-  { id: 'universo-visual',   num: '11', label: { es: 'Imágenes',         en: 'Images',         ca: 'Imatges' } },
-  { id: 'sistema-grafico',   num: '12', label: { es: 'Sistema gráfico',  en: 'Graphic system', ca: 'Sistema gràfic' } },
-  { id: 'aplicaciones',      num: '13', label: { es: 'Aplicaciones',     en: 'Applications',   ca: 'Aplicacions' } },
-  { id: 'movimiento',        num: '14', label: { es: 'Movimiento',       en: 'Motion',         ca: 'Moviment' } },
-  { id: 'ia-ready',          num: '15', label: { es: 'Manual para IA',   en: 'Manual for AI',  ca: 'Manual per a IA' } },
+  { id: 'iconos',            num: '11', label: { es: 'Iconos',           en: 'Icons',          ca: 'Icones' } },
+  { id: 'componentes',       num: '12', label: { es: 'Componentes',      en: 'Components',     ca: 'Components' } },
+  { id: 'universo-visual',   num: '13', label: { es: 'Imágenes',         en: 'Images',         ca: 'Imatges' } },
+  { id: 'sistema-grafico',   num: '14', label: { es: 'Sistema gráfico',  en: 'Graphic system', ca: 'Sistema gràfic' } },
+  { id: 'aplicaciones',      num: '15', label: { es: 'Aplicaciones',     en: 'Applications',   ca: 'Aplicacions' } },
+  { id: 'movimiento',        num: '16', label: { es: 'Movimiento',       en: 'Motion',         ca: 'Moviment' } },
+  { id: 'ia-ready',          num: '17', label: { es: 'Manual para IA',   en: 'Manual for AI',  ca: 'Manual per a IA' } },
 ];

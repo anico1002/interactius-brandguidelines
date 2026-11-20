@@ -154,15 +154,6 @@ export function Sidebar() {
           </a>
           <span aria-hidden className="text-dark/25">·</span>
           <a
-            href="/brand-guidelines-2026.pdf"
-            download
-            className="text-dark/70 hover:text-dark transition-colors duration-300 ease-expo inline-flex items-center gap-1"
-          >
-            <span aria-hidden>↓</span>
-            <span>PDF</span>
-          </a>
-          <span aria-hidden className="text-dark/25">·</span>
-          <a
             href="/AI-Kit.zip"
             download
             className="text-dark/70 hover:text-dark transition-colors duration-300 ease-expo inline-flex items-center gap-1"

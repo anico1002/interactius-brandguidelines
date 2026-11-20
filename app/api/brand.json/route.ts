@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server';
 import {
   colorsBase,
   colorsAccent,
+  colorsFunctional,
   typography,
   brand,
   logoMinSize,
@@ -15,6 +16,7 @@ import {
   examples,
 } from '@/lib/tokens';
 import { sections } from '@/lib/sections';
+import { uiPrinciples, uiTokens, uiTypeScale, uiSizes, uiSpacingRules, uiStates, uiComponents, uiPieces, uiIconRules } from '@/lib/ui';
 import { getMasterPrompt, getTonePrompt } from '@/lib/prompts';
 import { typeScale } from '@/lib/typeScale';
 import { easings, durations, heroReferenceUrl } from '@/lib/motion';
@@ -49,6 +51,7 @@ export function GET() {
     colors: {
       base: colorsBase,
       accent: colorsAccent,
+      functional: colorsFunctional,
       rules: {
         onLightBg: '#1C1A17',
         onDarkBg: '#F5F2ED',
@@ -60,6 +63,18 @@ export function GET() {
       italicsAllowed: false,
     },
     typeScale,
+    interface: {
+      principles: uiPrinciples,
+      tokens: uiTokens,
+      sizes: uiSizes,
+      typeScale: uiTypeScale,
+      spacing: uiSpacingRules,
+      states: uiStates,
+      components: uiComponents,
+      pieces: uiPieces,
+      icons: uiIconRules,
+      stylesheet: 'app/ui-kit.css',
+    },
     motion: {
       easings,
       durations,
@@ -96,7 +111,6 @@ export function GET() {
       url: `${SITE}/#${s.id}`,
     })),
     documents: {
-      pdf: `${SITE}/brand-guidelines-2026.pdf`,
       llms: `${SITE}/llms.txt`,
     },
   };

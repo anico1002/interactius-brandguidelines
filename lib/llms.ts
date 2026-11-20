@@ -6,6 +6,7 @@
 import {
   colorsBase,
   colorsAccent,
+  colorsFunctional,
   typography,
   brand,
   logoMinSize,
@@ -21,6 +22,7 @@ import { sections } from '@/lib/sections';
 import { getMasterPrompt } from '@/lib/prompts';
 import { typeScale } from '@/lib/typeScale';
 import { easings, durations, heroReferenceUrl } from '@/lib/motion';
+import { uiPrinciples, uiTokens, uiTypeScale, uiSizes, uiSpacingRules, uiStates, uiComponents, uiPieces, uiIconRules } from '@/lib/ui';
 import { serviceShapes } from '@/lib/graphics';
 
 const SITE = 'https://brand.interactius.com';
@@ -50,8 +52,8 @@ export function buildLlmsMarkdown(): string {
 
   const colorLine = (c: typeof colorsBase[number]) => {
     const service = c.service ? ` · servicio asociado: ${c.service.es} / ${c.service.en}` : '';
-    const uiRole = c.uiRole ? ` · rol en interfaz: ${c.uiRole.es} / ${c.uiRole.en}` : '';
-    return `- ${c.name}: ${c.hex} · RGB(${c.rgb}) · CMYK(${c.cmyk})${service}${uiRole}`;
+    const role = c.role ? ` · rol funcional: ${c.role.es} / ${c.role.en}` : '';
+    return `- ${c.name}: ${c.hex} · RGB(${c.rgb}) · CMYK(${c.cmyk})${service}${role}`;
   };
 
   const sectionsLine = sections
@@ -190,6 +192,57 @@ ${colorsBase.map(colorLine).join('\n')}
 ### Acento
 ${colorsAccent.map(colorLine).join('\n')}
 
+### Funcionales (solo estado de interfaz; nunca decoran ni identifican servicios)
+${colorsFunctional.map(colorLine).join('\n')}
+
+## 5.1 · Iconos (UI)
+
+${uiIconRules.map((r) => `- **${r.title.es}** — ${r.body.es}`).join('\n')}
+
+## 5.2 · Biblioteca de componentes (UI)
+
+Componentes compartidos por todas las herramientas digitales de la marca. Clases de referencia \`.ixu-*\` (app/ui-kit.css).
+
+### Principios
+
+${uiPrinciples.map((p) => `- **${p.title.es}** — ${p.body.es}`).join('\n')}
+
+### Tokens semánticos
+
+${uiTokens.map((t) => `- \`${t.name}\` (${t.cssVar}) = ${t.value} — ${t.role.es}`).join('\n')}
+
+### Medidas (retícula 4px)
+
+${uiSizes.map((s) => `- **${s.id}** · alto ${s.height}px · padding lateral ${s.paddingX} · icono ${s.icon} — ${s.usage.es}`).join('\n')}
+
+### Tipografía de interfaz (px fijos, IBM Plex Mono)
+
+${uiTypeScale.map((s) => `- **${s.id}** · ${s.size}px/${s.lineHeight} · ${s.weight}${s.tracking !== '0' ? ` · tracking ${s.tracking}` : ''}${s.uppercase ? ' · mayúsculas' : ''} — ${s.usage.es}`).join('\n')}
+
+### Espaciado
+
+${uiSpacingRules.map((r) => `- **${r.value}px** — ${r.rule.es}`).join('\n')}
+
+### Modelo de estados
+
+${uiStates.map((s) => `- **${s.label.es}** (${s.trigger}) — ${s.rule.es}`).join('\n')}
+
+### Componentes
+
+${uiComponents.map((c) => `#### ${c.name.es}
+
+${c.summary.es}${c.sizes.length ? ` Tallas: ${c.sizes.join(', ')}.` : ''}
+
+${c.variants.map((v) => `- **${v.label.es}** (\`${v.className}\`): ${c.states.map((s) => { const x = v.cells[s]; return x ? `${s} = fondo ${x.fill} / texto ${x.text} / filete ${x.border}` : null; }).filter(Boolean).join(' · ')}`).join('\n')}
+
+- Accesibilidad: ${c.a11y.es}
+- Sí: ${c.do.es}
+- No: ${c.dont.es}`).join('\n\n')}
+
+### Piezas sin matriz (se especifican por medidas)
+
+${uiPieces.map((p) => `- **${p.name.es}** — ${p.spec.es}`).join('\n')}
+
 ## 6 · Logo
 
 - Versión positiva (SVG): ${SITE}/logo/interactius-positivo.svg
@@ -282,7 +335,6 @@ ${rejectedBlock}
 
 ## 15 · Recursos
 
-- PDF original: ${SITE}/brand-guidelines-2026.pdf
 - Tokens JSON: ${SITE}/api/brand.json
 - Sitio (EN): ${SITE}/en
 `;

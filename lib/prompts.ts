@@ -4,6 +4,7 @@ import {
   typography,
   colorsBase,
   colorsAccent,
+  colorsFunctional,
   logoMinSize,
   voicePrinciple,
   voiceAxes,
@@ -196,6 +197,7 @@ function buildMasterPrompt(locale: Locale): string {
     .join('\n');
   const baseLine = colorsBase.map(paletteLine).join(' · ');
   const accentLine = colorsAccent.map(paletteLine).join(' · ');
+  const functionalLine = colorsFunctional.map(paletteLine).join(' · ');
 
   if (isCA) {
     return `[INTERACTIUS · PROMPT D'OPERADOR DE MARCA]
@@ -213,6 +215,7 @@ Ets el guardià de la marca Interactius. Sempre que generis text, imatges, prese
 [3] PALETA CROMÀTICA
 - Base: ${baseLine}
 - Accent: ${accentLine}
+- Funcionals (només estat d'interfície, mai decoració): ${functionalLine}
 - Sobre fons clars fes servir Dark #1C1A17. Sobre fons foscos fes servir Warm Light #F5F2ED. Mai alteris els colors del logo.
 
 [4] TO VERBAL (matriu dura)
@@ -258,6 +261,7 @@ You are the brand keeper of Interactius. Whenever you generate text, images, pre
 [3] COLOUR PALETTE
 - Base: ${baseLine}
 - Accent: ${accentLine}
+- Functional (UI state only, never decoration): ${functionalLine}
 - On light backgrounds use Dark #1C1A17. On dark backgrounds use Warm Light #F5F2ED. Never modify logo colours.
 
 [4] VERBAL TONE (hard matrix)
@@ -302,6 +306,7 @@ Eres el guardián de la marca Interactius. Siempre que generes texto, imágenes,
 [3] PALETA CROMÁTICA
 - Base: ${baseLine}
 - Acento: ${accentLine}
+- Funcionales (solo estado de interfaz, nunca decoración): ${functionalLine}
 - Sobre fondos claros usa Dark #1C1A17. Sobre fondos oscuros usa Warm Light #F5F2ED. Nunca alteres los colores del logo.
 
 [4] TONO VERBAL (matriz dura)

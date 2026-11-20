@@ -6,10 +6,9 @@ export type ColorToken = {
   /* Servicio asociado. Solo en colores de acento — cada acento identifica
      uno de los tres servicios canónicos de Interactius. */
   service?: { es: string; en: string; ca: string };
-  /* Rol funcional de interfaz, además del servicio. Hasta ahora solo Burdeos
-     lo tiene: es el color de alerta del sistema. No abre la puerta a usar los
-     acentos como decoración — un rol se declara aquí o no existe. */
-  uiRole?: { es: string; en: string; ca: string };
+  /* Rol funcional. Solo en los colores funcionales (error, éxito): comunican un estado del
+     sistema y nada más. Nunca decoran ni identifican un servicio. */
+  role?: { es: string; en: string; ca: string };
 };
 
 export const colorsBase: ColorToken[] = [
@@ -24,8 +23,7 @@ export const colorsBase: ColorToken[] = [
 
 export const colorsAccent: ColorToken[] = [
   { name: 'Opal',     hex: '#B0B5B0', rgb: '176,181,176', cmyk: '3,0,3,29',   service: { es: 'Pensamiento estratégico',  en: 'Strategic thinking',       ca: 'Pensament estratègic' } },
-  { name: 'Bordeaux', hex: '#99335F', rgb: '153,51,95',   cmyk: '0,67,38,40', service: { es: 'Diseño de experiencias',   en: 'Experience design',        ca: 'Disseny d\'experiències' },
-    uiRole: { es: 'Alerta y estados críticos en interfaz', en: 'Alerts and critical states in UI', ca: 'Alerta i estats crítics en interfície' } },
+  { name: 'Bordeaux', hex: '#99335F', rgb: '153,51,95',   cmyk: '0,67,38,40', service: { es: 'Diseño de experiencias',   en: 'Experience design',        ca: 'Disseny d\'experiències' } },
   { name: 'Emerald',  hex: '#5999A6', rgb: '89,153,166',  cmyk: '46,8,0,35',  service: { es: 'Transformación cultural',  en: 'Cultural transformation',  ca: 'Transformació cultural' } },
 ];
 
@@ -45,7 +43,7 @@ export const colorsAccent: ColorToken[] = [
    Es color de familia, no etiqueta.
 
    El alcance es estricto: components/workspace/AppIcon.tsx y nada más. No se usan como color de
-   interfaz, ni de texto, ni de fondo, ni salen de la home. Para alertas sigue mandando Burdeos.
+   interfaz, ni de texto, ni de fondo, ni salen de la home. Para alertas mandan los colores funcionales (Error), no Burdeos ni estos.
 
    Ojo con los nombres: el verde de FormMak_r NO es la Esmeralda de marca (#5999A6) aunque se le
    parezca de lejos. Son colores distintos con orígenes distintos. */
@@ -67,6 +65,20 @@ export const toolIconAccents: { app: string; hex: string; note: string }[] = [
   { app: 'delivr',   hex: '#FF6B6B', note: 'Coral — compartido con DeckMak_r' },
   /* SocialMak_r, noviembre de 2026. Decisión de MARTINA; comparte el verde de FormMak_r a propósito. */
   { app: 'socialmakr', hex: '#10B981', note: 'Verde — compartido con FormMak_r' },
+];
+
+/* Colores funcionales — noviembre de 2026. Comunican estado en interfaz y nada más.
+   Sustituyen el rol de alerta que Burdeos tuvo de julio a noviembre de 2026: un acento identifica
+   un servicio y no puede significar además "error".
+   - Error: el rojo que el Deck Maker ya usaba para el fallo de guardado. hsl(8, 59%, 44%).
+   - Success: el mismo H girado a verde (140°) y la misma S (59%). La L baja a 29% porque el verde
+     se percibe mucho más luminoso: a 44% daba 2,7:1 sobre blanco. A 29% da 5,66:1, el mismo
+     contraste que el rojo (AA sobre White y sobre Warm Light). */
+export const colorsFunctional: ColorToken[] = [
+  { name: 'Error',   hex: '#B4402E', rgb: '180,64,46',  cmyk: '0,64,74,29',
+    role: { es: 'Error, acción destructiva y alerta en interfaz', en: 'Error, destructive action and alert in UI', ca: 'Error, acció destructiva i alerta en interfície' } },
+  { name: 'Success', hex: '#1E763B', rgb: '30,118,59',  cmyk: '75,0,50,54',
+    role: { es: 'Confirmación y éxito en interfaz', en: 'Confirmation and success in UI', ca: 'Confirmació i èxit en interfície' } },
 ];
 
 export const typography = {
@@ -261,8 +273,8 @@ export const brand = {
      `version` es decisión editorial: se sube cuando el manual cambia de edición, no cuando se
      commitea. `versionDate` es solo el respaldo — en un build con git, la fecha real la calcula
      next.config.mjs a partir del último commit que tocó contenido de marca. */
-  version: 'v2',
-  versionDate: '2026-07',
+  version: 'v3',
+  versionDate: '2026-11',
   concept: {
     es: 'El Macrón ortográfico sobre la ī indica la vocal larga y la pronunciación correcta del logotipo. La marca utiliza este recurso como juego gráfico y dinámico.',
     en: 'The orthographic Macron over the ī marks the long vowel and the correct pronunciation of the logotype. The brand uses it as a graphic and dynamic device.',

@@ -13,7 +13,7 @@ const withMDX = createMDX({});
 
    Se resuelve en build. Si git no está disponible (algún entorno sin repo), devuelve null y
    lib/tokens.ts se queda con el valor escrito a mano — o sea, el comportamiento de siempre. */
-const BRAND_CONTENT_PATHS = ['lib/tokens.ts', 'lib/typeScale.ts', 'lib/prompts.ts', 'components/sections', 'messages'];
+const BRAND_CONTENT_PATHS = ['lib/tokens.ts', 'lib/typeScale.ts', 'lib/prompts.ts', 'lib/ui.ts', 'app/ui-kit.css', 'components/sections', 'messages'];
 
 function lastBrandChange() {
   try {

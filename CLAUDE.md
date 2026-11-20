@@ -70,6 +70,7 @@ es peor que no opinar:
 |---|---|
 | `lib/tokens.ts` | Colores (7 base + 3 acentos), tipografías y sus pesos, voz de marca |
 | `lib/typeScale.ts` | Escala tipográfica, con el **uso declarado** de cada peldaño |
+| `lib/ui.ts` + `app/ui-kit.css` | Iconos (sección 11) y componentes (sección 12): principios, escala de UI en px fijos, alturas, botones y estados. Clases `.ixu-*`, que son las que deben usar las herramientas |
 
 ### Reglas duras
 
@@ -78,11 +79,13 @@ es peor que no opinar:
 - **IBM Plex Mono** (marca): pesos **400/500/600**.
 - Los tres acentos **no son decorativos**: Opal = pensamiento estratégico · Burdeos = diseño de
   experiencias · Esmeralda = transformación cultural. Cada uno identifica un servicio.
-  - **Burdeos tiene además un rol de interfaz: es el color de alerta del sistema** (avisos,
-    estados críticos, cuenta atrás cumplida). Decidido en julio de 2026 al integrar `/timer`,
-    recogiendo lo que `components/forms/forms.css` ya hacía. Está declarado en `lib/tokens.ts`
-    como `uiRole`. Que Burdeos tenga dos roles **no** abre la puerta a usar los acentos como
-    decoración: un rol se declara en `lib/tokens.ts` o no existe.
+  - **Los acentos no entran en la interfaz.** De julio a noviembre de 2026, Burdeos fue también
+    el color de alerta (`uiRole`). En noviembre, Alberto lo revocó: un acento identifica un
+    servicio y no puede significar además «error». El estado lo comunican dos **colores
+    funcionales** (`colorsFunctional` en `lib/tokens.ts`): **Error `#B4402E`** y
+    **Success `#1E763B`**. Solo marcan estado: nunca decoran ni identifican servicios.
+    Las herramientas que aún usan Burdeos como alerta (forms.css, timer.css, FormToolbar,
+    IssuesPanel, authUi…) están pendientes de migrar al kit `.ixu-*`.
 
 ## Desviaciones conocidas (no las "arregles" por tu cuenta)
 

@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { IBM_Plex_Mono, IBM_Plex_Serif } from 'next/font/google';
 import './globals.css';
+import './ui-kit.css';
 
 const mono = IBM_Plex_Mono({
   weight: ['400', '500', '600', '700'],
