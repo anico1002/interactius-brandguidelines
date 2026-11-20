@@ -3,7 +3,7 @@ import { getSessionUser } from '@/lib/auth/sessionUser';
 import { DeckStudio } from '@/components/deck/DeckStudio';
 
 export const metadata: Metadata = {
-  title: 'DeckMakr · Editor',
+  title: 'Deck Maker · Interactius',
   robots: { index: false, follow: false },
 };
 
