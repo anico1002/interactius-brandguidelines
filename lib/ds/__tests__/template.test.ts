@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { colorsAccent, colorsBase, typography } from '../../tokens.ts';
+import { colorsAccent, colorsBase, colorsFunctional, typography } from '../../tokens.ts';
 import { composeTokens } from '../engine/index.ts';
 import { brandSchema, overridesSchema } from '../schema.ts';
 import { interactiusTemplate } from '../template.ts';
@@ -36,12 +36,14 @@ test('los colores de marca salen de la paleta base, nunca de los acentos de serv
   }
 });
 
-test('el semántico de error es Burdeos, su rol de interfaz declarado', () => {
-  const bordeaux = colorsAccent.find((c) => c.uiRole)!;
+test('error y éxito salen de los colores funcionales, no de un acento de servicio', () => {
+  const hex = (name: string) => colorsFunctional.find((c) => c.name === name)!.hex;
   const { brand, overrides } = interactiusTemplate();
-  assert.equal(overrides.semanticBase?.error, bordeaux.hex);
+  assert.equal(overrides.semanticBase?.error, hex('Error'));
+  assert.equal(overrides.semanticBase?.success, hex('Success'));
   const { tokens } = composeTokens(brand, overrides);
-  assert.ok(Object.values(tokens.semantic.error).includes(bordeaux.hex));
+  assert.ok(Object.values(tokens.semantic.error).includes(hex('Error')));
+  assert.ok(Object.values(tokens.semantic.success).includes(hex('Success')));
 });
 
 test('la plantilla usa radios rectos', () => {
