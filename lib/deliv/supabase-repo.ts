@@ -2,6 +2,7 @@ import type { SupabaseClient } from '@supabase/supabase-js'
 
 import { claveStorage, rutaDesdeClave } from './clave-storage.ts'
 import { mapConLimite } from './concurrencia.ts'
+import { carpetaPortadas, rutaPortada } from './portada.ts'
 import type { RepoDeliv } from './repo.ts'
 import { rutaArchivoSegura, tipoMime } from './subida.ts'
 import type { Acceso, Artefacto, EstadoArtefacto, TipoArtefacto, UsuarioCliente } from './tipos.ts'
@@ -394,4 +395,51 @@ export async function borrarVersion(sb: SupabaseClient, id: string, version: num
 
 export async function borrarTodo(sb: SupabaseClient, id: string): Promise<void> {
   await borrarRutas(sb, await listarRecursivo(sb, prefijoArtefacto(id)))
+}
+
+/**
+ * URL firmada (1 h) de la portada de la versión actual de cada artefacto que la tenga. Una
+ * consulta de listado por artefacto, de 8 en 8.
+ */
+export async function urlsDePortadas(
+  sb: SupabaseClient,
+  artefactos: { id: string; version: number }[],
+): Promise<Map<string, string>> {
+  const conPortada = (
+    await mapConLimite(artefactos, CONCURRENCIA_STORAGE, async (a) => {
+      const { data, error } = await sb.storage.from(BUCKET).list(carpetaPortadas(a.id), { limit: 100 })
+      if (error) throw fallo('storage.list portadas', error)
+      return data.some((e) => e.name === `v${a.version}.jpg`) ? a : null
+    })
+  ).filter((a): a is { id: string; version: number } => a !== null)
+  const out = new Map<string, string>()
+  if (!conPortada.length) return out
+  const { data, error } = await sb.storage
+    .from(BUCKET)
+    .createSignedUrls(conPortada.map((a) => rutaPortada(a.id, a.version)), 60 * 60)
+  if (error) throw fallo('storage.createSignedUrls portadas', error)
+  data.forEach((d, i) => { if (d.signedUrl) out.set(conPortada[i].id, d.signedUrl) })
+  return out
+}
+
+/**
+ * Guarda la portada de una versión y borra las de versiones anteriores. El equipo no tiene
+ * política de UPDATE en el bucket (solo insert, select y delete): por eso se borra antes de subir
+ * en lugar de un upsert.
+ */
+export async function guardarPortada(
+  sb: SupabaseClient,
+  id: string,
+  version: number,
+  jpeg: Uint8Array,
+): Promise<void> {
+  const { data, error } = await sb.storage.from(BUCKET).list(carpetaPortadas(id), { limit: 100 })
+  if (error) throw fallo('storage.list portadas', error)
+  const previas = data.filter((e) => e.id).map((e) => `${carpetaPortadas(id)}/${e.name}`)
+  if (previas.length) await borrarRutas(sb, previas)
+  const { error: e2 } = await sb.storage
+    .from(BUCKET)
+    .upload(rutaPortada(id, version), jpeg, { contentType: 'image/jpeg', upsert: false })
+  // Otra persona del equipo la ha subido a la vez: ya está, vale igual.
+  if (e2 && !/already exists|duplicate/i.test(e2.message)) throw fallo('storage.upload portada', e2)
 }

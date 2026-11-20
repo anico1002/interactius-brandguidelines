@@ -124,7 +124,15 @@ un producto nuevo; el código de seguridad se porta, no se reinventa.
 
 **Sí:**
 
-- Galería por cliente: artefactos agrupados, buscador por título y cliente, contador de personas con acceso.
+- Galería con el traje de DeckMak_r y FormMak_r: buscador de la cabecera (`SearchField`), filtro de cliente
+  (`FilterBar`), rejilla 16:9 con «+ Nuevo artefacto» primero y, en cada tarjeta, la portada, el nombre y
+  «Cliente · TIPO» y la fecha de creación. Más reciente primero. (Noviembre de 2026: sustituye a la lista agrupada por
+  cliente con contador de personas, que sigue en la ficha.)
+- Portada: un JPEG 1280×720 de la primera pantalla por versión, en `deliv-r/<uuid>/portadas/v<N>.jpg`. La
+  genera el navegador del equipo la primera vez que la galería ve la versión sin portada: el HTML se
+  fotografía desde dentro de su sandbox (la ruta de archivos le añade `public/deliv/html-to-image.js` y
+  `public/deliv/captura.js` solo con `?captura=1`), y el PDF lo pinta pdf.js. Detalle en `lib/deliv/portada.ts`.
+  En local no se generan: hacen falta `DELIV_SESSION_SECRET` y la service role.
 - Nuevo artefacto: cliente (con sugerencia de los existentes), título y un archivo `.html`, `.pdf` o `.zip`
   (con `index.html` en la raíz o en una única carpeta raíz). Hasta 100 MB por artefacto.
 - Optimización de peso al subir: imágenes reescaladas a 2400 px como máximo y pasadas a WebP (calidad
