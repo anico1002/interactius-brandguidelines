@@ -3,6 +3,7 @@ import { verificarTokenArchivo } from '@/lib/deliv/file-tokens';
 import { CABECERAS_PRIVADAS, CSP_ARTEFACTO, noDisponible, rutaSegura } from '@/lib/deliv/http';
 import { ID_ARTEFACTO_RE } from '@/lib/deliv/ids';
 import { clienteServicio } from '@/lib/deliv/servidor';
+import { inyectarCaptura } from '@/lib/deliv/portada';
 import { entregaExterna } from '@/lib/deliv/subida';
 import { crearRepoSupabase, descargar, urlFirmada } from '@/lib/deliv/supabase-repo';
 
@@ -17,7 +18,7 @@ const noEncontrado = () => new Response('Not found', { status: 404, headers: CAB
  * y la versión, así que sustituir el archivo invalida los tokens emitidos antes.
  */
 export async function GET(
-  _req: Request,
+  req: Request,
   { params }: { params: Promise<{ id: string; token: string; ruta: string[] }> },
 ) {
   const { id, token, ruta } = await params;
@@ -64,7 +65,15 @@ export async function GET(
 
     const archivo = await descargar(sb, art.id, art.version, rutaArchivo);
     if (!archivo) return noEncontrado();
-    return new Response(archivo.datos, {
+    // `?captura=1` en el HTML de entrada: lo pide solo la galería del equipo para hacer la portada.
+    // Añade dos scripts nuestros que fotografían la página desde dentro del sandbox (misma CSP,
+    // mismo token: no amplía el acceso). Sin el parámetro, el archivo sale tal cual.
+    const captura =
+      new URL(req.url).searchParams.get('captura') === '1' &&
+      rutaArchivo === art.entrada &&
+      archivo.tipoMime.startsWith('text/html');
+    const datos = captura ? inyectarCaptura(new TextDecoder().decode(archivo.datos)) : archivo.datos;
+    return new Response(datos, {
       headers: {
         ...CABECERAS_PRIVADAS,
         'Content-Type': archivo.tipoMime,

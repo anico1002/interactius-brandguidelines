@@ -1,12 +1,11 @@
 import { BotonSalir } from './BotonSalir';
 import { RecargaAlCaducar } from './RecargaAlCaducar';
+import { SANDBOX_HTML } from '../sandbox';
 
 /* El HTML del artefacto corre aislado: sandbox sin allow-same-origin (lo refuerza la CSP de la
    ruta de archivos), así que no puede leer la sesión ni actuar como el sitio. El PDF va SIN
    sandbox: Chrome no abre su visor de PDF dentro de un iframe aislado. Un PDF no ejecuta código
    del sitio, y la ruta lo sirve con nosniff y frame-ancestors 'self'. */
-const SANDBOX_HTML =
-  'allow-scripts allow-popups allow-popups-to-escape-sandbox allow-forms allow-modals allow-downloads';
 
 export type SalidaVisor =
   /** Cliente: cierra su sesión y vuelve al login del mismo enlace. */

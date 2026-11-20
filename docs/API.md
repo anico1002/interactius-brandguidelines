@@ -156,6 +156,7 @@ servicio. Los enlaces que devuelven son relativos (`/clientes/<cliente>/<id>`).
 | `/api/deliv_r/artefactos` | POST | Crea el borrador y da las URL de subida |
 | `/api/deliv_r/artefactos/:id` | PATCH | Cambia el título |
 | `/api/deliv_r/artefactos/:id` | DELETE | Borra ficha, accesos y archivos |
+| `/api/deliv_r/artefactos/:id/portada` | POST | Guarda la portada (JPEG) de la versión actual |
 | `/api/deliv_r/artefactos/:id/version` | POST | URL de subida para la versión siguiente |
 | `/api/deliv_r/artefactos/:id/publicar` | POST | Publica la versión subida |
 | `/api/deliv_r/artefactos/:id/accesos` | POST | Da acceso a una persona (la crea si no existe) |
@@ -182,6 +183,13 @@ servicio. Los enlaces que devuelven son relativos (`/clientes/<cliente>/<id>`).
 Petición `{ titulo }`. Respuesta `{ titulo }`, ya recortado. Solo actualiza la columna `titulo`: no toca el
 enlace, la versión ni los accesos. Título vacío → «El título no puede quedar vacío.»; artefacto inexistente →
 «El artefacto no existe.».
+
+### `POST /api/deliv_r/artefactos/:id/portada?version=N`
+
+Cuerpo: el JPEG en bruto (`Content-Type: image/jpeg`, 2 MB como máximo, cabecera `FF D8 FF`). Lo genera
+la galería en el navegador del equipo (`lib/deliv/portada.ts`). Se guarda en
+`deliv-r/<uuid>/portadas/v<N>.jpg` y se borran las de versiones anteriores. Rechaza si el artefacto no
+está publicado o si `N` ya no es su versión. Respuesta `{ ok: true }`.
 
 ### `POST /api/deliv_r/artefactos/:id/version`
 
