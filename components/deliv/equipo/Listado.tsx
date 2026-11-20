@@ -56,19 +56,27 @@ export function Listado({ user, artefactos }: { user: SessionUser; artefactos: F
     <div style={{ minHeight: '100vh', background: colors.warmLight, color: colors.dark }}>
       <Cabecera
         user={user}
-        acciones={<Enlace s href="/workspace/deliv_r/usuarios">Usuarios</Enlace>}
         busqueda={<SearchField value={q} onChange={setQ} label="Buscar artefactos por título o cliente" width={380} />}
       />
 
       <div style={{ maxWidth: 1120, margin: '0 auto', padding: '40px 32px 64px' }}>
-        <FilterBar
-          clients={clientes}
-          client={cliente}
-          onClient={setCliente}
-          allTags={[]}
-          selectedTags={[]}
-          onToggleTag={() => {}}
-        />
+        {/* Fila de filtros: el desplegable centrado, como en DeckMak_r, y «Gestión Usuarios» al
+            borde derecho de la rejilla. Tres columnas para que el enlace no descentre el filtro. */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr', alignItems: 'center', gap: 16, marginBottom: 40 }}>
+          <span />
+          <FilterBar
+            clients={clientes}
+            client={cliente}
+            onClient={setCliente}
+            allTags={[]}
+            selectedTags={[]}
+            onToggleTag={() => {}}
+            marginBottom={0}
+          />
+          <span style={{ justifySelf: 'end' }}>
+            <Enlace href="/workspace/deliv_r/usuarios">Gestión Usuarios</Enlace>
+          </span>
+        </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 240px), 1fr))', gap: 28 }}>
           <NuevoArtefacto />
