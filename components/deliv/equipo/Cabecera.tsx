@@ -7,9 +7,7 @@ import type { SessionUser } from '@/lib/auth/sessionUser';
 
 /* Cabecera de Deliv_r: la de las demás galerías del workspace (imagotipo, wordmark, menú de usuario),
    con el buscador centrado si lo hay. */
-export function Cabecera({
-  user, busqueda, acciones,
-}: { user: SessionUser; busqueda?: ReactNode; acciones?: ReactNode }) {
+export function Cabecera({ user, busqueda }: { user: SessionUser; busqueda?: ReactNode }) {
   return (
     <header className="dq-cab">
       <BrandMark height={20} href="/workspace" label="Ir a la landing de aplicaciones" />
@@ -18,7 +16,6 @@ export function Cabecera({
         <Wordmark before="Deliv" after="r" height={22} title="Deliv_r" />
       </Link>
       <span className="dq-cab__der" />
-      {acciones}
       <UserMenu user={user} />
       {busqueda ? <div className="dq-cab__busca">{busqueda}</div> : null}
     </header>
