@@ -5,11 +5,9 @@ import { evalText } from '@/lib/eval';
 export function ToneReport({ text }: { text: string }) {
   const r = evalText(text);
   const messages = r.violations.map((v) => {
-    if (v.rule === 'forbidden') return `Lista roja: «${v.match}» — sustitúyelo por la respuesta o cambio real.`;
     if (v.rule === 'length:over_max') return `Frase ${v.sentence}: ${v.count} palabras (máx ${v.limit}). Pártela.`;
     if (v.rule === 'length:under_min') return `Frase ${v.sentence}: ${v.count} palabras (mín ${v.limit}).`;
-    if (v.rule === 'punctuation:exclamation') return 'Signo de exclamación prohibido.';
-    return 'Puntos suspensivos prohibidos.';
+    return 'Signo de exclamación: mejor evitarlo, la energía viene del contenido.';
   });
 
   return (

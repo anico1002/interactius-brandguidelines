@@ -6,52 +6,30 @@ import {
   colorsAccent,
   colorsFunctional,
   logoMinSize,
-  voicePrinciple,
-  voiceAxes,
-  forbiddenVocabulary,
-  punctuationRules,
-  sentenceLength,
+  voiceRulesText,
 } from './tokens.ts';
 
 /* ─── Tone-only prompt (sección Tono de marca, botón "Copiar prompt") ─── */
 
-const TONE_PROMPT_ES = `[REGLAS DE TONO VERBAL INTERACTIUS]
-Al redactar, aplica una sintaxis directa y asertiva (${sentenceLength.min}-${sentenceLength.max} palabras por frase). No utilices signos de exclamación ni puntos suspensivos.
+/* Las reglas salen enteras de voiceRulesText() (lib/tokens.ts): aquí solo va la cabecera y el
+   cierre. Desde el 2026-11-20 no hay lista roja que pegar: el documento «Identidad verbal» no veta
+   palabras, pide criterio. */
+const TONE_HEAD = {
+  es: '[IDENTIDAD VERBAL INTERACTIUS]\nAl redactar cualquier texto de Interactius, aplica esta voz y ajusta el tono al canal:',
+  en: '[INTERACTIUS VERBAL IDENTITY]\nWhen writing any Interactius text, apply this voice and adjust the tone to the channel:',
+  ca: "[IDENTITAT VERBAL INTERACTIUS]\nQuan redactis qualsevol text d'Interactius, aplica aquesta veu i ajusta el to al canal:",
+} as const;
 
-Aplica estrictamente esta matriz JSON de exclusión semántica en tu sistema de procesamiento:
-{
-  "forbidden_vocabulary": [
-${forbiddenVocabulary.map((w) => `    "${w}"`).join(',\n')}
-  ]
-}
-Si el resultado suena a consultora tradicional, descártalo y reescribe desde un enfoque crítico y honesto.`;
+const TONE_TAIL = {
+  es: 'Si el resultado podría haberlo escrito cualquier otra consultora, reescríbelo: plantea una tensión, no describas un servicio.',
+  en: 'If any other consultancy could have written the result, rewrite it: pose a tension, do not describe a service.',
+  ca: "Si el resultat l'hauria pogut escriure qualsevol altra consultora, reescriu-lo: planteja una tensió, no descriguis un servei.",
+} as const;
 
-const TONE_PROMPT_EN = `[INTERACTIUS VERBAL TONE RULES]
-When writing, apply direct and assertive syntax (${sentenceLength.min}-${sentenceLength.max} words per sentence). Do not use exclamation marks or ellipses.
-
-Strictly apply this JSON semantic-exclusion matrix in your processing system:
-{
-  "forbidden_vocabulary": [
-${forbiddenVocabulary.map((w) => `    "${w}"`).join(',\n')}
-  ]
-}
-If the result sounds like a traditional consultancy, discard it and rewrite from a critical, honest stance.`;
-
-const TONE_PROMPT_CA = `[REGLES DE TO VERBAL INTERACTIUS]
-En redactar, aplica una sintaxi directa i assertiva (${sentenceLength.min}-${sentenceLength.max} paraules per frase). No facis servir signes d'exclamació ni punts suspensius.
-
-Aplica estrictament aquesta matriu JSON d'exclusió semàntica al teu sistema de processament:
-{
-  "forbidden_vocabulary": [
-${forbiddenVocabulary.map((w) => `    "${w}"`).join(',\n')}
-  ]
-}
-Si el resultat sona a consultora tradicional, descarta'l i reescriu des d'un enfocament crític i honest.`;
+const tonePrompt = (l: Locale) => `${TONE_HEAD[l]}\n\n${voiceRulesText(l)}\n\n${TONE_TAIL[l]}`;
 
 export function getTonePrompt(locale: Locale): string {
-  if (locale === 'en') return TONE_PROMPT_EN;
-  if (locale === 'ca') return TONE_PROMPT_CA;
-  return TONE_PROMPT_ES;
+  return tonePrompt(locale);
 }
 
 /* ─── Image prompt (sección Universo visual, botones "Copiar prompt técnico") ───
@@ -182,7 +160,7 @@ export const IMAGE_SUBJECT_CRITERION = {
 /* ─── Master prompt: capa dura completa para ingesta IA ───
    Esta es la pieza que cualquier LLM (NotebookLM, ChatGPT, Claude Projects)
    debería absorber al pasarle la URL del manual. Mezcla wordmark, paleta,
-   tipografía, voz, vocabulario prohibido y reglas de logo en un único bloque
+   tipografía, identidad verbal y reglas de logo en un único bloque
    que actúa como system prompt portable. */
 
 function paletteLine(c: { name: string; hex: string }) {
@@ -192,9 +170,7 @@ function paletteLine(c: { name: string; hex: string }) {
 function buildMasterPrompt(locale: Locale): string {
   const isEN = locale === 'en';
   const isCA = locale === 'ca';
-  const axesList = voiceAxes
-    .map((a) => `- ${a.title[locale]}: ${a.body[locale]}`)
-    .join('\n');
+  const voiceBlock = voiceRulesText(locale);
   const baseLine = colorsBase.map(paletteLine).join(' · ');
   const accentLine = colorsAccent.map(paletteLine).join(' · ');
   const functionalLine = colorsFunctional.map(paletteLine).join(' · ');
@@ -218,28 +194,17 @@ Ets el guardià de la marca Interactius. Sempre que generis text, imatges, prese
 - Funcionals (només estat d'interfície, mai decoració): ${functionalLine}
 - Sobre fons clars fes servir Dark #1C1A17. Sobre fons foscos fes servir Warm Light #F5F2ED. Mai alteris els colors del logo.
 
-[4] TO VERBAL (matriu dura)
-- Sintaxi directa i assertiva. ${sentenceLength.min}–${sentenceLength.max} paraules per frase.
-- Sense signes d'exclamació. Sense punts suspensius. Les frases acaben amb un punt ferm.
-- Quatre eixos:
-${axesList}
-- Principi de veu: ${voicePrinciple.ca}
+[4] IDENTITAT VERBAL
+${voiceBlock}
+Si el resultat l'hauria pogut escriure qualsevol altra consultora, reescriu-lo des d'un enfocament crític i honest.
 
-[5] VOCABULARI PROHIBIT (JSON)
-{
-  "forbidden_vocabulary": [
-${forbiddenVocabulary.map((w) => `    "${w}"`).join(',\n')}
-  ]
-}
-Si l'output conté qualsevol d'aquestes paraules o sona a consultora tradicional, descarta'l i reescriu des d'un enfocament crític i honest.
-
-[6] ÚS DEL LOGO
+[5] ÚS DEL LOGO
 - Versió positiva sobre fons clars. Versió negativa sobre fons foscos.
 - Àrea de reserva: equivalent a l'alçada de la "a" minúscula del logotip.
 - Mida mínima: ${logoMinSize.print} (impressió) · ${logoMinSize.digital} (digital).
 - Prohibit: canviar colors, distorsionar, condensar/expandir, girar (excepte un ús estricte a 90º en chrome lateral), retallar, afegir ombres, gradients o contorns, col·locar el logo sobre fons que en redueixin la llegibilitat.
 
-[7] UNIVERS VISUAL
+[6] UNIVERS VISUAL
 ${brand.visualUniverse.ca}
 
 Aplica aquest sistema com a capa dura. Si la petició de l'usuari trenca qualsevol regla anterior, explicita el conflicte i ofereix una alternativa compliant.`;
@@ -264,28 +229,17 @@ You are the brand keeper of Interactius. Whenever you generate text, images, pre
 - Functional (UI state only, never decoration): ${functionalLine}
 - On light backgrounds use Dark #1C1A17. On dark backgrounds use Warm Light #F5F2ED. Never modify logo colours.
 
-[4] VERBAL TONE (hard matrix)
-- Direct, assertive syntax. ${sentenceLength.min}–${sentenceLength.max} words per sentence.
-- No exclamation marks. No ellipses. Sentences end with a firm full stop.
-- Four axes:
-${axesList}
-- Voice principle: ${voicePrinciple.en}
+[4] VERBAL IDENTITY
+${voiceBlock}
+If any other consultancy could have written the result, rewrite it from a critical, honest stance.
 
-[5] FORBIDDEN VOCABULARY (JSON)
-{
-  "forbidden_vocabulary": [
-${forbiddenVocabulary.map((w) => `    "${w}"`).join(',\n')}
-  ]
-}
-If the output contains any of these words or sounds like a traditional consultancy, discard it and rewrite from a critical, honest stance.
-
-[6] LOGO USAGE
+[5] LOGO USAGE
 - Positive version on light backgrounds. Negative version on dark backgrounds.
 - Clear space: equivalent to the height of the lowercase "a" in the logotype.
 - Minimum size: ${logoMinSize.print} (print) · ${logoMinSize.digital} (digital).
 - Forbidden: changing colours, distorting, condensing/expanding, rotating (except a strict 90º lateral chrome usage), cropping, adding shadows, gradients or outlines, placing the logo on backgrounds that reduce legibility.
 
-[7] VISUAL UNIVERSE
+[6] VISUAL UNIVERSE
 ${brand.visualUniverse.en}
 
 Apply this system as a hard layer. If the user request breaks any rule above, surface the conflict explicitly and offer a compliant alternative.`;
@@ -309,28 +263,17 @@ Eres el guardián de la marca Interactius. Siempre que generes texto, imágenes,
 - Funcionales (solo estado de interfaz, nunca decoración): ${functionalLine}
 - Sobre fondos claros usa Dark #1C1A17. Sobre fondos oscuros usa Warm Light #F5F2ED. Nunca alteres los colores del logo.
 
-[4] TONO VERBAL (matriz dura)
-- Sintaxis directa y asertiva. ${sentenceLength.min}–${sentenceLength.max} palabras por frase.
-- Sin signos de exclamación. Sin puntos suspensivos. Las frases terminan con un punto firme.
-- Cuatro ejes:
-${axesList}
-- Principio de voz: ${voicePrinciple.es}
+[4] IDENTIDAD VERBAL
+${voiceBlock}
+Si el resultado podría haberlo escrito cualquier otra consultora, reescríbelo desde un enfoque crítico y honesto.
 
-[5] VOCABULARIO PROHIBIDO (JSON)
-{
-  "forbidden_vocabulary": [
-${forbiddenVocabulary.map((w) => `    "${w}"`).join(',\n')}
-  ]
-}
-Si el output contiene cualquiera de estas palabras o suena a consultora tradicional, descártalo y reescribe desde un enfoque crítico y honesto.
-
-[6] USO DEL LOGO
+[5] USO DEL LOGO
 - Versión positiva sobre fondos claros. Versión negativa sobre fondos oscuros.
 - Área de reserva: equivalente a la altura de la "a" minúscula del logotipo.
 - Tamaño mínimo: ${logoMinSize.print} (impresión) · ${logoMinSize.digital} (digital).
 - Prohibido: cambiar colores, distorsionar, condensar/expandir, rotar (salvo un uso estricto a 90º en chrome lateral), recortar, añadir sombras, gradientes o contornos, colocar el logo sobre fondos que reduzcan su legibilidad.
 
-[7] UNIVERSO VISUAL
+[6] UNIVERSO VISUAL
 ${brand.visualUniverse.es}
 
 Aplica este sistema como capa dura. Si la petición del usuario rompe cualquier regla anterior, explicita el conflicto y ofrece una alternativa compliant.`;

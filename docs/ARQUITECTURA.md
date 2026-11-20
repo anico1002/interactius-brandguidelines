@@ -19,7 +19,7 @@ El principio rector es **_single source of truth_**: la identidad se declara una
 ```
                          lib/tokens.ts
    (colorsBase, colorsAccent, typography, voicePrinciple, voiceAxes,
-    forbiddenVocabulary, substitutionMatrix, punctuationRules,
+    voiceValues, punctuationRules, brandVocabulary, voiceRulesText,
     sentenceLength, examples, brand)
         │              │                 │                  │
         ▼              ▼                 ▼                  ▼
@@ -78,7 +78,7 @@ Rutas resultantes:
 
 | Módulo | Exporta | Consumido por |
 |--------|---------|---------------|
-| [lib/tokens.ts](../lib/tokens.ts) | `colorsBase`, `colorsAccent`, `typography`, `voicePrinciple`, `voiceAxes`, `forbiddenVocabulary(Detailed)`, `substitutionMatrix`, `punctuationRules`, `sentenceLength`, `examples`, `brand` | Todo lo demás |
+| [lib/tokens.ts](../lib/tokens.ts) | `colorsBase`, `colorsAccent`, `typography`, `voicePrinciple`, `voiceAxes`, `voiceValues`, `punctuationRules`, `brandVocabulary`, `pillarKeywords`, `channelGuides`, `voiceRulesText`, `sentenceLength`, `examples`, `brand` | Todo lo demás |
 | [lib/typeScale.ts](../lib/typeScale.ts) | Escala fluida de 7 niveles (`super`, `display`, `title`, `title-sm`, `body`, `body-sm`, `caption`) con `clamp()`, line-height y uso | `SectionSistemaTexto`, Tailwind, `llms.ts` |
 | [lib/motion.ts](../lib/motion.ts) | 3 easings (`expo`, `hover-wipe`, `page-curtain`) + 6 duraciones (200–1100 ms) + referencias de hero | `SectionMovimiento`, Tailwind, `llms.ts` |
 | [lib/graphics.ts](../lib/graphics.ts) | 3 `serviceShapes` (polygon/ellipse/wave) ligadas a color y servicio | `SectionSistemaGrafico`, `llms.ts` |
@@ -89,13 +89,12 @@ Rutas resultantes:
 
 ### Validación de tono (`evalText`)
 
-`evalText(text): EvalResult` aplica tres familias de reglas:
+`evalText(text): EvalResult` aplica dos familias de reglas, las dos orientativas:
 
-1. **Vocabulario prohibido** — regex con límites de palabra Unicode sobre cada familia (ES+EN); _hard fail_.
-2. **Longitud de frase** — 15–22 palabras (`sentenceLength`); violación _soft_ (advertencia de estilo).
-3. **Puntuación** — prohíbe `!`/`¡` y `…`/`...`; _hard fail_.
+1. **Longitud de frase** — 15–22 palabras (`sentenceLength`); violación _soft_.
+2. **Puntuación** — señala `!`/`¡`; _soft_ (el documento «Identidad verbal» lo marca como aconsejable).
 
-Puntuación: `100 − 10 × nº de violaciones`, con suelo en 0. `hardFail = true` si hay vocabulario o puntuación prohibidos.
+Puntuación: `100 − 10 × nº de violaciones`, con suelo en 0. Desde el 2026-11-20 no hay lista roja ni regla de elipsis y `hardFail` vale siempre `false`.
 
 ## 6. Componentes
 

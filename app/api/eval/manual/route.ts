@@ -9,8 +9,8 @@ export const dynamic = 'force-dynamic';
 
 /* Paths excluded from eval. Three categories:
    1. UI labels / chrome — not editorial prose.
-   2. Self-referential meta — sections that legitimately cite forbidden
-      vocabulary because they ARE the red list or punctuation rules.
+   2. Self-referential meta — kept as a category; the red list and the punctuation keys it used
+      to exclude were retired on 2026-11-20.
    3. Technical / encyclopedic content — definitions, specs, do/don'ts, notes,
       captions. The sentenceLength rule (15-22 words) is meant for brand prose
       (intro, voice, axes, image lead). Technical descriptions follow their own
@@ -28,9 +28,7 @@ const META_PATHS_EXCLUDED: readonly string[] = [
   'iaReady.open',
   'iaReady.endpointsTitle',
   'prompts.',
-  // 2. Self-referential meta
-  'tonoMarca.red',          // red1Word, red1Rule, ... redHeadWord, redTitle, redBody
-  'tonoMarca.punc',         // punctuation rules cite the forbidden symbols
+  // 2. Self-referential meta (none today)
   // 3. Technical / encyclopedic content
   'meta.',                  // SEO metadata, not editorial copy
   'concepto.',              // phonetic / morphological definitions
@@ -151,9 +149,8 @@ export function GET() {
     totalEntriesWithViolations:
       es.entriesWithViolations + en.entriesWithViolations + ca.entriesWithViolations,
     rulesApplied: {
-      forbidden: 'detect via regex word-boundary, case-insensitive, over ForbiddenEntry.family',
       sentenceLength: 'skipped for strings under 6 words (labels/eyebrows)',
-      punctuation: '! / ¡ / … / ... — always applied',
+      punctuation: '! / ¡ — advisory, always applied, never a hard fail',
     },
     excludedPathsCount: META_PATHS_EXCLUDED.length,
   };

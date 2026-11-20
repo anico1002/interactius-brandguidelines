@@ -24,7 +24,7 @@ Estructura (claves principales):
 ```jsonc
 {
   "brand":      { "name", "wordmark", "tagline", "version", "versionDate", "concept", "visualUniverse" },
-  "voice":      { "principle", "sentenceLength", "axes", "forbiddenVocabulary", "substitutionMatrix", "punctuation" },
+  "voice":      { "principle", "definition", "profile", "isNot", "inclusive", "values", "sentenceLength", "axes", "toneByChannel", "structure", "length", "punctuation", "examples", "vocabulary", "pillarKeywords", "channels", "forbiddenVocabulary": [] },
   "colors":     { "base": [ { "name", "hex", "rgb", "cmyk" } ], "accent": [ { …, "service" } ], "rules" },
   "typography": { "brand", "contrast" },
   "typeScale":  [ { "className", "family", "weights", "clamp", "lineHeight", "usage" } ],
@@ -50,7 +50,7 @@ curl -s https://brand.interactius.com/api/brand.json | jq '.brand'
 
 Devuelve el **manual completo en Markdown plano**, generado por `buildLlmsMarkdown()` ([lib/llms.ts](../lib/llms.ts)). Es la vía recomendada para que un LLM ingiera la marca (NotebookLM, Claude Projects, GPTs).
 
-Contiene, en orden: prompt de sistema (plegado), concepto, tono de marca (principio, ejes, vocabulario prohibido, matriz de sustitución, puntuación), tipografía, sistema de texto (escala con tokens), paleta cromática (RGB+CMYK), logo, reglas Do/Don't, universo visual, sistema gráfico, aplicaciones, movimiento, índice de secciones, ejemplos few-shot (aprobados + rechazados) y recursos (PDF, JSON).
+Contiene, en orden: prompt de sistema (plegado), concepto, tono de marca (identidad verbal: principio, valores, ejes, marco de escritura, vocabulario de marca, por canal), tipografía, sistema de texto (escala con tokens), paleta cromática (RGB+CMYK), logo, reglas Do/Don't, universo visual, sistema gráfico, aplicaciones, movimiento, índice de secciones, ejemplos few-shot (aprobados + rechazados) y recursos (PDF, JSON).
 
 ```bash
 curl -s https://brand.interactius.com/llms.txt | head -40
@@ -87,11 +87,11 @@ Valida un texto contra las reglas de tono de marca y devuelve una puntuación. M
 
 | `rule` | Condición | Severidad |
 |--------|-----------|-----------|
-| `forbidden` | El texto contiene un término de la lista roja (familia ES+EN) | **hard fail** |
-| `punctuation:exclamation` | Uso de `!` o `¡` | **hard fail** |
-| `punctuation:ellipsis` | Uso de `…` o `...` | **hard fail** |
+| `punctuation:exclamation` | Uso de `!` o `¡` | soft (aconsejable evitarlo) |
 | `length:under_min` | Frase con menos de 15 palabras | soft (estilo) |
 | `length:over_max` | Frase con más de 22 palabras | soft (estilo) |
+
+Desde el 2026-11-20 (documento «Identidad verbal») no hay lista roja ni regla de puntos suspensivos, y ninguna regla es dura: `hardFail` se mantiene por compatibilidad y vale siempre `false`.
 
 ### Ejemplo
 
@@ -133,7 +133,7 @@ Audita **todos los strings de i18n** (`messages/es|en|ca.json`) contra las regla
 }
 ```
 
-Exclusiones: las claves de chrome/UI (`menu.*`, `chrome.*`, `ui.*`), las que citan legítimamente vocabulario prohibido (la propia lista roja, reglas de puntuación) y las especificaciones técnicas quedan fuera de la evaluación. Las frases de menos de 6 palabras (labels, eyebrows) se saltan la regla de longitud.
+Exclusiones: las claves de chrome/UI (`menu.*`, `chrome.*`, `ui.*`), los prompts copiables y las especificaciones técnicas quedan fuera de la evaluación. Las frases de menos de 6 palabras (labels, eyebrows) se saltan la regla de longitud.
 
 ```bash
 curl -s http://localhost:3000/api/eval/manual | jq '.summary'

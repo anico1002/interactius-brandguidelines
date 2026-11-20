@@ -24,7 +24,7 @@ const MAX_DRAFT = 8000;
 const MAX_CONTEXT = 2000;
 
 /* Opus 5 al nivel de esfuerzo más bajo. Un correo es un texto corto con restricciones duras:
-   el trabajo está en respetar la lista roja y el tono, no en razonar largo. Subir el esfuerzo
+   el trabajo está en respetar la identidad verbal y el tono, no en razonar largo. Subir el esfuerzo
    alarga la respuesta y acerca el 504 del gateway que ya nos mordió en /api/translate con los
    decks. Si algún día hace falta más calidad, este es el primer dial. */
 const MODEL = 'claude-opus-5';

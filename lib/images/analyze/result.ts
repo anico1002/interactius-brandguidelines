@@ -6,8 +6,10 @@ import { verdictFrom } from './verdict.ts';
 /* Lo que se hace con la salida del modelo antes de enseñarla o guardarla.
 
    - El veredicto sale de los criterios (verdictFrom), no del modelo.
-   - El nombre y el motivo se auditan con evalText(). «Pasa» es no tener ningún incumplimiento duro
-     (vocabulario prohibido o puntuación): la longitud es una regla blanda, y un nombre de 3 a 8 palabras
+   - El nombre y el motivo se auditan con evalText(). «Pasa» es no llevar exclamaciones. Desde el
+     2026-11-20 la marca ya no tiene reglas duras (sin lista roja ni regla de elipsis; la exclamación es
+     «aconsejable»), pero un metadato generado por máquina no tiene motivo para gritar y el prompt ya
+     lo pide: aquí la exclamación sí descarta. La longitud no cuenta: un nombre de 3 a 8 palabras
      siempre la incumpliría. Un nombre que no pasa no se propone. Un motivo que no pasa se reintenta una
      vez (lo decide quien llama, con `reasonFailed`) y, si sigue sin pasar, se guarda sin motivo.
    - Las etiquetas se normalizan igual que las de la subida. */
@@ -19,7 +21,8 @@ export type AnalysisResult = {
   style: StoredStyle;
 };
 
-const passes = (text: string) => !evalText(text).hardFail;
+const passes = (text: string) =>
+  !evalText(text).violations.some((v) => v.rule === 'punctuation:exclamation');
 
 export function finishAnalysis(out: AnalysisOutput): { result: AnalysisResult; reasonFailed: boolean } {
   const name = out.name.trim().replace(/\.+$/, '').trim().slice(0, NAME_MAX);

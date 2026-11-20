@@ -1,22 +1,16 @@
 /* ReWrit_r — el system prompt, compuesto desde los tokens de marca.
 
-   La voz NO se escribe aquí: se compone desde lib/tokens.ts (principio, ejes, longitud de frase,
-   puntuación, lista roja y matriz de sustitución). Si cambia el vocabulario prohibido en tokens,
-   cambia lo que esta herramienta exige, sin tocar este fichero. Es el mismo criterio que siguen
+   La voz NO se escribe aquí: se compone desde lib/tokens.ts (voiceRulesText: principio, valores,
+   ejes, estructura, longitud, puntuación y vocabulario de marca). Si cambia la identidad verbal en
+   tokens, cambia lo que esta herramienta exige, sin tocar este fichero. Desde el 2026-11-20 no hay
+   lista roja: el documento «Identidad verbal» no veta palabras. Es el mismo criterio que siguen
    lib/llms.ts y lib/prompts.ts, que ya construyen sus bloques desde la misma fuente.
 
    Función pura: mismo input, mismo prompt. Se prueba en __tests__/prompt.test.ts. */
 
 /* Imports relativos con extensión, no el alias `@/`: es la convención de lib/forms y lo que
    permite cargar el módulo desde node --test, que no resuelve los paths de tsconfig. */
-import {
-  forbiddenVocabulary,
-  punctuationRules,
-  sentenceLength,
-  substitutionMatrix,
-  voiceAxes,
-  voicePrinciple,
-} from '../tokens.ts';
+import { sentenceLength, voiceRulesText } from '../tokens.ts';
 import {
   PRESETS,
   textTypeOption,
@@ -72,41 +66,20 @@ function voiceLocaleFor(lang: OutputLang): 'es' | 'en' | 'ca' {
    la herramienta acabaría pidiendo titulares para luego suspenderlos. */
 function sentenceLengthLine(l: 'es' | 'en' | 'ca', allowFragments: boolean): string {
   const unit = l === 'en' ? 'words per sentence' : l === 'ca' ? 'paraules per frase' : 'palabras por frase';
-  const full = `Sintaxis directa y asertiva: ${sentenceLength.min}–${sentenceLength.max} ${unit}.`;
+  const full = `Frases de ${sentenceLength.min}–${sentenceLength.max} ${unit} de media; más cortas solo para enfatizar.`;
   if (!allowFragments) return full;
-  return `Sintaxis directa y asertiva. En este formato se admiten fragmentos y frases por debajo de ${sentenceLength.min} palabras, pero ninguna frase pasa de ${sentenceLength.max} ${unit}.`;
+  return `En este formato se admiten fragmentos y frases por debajo de ${sentenceLength.min} palabras, pero ninguna frase pasa de ${sentenceLength.max} ${unit}.`;
 }
 
 function buildVoiceBlock(lang: OutputLang, allowFragments: boolean): string {
   const l = voiceLocaleFor(lang);
 
-  const axes = voiceAxes.map((a) => `- ${a.title[l]}: ${a.body[l]}`).join('\n');
-  const substitutions = substitutionMatrix
-    .map((s) => `- ${s.forbidden} → ${s.replaceWith[l]}`)
-    .join('\n');
-  const forbidden = forbiddenVocabulary.map((w) => `    "${w}"`).join(',\n');
+  return `VOZ INTERACTIUS (identidad verbal, obligatoria)
+${voiceRulesText(l, { compact: true })}
 
-  return `VOZ INTERACTIUS (capa dura, obligatoria)
-${voicePrinciple[l]}
+LONGITUD DE FRASE EN ESTE FORMATO: ${sentenceLengthLine(l, allowFragments)}
 
-${sentenceLengthLine(l, allowFragments)}
-${punctuationRules.noExclamation[l]}
-${punctuationRules.noEllipsis[l]}
-
-Cuatro ejes de tono:
-${axes}
-
-Vocabulario prohibido:
-{
-  "forbidden_vocabulary": [
-${forbidden}
-  ]
-}
-
-Matriz de sustitución:
-${substitutions}
-
-Si el resultado suena a consultora tradicional, descártalo y reescribe desde un enfoque crítico y honesto.`;
+Si el resultado podría haberlo escrito cualquier otra consultora, descártalo y reescribe desde un enfoque crítico y honesto.`;
 }
 
 export function buildRewriterPrompt(input: RewriteRequest): string {

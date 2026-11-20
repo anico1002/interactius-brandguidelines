@@ -51,7 +51,7 @@ test('el estilo que se guarda con la imagen solo admite los tres veredictos', ()
 
 import { buildAnalysisPrompt, PROMPT_TAGS_MAX } from '../analyze/prompt.ts';
 import { getImagePrompt } from '../../prompts.ts';
-import { forbiddenVocabulary, forbiddenVocabularyDetailed, punctuationRules } from '../../tokens.ts';
+import { punctuationRules } from '../../tokens.ts';
 
 test('el prompt lleva las etiquetas que ya existen, para que elija primero entre ellas', () => {
   const p = buildAnalysisPrompt(['oficina', 'equipo', 'luz-natural']);
@@ -65,19 +65,13 @@ test('el prompt no crece sin límite con el banco: como mucho PROMPT_TAGS_MAX et
   assert.ok(!p.includes(`etiqueta-${PROMPT_TAGS_MAX}`));
 });
 
-test('el prompt lleva las reglas de puntuación y el vocabulario prohibido de lib/tokens.ts', () => {
+test('la regla de exclamaciones sale de lib/tokens.ts, y ya no viaja ninguna lista roja', () => {
   const p = buildAnalysisPrompt([]);
-  assert.ok(p.includes(punctuationRules.noExclamation.es));
-  assert.ok(p.includes(punctuationRules.noEllipsis.es));
-  for (const w of forbiddenVocabulary) assert.ok(p.includes(w), w);
-});
-
-/* evalText() rechaza la familia entera de cada palabra, no solo su forma canónica. Si el prompt solo da la
-   canónica, el modelo escribe la variante («nítida de extremo a extremo», de la familia de «end-to-end») y el
-   motivo se pierde: pasó en la verificación de la fase 2. El prompt da la misma lista que se audita. */
-test('el prompt lleva todas las formas del vocabulario prohibido que audita evalText(), no solo la canónica', () => {
-  const p = buildAnalysisPrompt([]);
-  for (const entry of forbiddenVocabularyDetailed) for (const form of entry.family) assert.ok(p.includes(form), form);
+  const excl = punctuationRules.find((r) => r.id === 'exclamaciones')!;
+  assert.ok(p.includes(excl.body.es));
+  // Retirada el 2026-11-20: «innovación» y compañía se pueden usar.
+  assert.ok(!/No uses ninguna de estas palabras/.test(p));
+  assert.ok(!p.includes('puntos suspensivos'));
 });
 
 test('el prompt lleva las dos variantes de la guía, literales', () => {
@@ -102,7 +96,8 @@ test('el veredicto sale de los criterios, no del modelo', () => {
 test('un nombre que no pasa evalText no se propone; uno bueno pierde el punto final', () => {
   assert.equal(finishAnalysis({ ...valid, name: 'Oficina vacía.' }).result.proposal.name, 'Oficina vacía');
   assert.equal(finishAnalysis({ ...valid, name: 'Oficina increíble¡' }).result.proposal.name, null);
-  assert.equal(finishAnalysis({ ...valid, name: 'Oficina vacía…' }).result.proposal.name, null);
+  // La elipsis dejó de ser regla el 2026-11-20.
+  assert.equal(finishAnalysis({ ...valid, name: 'Oficina vacía…' }).result.proposal.name, 'Oficina vacía…');
 });
 
 test('las etiquetas propuestas se normalizan como las de la subida, sin repetir y como mucho cinco', () => {

@@ -49,9 +49,10 @@ test('la puntuación se recalcula, no se hereda', () => {
 
 test('la política no toca el aprobado, solo el número', () => {
   // Las violaciones de longitud ya eran blandas: filtrarlas no puede cambiar hardFail.
-  const conPalabraProhibida = evalText('Soluciones innovadoras. Muy disruptivo.');
-  assert.equal(conPalabraProhibida.hardFail, true);
-  assert.equal(applyLengthPolicy(conPalabraProhibida, 'mensaje').hardFail, true);
+  // Desde el 2026-11-20 no hay lista roja: «innovadoras» ya no bloquea nada.
+  const sinListaRoja = evalText('Soluciones innovadoras. Muy disruptivo.');
+  assert.equal(sinListaRoja.violations.some((v) => (v.rule as string) === 'forbidden'), false);
+  assert.equal(applyLengthPolicy(sinListaRoja, 'mensaje').hardFail, false);
 
   const limpio = evalText(CORTO);
   assert.equal(limpio.hardFail, false);
@@ -76,7 +77,7 @@ test('scoreFor es 100 menos 10 por violación, con suelo en 0', () => {
   }
 });
 
-test('hardFailFor solo se dispara con vocabulario prohibido o puntuación', () => {
+test('hardFailFor ya no se dispara con nada: longitud y exclamación son orientativas', () => {
   assert.equal(hardFailFor([]), false);
   assert.equal(
     hardFailFor([{ rule: 'length:under_min', sentence: 1, count: 3, limit: 15, excerpt: 'x' }]),
@@ -87,6 +88,5 @@ test('hardFailFor solo se dispara con vocabulario prohibido o puntuación', () =
     hardFailFor([{ rule: 'length:over_max', sentence: 1, count: 40, limit: 22, excerpt: 'x' }]),
     false,
   );
-  assert.equal(hardFailFor([{ rule: 'punctuation:ellipsis', index: 0 }]), true);
-  assert.equal(hardFailFor([{ rule: 'forbidden', match: 'sinergia', root: 'sinerg', index: 0 }]), true);
+  assert.equal(hardFailFor([{ rule: 'punctuation:exclamation', index: 0 }]), false, 'aconsejable, no estricta');
 });

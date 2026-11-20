@@ -134,7 +134,7 @@ export function DsToolbar({
   );
 }
 
-/* Sin puntos suspensivos (punctuationRules.noEllipsis): "Guardando", no "Guardando…". */
+/* Sin puntos suspensivos (convención de las herramientas): "Guardando", no "Guardando…". */
 function SaveIndicator({
   state,
   dirty,

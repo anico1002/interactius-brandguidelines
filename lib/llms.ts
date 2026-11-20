@@ -11,11 +11,21 @@ import {
   brand,
   logoMinSize,
   voicePrinciple,
+  voiceDefinition,
+  voiceProfile,
+  voiceIsNot,
+  voiceInclusive,
+  voiceValues,
+  voiceAxesIntro,
   voiceAxes,
-  forbiddenVocabulary,
-  substitutionMatrix,
+  toneByChannel,
+  writingStructure,
+  lengthGuide,
   punctuationRules,
-  sentenceLength,
+  writingExamples,
+  brandVocabulary,
+  pillarKeywords,
+  channelGuides,
   examples,
 } from '@/lib/tokens';
 import { sections } from '@/lib/sections';
@@ -47,7 +57,7 @@ export function buildLlmsMarkdown(): string {
     'No rotes el logo (excepto un uso estricto a 90º como en sidebar).',
     'No recortes el logo.',
     'No uses cursiva en IBM Plex Mono ni en IBM Plex Serif.',
-    'No utilices signos de exclamación ni puntos suspensivos.',
+    'Evita los signos de exclamación: la energía viene del contenido (aconsejable).',
   ];
 
   const colorLine = (c: typeof colorsBase[number]) => {
@@ -63,13 +73,35 @@ export function buildLlmsMarkdown(): string {
   const axesBlock = voiceAxes
     .map((a, i) => {
       const n = String(i + 1).padStart(2, '0');
-      return `### ${n}/ ${a.title.es}\n${a.body.es}`;
+      const more = a.more.map((m) => `- ${m.pole.es}: ${m.in.es}`).join('\n');
+      return `### ${n}/ ${a.title.es}\n${a.body.es}\n\n${more}`;
     })
     .join('\n\n');
 
-  const substitutionBlock = substitutionMatrix
-    .map((s) => `- ${s.forbidden} → ${s.replaceWith.es}`)
-    .join('\n');
+  const toneTable = [
+    `| Pieza | ${voiceAxes.map((a) => a.title.es).join(' | ')} |`,
+    `|---|${voiceAxes.map(() => '---').join('|')}|`,
+    ...toneByChannel.map((r) => `| ${r.channel.es} | ${r.axes.map((x) => x.es).join(' | ')} |`),
+  ].join('\n');
+
+  const ruleLine = (r: { title: { es: string }; body: { es: string }; advisory?: boolean }) =>
+    `- **${r.title.es}**: ${r.body.es}${r.advisory ? ' _(aconsejable, no estricto)_' : ''}`;
+
+  const pairsBlock = writingExamples
+    .map((e) => `- SÍ — ${e.yes.es}\n- NO — ${e.no.es}`)
+    .join('\n\n');
+
+  const pillarsBlock = pillarKeywords
+    .map((p) => `#### ${p.title.es} (acento ${p.accent})\n${p.keywords.map((k) => `- **${k.term.es}**: ${k.body.es}`).join('\n')}`)
+    .join('\n\n');
+
+  const channelsBlock = channelGuides
+    .map((c) => {
+      const rules = c.rules.map((r) => `- **${r.label.es}**: ${r.body.es}`).join('\n');
+      const ex = c.example ? `\n- SÍ — ${c.example.yes.es}\n- NO — ${c.example.no.es}` : '';
+      return `### ${c.title.es}\n${rules}${ex}`;
+    })
+    .join('\n\n');
 
   const masterPrompt = getMasterPrompt('es');
 
@@ -107,7 +139,7 @@ export function buildLlmsMarkdown(): string {
 > Marca: **${brand.name}** — wordmark: **${brand.wordmark}** — tagline (ES): "${brand.tagline.es}" / (EN): "${brand.tagline.en}"
 > Versión: ${brand.version} · ${brand.versionDate}
 > Documento vivo y público: ${SITE}
-> Para máquinas: este archivo + ${SITE}/api/brand.json son la fuente de verdad. El PDF queda como referencia humana.
+> Para máquinas: este archivo + ${SITE}/api/brand.json son la fuente de verdad.
 
 ---
 
@@ -126,34 +158,65 @@ ${masterPrompt}
 ES — ${brand.concept.es}
 EN — ${brand.concept.en}
 
-## 2 · Tono de marca (capa verbal)
+## 2 · Tono de marca (identidad verbal)
 
 **Principio de voz** — ${voicePrinciple.es}
 
-**Longitud de frase**: ${sentenceLength.min}–${sentenceLength.max} ${sentenceLength.unit}.
+**Perfil** — ${voiceProfile.es}
 
-### Ejes
+${voiceDefinition.es}
+
+### Lo que nuestra voz no es
+
+${voiceIsNot.map((n) => `- **${n.title.es}**: ${n.body.es}`).join('\n')}
+
+### Tono neutro e inclusivo
+
+${voiceInclusive.es}
+
+### Valores
+
+${voiceValues.map((v) => `- **${v.title.es}**: ${v.body.es}`).join('\n')}
+
+### Ejes de tono
+
+${voiceAxesIntro.es}
 
 ${axesBlock}
 
-### Vocabulario prohibido (lista roja)
+### Tabla de referencia rápida
 
-\`\`\`json
-{
-  "forbidden_vocabulary": [
-${forbiddenVocabulary.map((w) => `    "${w}"`).join(',\n')}
-  ]
-}
-\`\`\`
+${toneTable}
 
-### Matriz de sustitución
+### Marco de escritura · estructura
 
-${substitutionBlock}
+${writingStructure.map(ruleLine).join('\n')}
 
-### Puntuación
+### Longitud
 
-- ${punctuationRules.noExclamation.es}
-- ${punctuationRules.noEllipsis.es}
+${lengthGuide.map(ruleLine).join('\n')}
+
+### Puntuación y gramática
+
+${punctuationRules.map(ruleLine).join('\n')}
+
+### Correcto / a evitar
+
+${pairsBlock}
+
+### Palabras que nos representan
+
+${brandVocabulary.map((w) => `- **${w.term.es}**: ${w.meaning.es}`).join('\n')}
+
+No hay lista de palabras prohibidas: se retiró en noviembre de 2026. Lo que se pide es criterio, no un filtro.
+
+### Keywords por pilar
+
+${pillarsBlock}
+
+### Por canal
+
+${channelsBlock}
 
 ## 3 · Tipografía
 

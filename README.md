@@ -70,7 +70,7 @@ Una página de scroll continuo con **15 secciones** documentadas, navegables des
 | # | Sección | Documenta |
 |---|---------|-----------|
 | 01 | Introducción | Logo, tagline y presentación de la marca |
-| 02 | Tono de marca | Principio de voz, 4 ejes, vocabulario prohibido, reglas de puntuación |
+| 02 | Tono de marca | Identidad verbal: voz, valores, 4 ejes de tono, marco de escritura, vocabulario de marca, por canal |
 | 03 | Concepto | Construcción del logotipo y función fonética del macrón (`interactīus`) |
 | 04 | Logo | Versiones positiva/negativa, vertical e isotipo |
 | 05 | Área de reserva | Clear space mínimo alrededor del logo |
@@ -202,9 +202,9 @@ Toda la identidad vive en TypeScript tipado. Lo más importante:
   - **Bordeaux** `#99335F` → Diseño de experiencias
   - **Emerald** `#5999A6` → Transformación cultural
 - **Tipografía:** IBM Plex Mono (400/500/600, marca) e IBM Plex Serif (300/400, contraste). **Sin cursivas** (regla forzada en `globals.css`).
-- **Voz:** principio multilingüe + 4 ejes (directos·reflexivos, cercanos·profesionales, críticos·constructivos, sobrios·sugerentes).
-- **Vocabulario prohibido:** lista roja (innovación, disruptivo, soluciones, holístico, empoderar…) con matriz de sustitución.
-- **Reglas duras:** frases de **15–22 palabras**, prohibidos `!`/`¡` y `…`.
+- **Voz:** identidad verbal de noviembre de 2026 — principio, arquetipo Exploradora, 4 valores (Tribu, Humana, Honesta, Crítica) y 4 ejes de tono (directa·reflexiva, cercana·profesional, segura·humilde, filosófica·práctica).
+- **Vocabulario de marca:** palabras que nos representan y keywords por pilar. No hay lista de palabras prohibidas (retirada el 2026-11-20).
+- **Escritura:** frases de **15–22 palabras de media**; evitar `!`/`¡` (aconsejable).
 - **Ejemplos few-shot:** casos aprobados y rechazados con su justificación y reescritura.
 
 Estos mismos tokens se exponen como tema de Tailwind en [tailwind.config.ts](tailwind.config.ts) y como variables CSS en [app/globals.css](app/globals.css).
@@ -236,8 +236,8 @@ Ejemplo de validación de tono:
 ```bash
 curl -s -X POST http://localhost:3000/api/eval \
   -H 'content-type: application/json' \
-  -d '{"text":"Diseñamos soluciones innovadoras para empresas líderes."}'
-# → score bajo + hardFail:true (usa vocabulario prohibido)
+  -d '{"text":"¡Diseñamos soluciones para empresas!"}'
+# → score 80: frase corta + exclamación (orientativas, hardFail:false)
 ```
 
 Detalle completo en [docs/API.md](docs/API.md).

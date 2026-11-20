@@ -15,7 +15,7 @@ import '@/components/workspace/workspace.css';
    UserMenu; las tarjetas siguen siendo server components y los enlaces siguen siendo <a>. */
 
 /* Descripción validada con el motor de tono del repo (lib/eval.ts): 21 palabras, dentro del rango
-   de sentenceLength (15-22), score 100, sin lista roja ni puntuación prohibida.
+   de sentenceLength (15-22), score 100, sin exclamaciones.
 
    Lleva `openGraph` propio a propósito. Next NO fusiona ese objeto con el del layout raíz: sin
    esto, un enlace al workspace pegado en Slack se anunciaría como "Interactius · Brand Guidelines

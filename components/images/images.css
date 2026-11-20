@@ -128,7 +128,7 @@
 }
 
 /* G2: solo la primera etiqueta, dentro de la imagen. Si no cabe se corta, sin puntos suspensivos
-   (`punctuationRules.noEllipsis`). */
+   (convención de las herramientas). */
 .ixi-ontop {
   position: absolute;
   left: 8px;

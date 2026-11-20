@@ -1,5 +1,5 @@
 import { getImagePrompt, IMAGE_STYLE_CRITERIA, IMAGE_SUBJECT_CRITERION } from '../../prompts.ts';
-import { forbiddenVocabularyDetailed, punctuationRules } from '../../tokens.ts';
+import { punctuationRules } from '../../tokens.ts';
 
 /* El prompt del análisis de una imagen (docs/features/img-r.md, «Propuesta de nombre y etiquetas, y
    análisis de estilo»): propuesta de nombre y etiquetas, si hay personas, y los seis criterios de estilo.
@@ -14,10 +14,9 @@ import { forbiddenVocabularyDetailed, punctuationRules } from '../../tokens.ts';
    lista no puede crecer sin límite: van las más usadas (llegan ordenadas por uso). */
 export const PROMPT_TAGS_MAX = 150;
 
-/* Todas las formas de cada palabra prohibida, que son las que audita evalText(), y no solo la canónica de
-   `forbiddenVocabulary`. Con la canónica sola, el modelo escribía la variante castellana («de extremo a
-   extremo», familia de «end-to-end») y el motivo no pasaba la auditoría. */
-const FORBIDDEN_FORMS = forbiddenVocabularyDetailed.flatMap((e) => e.family);
+/* La regla de escritura sale de lib/tokens.ts. Desde el 2026-11-20 no hay lista roja (el documento
+   «Identidad verbal» no veta palabras) ni regla de puntos suspensivos; queda la de exclamaciones. */
+const NO_EXCLAMATION = punctuationRules.find((r) => r.id === 'exclamaciones')!;
 
 export function buildAnalysisPrompt(existingTags: readonly string[]): string {
   const tags = existingTags.slice(0, PROMPT_TAGS_MAX);
@@ -50,7 +49,6 @@ ${tags.length ? tags.join(', ') : '(todavía no hay ninguna)'}
 MOTIVO. Una o dos frases en castellano que expliquen qué criterios cumple la foto y cuáles no.
 
 REGLAS DE ESCRITURA para el nombre y el motivo:
-- ${punctuationRules.noExclamation.es}
-- ${punctuationRules.noEllipsis.es}
-- No uses ninguna de estas palabras o expresiones: ${FORBIDDEN_FORMS.join(', ')}.`;
+- ${NO_EXCLAMATION.title.es}. ${NO_EXCLAMATION.body.es}
+- Describe con palabras concretas lo que se ve; sin adjetivos de superioridad ni jerga.`;
 }

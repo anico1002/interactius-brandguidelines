@@ -29,7 +29,7 @@ Brand package for AI tools. Generated ${today} from brand.interactius.com.
 
 ## Contenido / Contents
 
-- \`llms.txt\` — el manual completo en formato para LLMs: identidad, tono, vocabulario prohibido, ejemplos aprobados/rechazados, prompts. / The full manual in LLM format.
+- \`llms.txt\` — el manual completo en formato para LLMs: identidad, identidad verbal, vocabulario de marca, ejemplos aprobados/rechazados, prompts. / The full manual in LLM format.
 - \`brand.json\` — tokens y reglas en JSON programático. / Tokens and rules as JSON.
 - \`logo/\` — logotipo e isotipo en SVG (positivo y negativo). / Logotype and isotype SVGs.
 - \`sistema-grafico/\` — las tres formas del sistema gráfico en SVG. / The three graphic-system shapes.

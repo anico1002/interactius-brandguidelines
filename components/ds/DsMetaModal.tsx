@@ -20,7 +20,7 @@ const TITLES: Record<Mode, string> = {
   edit: 'Renombrar design system',
 };
 const SUBMIT: Record<Mode, string> = { new: 'Crear', duplicate: 'Duplicar', edit: 'Guardar' };
-/* Sin puntos suspensivos (punctuationRules.noEllipsis). */
+/* Sin puntos suspensivos (convención de las herramientas). */
 const BUSY: Record<Mode, string> = { new: 'Creando', duplicate: 'Duplicando', edit: 'Guardando' };
 
 const STARTS: { value: DsStart; label: string }[] = [

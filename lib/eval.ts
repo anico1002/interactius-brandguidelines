@@ -6,15 +6,14 @@
 
 /* Relativo con extensión, no el alias `@/`: es la convención de lib/forms y lo que permite
    cargar el módulo desde node --test, que no resuelve los paths de tsconfig. */
-import { forbiddenVocabularyDetailed, sentenceLength } from './tokens.ts';
+import { sentenceLength } from './tokens.ts';
 
+/* Desde el 2026-11-20 (documento «Identidad verbal») no hay vocabulario prohibido ni regla de
+   puntos suspensivos: la lista roja se retiró. La exclamación sigue contando, pero el documento
+   la marca como «aconsejable, no requerimiento estricto», así que resta puntos y no bloquea.
+   Hoy ninguna regla es dura: `hardFail` existe por compatibilidad con quien lo lee (ReWrit_r,
+   IMG_r, DeckMak_r, /api/eval) y vale siempre false. */
 export type EvalViolation =
-  | {
-      rule: 'forbidden';
-      match: string;
-      root: string;
-      index: number;
-    }
   | {
       rule: 'length:under_min' | 'length:over_max';
       sentence: number;
@@ -23,7 +22,7 @@ export type EvalViolation =
       excerpt: string;
     }
   | {
-      rule: 'punctuation:exclamation' | 'punctuation:ellipsis';
+      rule: 'punctuation:exclamation';
       index: number;
     };
 
@@ -32,12 +31,8 @@ export type EvalResult = {
   violations: EvalViolation[];
   sentenceCount: number;
   wordCount: number;
-  hardFail: boolean;              // true if any rule that is non-negotiable trips
+  hardFail: boolean;              // true if any non-negotiable rule trips (none today)
 };
-
-function escapeRegex(s: string): string {
-  return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-}
 
 /* Split into sentences using terminal punctuation. We accept ?! since the rules
    forbid ! in our copy but split anyway so a violating ! sentence is still
@@ -60,29 +55,7 @@ export function evalText(text: string): EvalResult {
   const violations: EvalViolation[] = [];
   const sentences = splitSentences(text);
 
-  // 1. Forbidden vocabulary — regex word-boundary, case-insensitive.
-  for (const entry of forbiddenVocabularyDetailed) {
-    for (const form of entry.family) {
-      // Build pattern that handles multi-word forms (e.g. "valor añadido").
-      // \b only works around ASCII word chars, so for unicode we use lookaround
-      // with non-letter context.
-      const pattern = new RegExp(
-        `(?<![\\p{L}\\p{N}])${escapeRegex(form)}(?![\\p{L}\\p{N}])`,
-        'giu',
-      );
-      let m: RegExpExecArray | null;
-      while ((m = pattern.exec(text)) !== null) {
-        violations.push({
-          rule: 'forbidden',
-          match: m[0],
-          root: entry.root,
-          index: m.index,
-        });
-      }
-    }
-  }
-
-  // 2. Sentence length.
+  // 1. Sentence length.
   sentences.forEach((s, i) => {
     const count = countWords(s);
     if (count === 0) return;
@@ -105,15 +78,11 @@ export function evalText(text: string): EvalResult {
     }
   });
 
-  // 3. Punctuation — exclamation (¡ or !) and ellipsis (… or ...).
+  // 2. Punctuation — exclamation (¡ or !). Advisory: counts, never blocks.
   const exclRe = /[¡!]/gu;
   let m: RegExpExecArray | null;
   while ((m = exclRe.exec(text)) !== null) {
     violations.push({ rule: 'punctuation:exclamation', index: m.index });
-  }
-  const ellipsisRe = /…|\.\.\./gu;
-  while ((m = ellipsisRe.exec(text)) !== null) {
-    violations.push({ rule: 'punctuation:ellipsis', index: m.index });
   }
 
   // Word count for the whole text (sum of sentence words).
@@ -146,13 +115,9 @@ export function scoreFor(violations: readonly EvalViolation[]): number {
   return Math.max(0, 100 - violations.length * 10);
 }
 
-/* Solo vocabulario prohibido y puntuación son no negociables. Las de longitud son blandas:
-   un texto puede necesitar un fragmento corto. */
-export function hardFailFor(violations: readonly EvalViolation[]): boolean {
-  return violations.some(
-    (v) =>
-      v.rule === 'forbidden' ||
-      v.rule === 'punctuation:exclamation' ||
-      v.rule === 'punctuation:ellipsis',
-  );
+/* Ninguna regla es dura desde el documento «Identidad verbal» (2026-11-20): la longitud y la
+   exclamación son orientativas. Se mantiene la función para que, si un día vuelve una regla no
+   negociable, haya un único sitio donde declararla. */
+export function hardFailFor(_violations: readonly EvalViolation[]): boolean {
+  return false;
 }

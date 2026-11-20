@@ -15,18 +15,16 @@ const DOCS = {
       violations: 'array of { rule, ... }',
       sentenceCount: 'number',
       wordCount: 'number',
-      hardFail: 'boolean — true if any forbidden vocabulary or banned punctuation appeared',
+      hardFail: 'boolean — kept for compatibility; always false since 2026-11-20 (no non-negotiable rules)',
     },
     rules: {
-      'forbidden': 'Any term in the forbidden vocabulary family (Spanish + English).',
       'length:under_min': 'Sentence shorter than tokens.sentenceLength.min (15 words).',
       'length:over_max': 'Sentence longer than tokens.sentenceLength.max (22 words).',
-      'punctuation:exclamation': 'Use of ¡ or !.',
-      'punctuation:ellipsis': 'Use of … or three consecutive dots.',
+      'punctuation:exclamation': 'Use of ¡ or ! — advisable to avoid, not strict.',
     },
     example: {
-      request: { text: 'Diseñamos soluciones innovadoras para empresas líderes.' },
-      response: { score: 70, hardFail: true, violations: [{ rule: 'forbidden', match: 'soluciones', root: 'soluci' }] },
+      request: { text: '¡Diseñamos soluciones para empresas!' },
+      response: { score: 80, hardFail: false, violations: [{ rule: 'length:under_min', sentence: 1, count: 4, limit: 15 }, { rule: 'punctuation:exclamation', index: 0 }] },
     },
   },
 };

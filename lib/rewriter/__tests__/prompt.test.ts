@@ -14,10 +14,10 @@ import {
   type RewriteRequest,
 } from '../options.ts';
 import { evalText } from '../../eval.ts';
-import { forbiddenVocabulary, sentenceLength, voicePrinciple } from '../../tokens.ts';
+import { sentenceLength, voicePrinciple, voiceRulesText } from '../../tokens.ts';
 
 /* Lo que se protege aquí no es la redacción del prompt, es su procedencia: la voz tiene que
-   SALIR de lib/tokens.ts. Si alguien copia la lista roja a mano dentro de prompt.ts, el texto
+   SALIR de lib/tokens.ts. Si alguien copia las reglas de voz a mano dentro de prompt.ts, el texto
    seguiría leyéndose bien pero dejaría de actualizarse al tocar los tokens — y este test
    seguiría pasando solo mientras las dos copias coincidan. De ahí que se compare contra el
    token importado, nunca contra un literal escrito en el test. */
@@ -36,10 +36,9 @@ const base: RewriteRequest = {
 
 test('la voz de marca sale de los tokens, no de una copia', () => {
   const prompt = buildRewriterPrompt(base);
-  for (const word of forbiddenVocabulary) {
-    assert.ok(prompt.includes(word), `falta "${word}" en la lista roja del prompt`);
-  }
+  assert.ok(prompt.includes(voiceRulesText('es', { compact: true })), 'falta el bloque de identidad verbal');
   assert.ok(prompt.includes(voicePrinciple.es), 'falta el principio de voz');
+  assert.ok(!prompt.includes('forbidden_vocabulary'), 'la lista roja se retiró el 2026-11-20');
   assert.ok(
     prompt.includes(`${sentenceLength.min}–${sentenceLength.max}`),
     'falta el rango de longitud de frase',
@@ -49,9 +48,7 @@ test('la voz de marca sale de los tokens, no de una copia', () => {
 test('sin voz de marca no viaja ninguna regla dura', () => {
   const prompt = buildRewriterPrompt({ ...base, brandVoice: false });
   assert.ok(!prompt.includes(voicePrinciple.es));
-  for (const word of forbiddenVocabulary) {
-    assert.ok(!prompt.includes(word), `"${word}" no debería estar con la voz desactivada`);
-  }
+  assert.ok(!prompt.includes(voiceRulesText('es', { compact: true })), 'con la voz desactivada no viaja la identidad verbal');
 });
 
 test('el bloque de voz se escribe en el idioma de salida cuando está fijado', () => {
@@ -138,7 +135,10 @@ test('la regla de longitud del prompt y la del eval salen de la misma tabla', ()
 
   for (const t of TEXT_TYPES) {
     const prompt = buildRewriterPrompt({ ...base, textType: t.id });
-    const promptAdmiteFragmentos = !prompt.includes(rangoEstricto);
+    /* El rango general también sale en el bloque de voz («de media»); lo que decide es la línea
+       de longitud propia del formato. */
+    const lineaFormato = prompt.split('\n').find((x) => x.startsWith('LONGITUD DE FRASE EN ESTE FORMATO')) ?? '';
+    const promptAdmiteFragmentos = !lineaFormato.includes(rangoEstricto);
     const evalPerdonaFragmentos = !applyLengthPolicy(corto, t.id).violations.some(
       (v) => v.rule === 'length:under_min',
     );
@@ -149,9 +149,11 @@ test('la regla de longitud del prompt y la del eval salen de la misma tabla', ()
 });
 
 test('el prompt no crece sin que nadie se entere', () => {
-  /* Tope deliberado. Hoy ronda los 4.700 caracteres; inyectar ejemplos few-shot lo dispararía.
-     La idea es que crecer sea una decisión y no una deriva. */
-  const MAX = 6000;
+  /* Tope deliberado. Con la identidad verbal de noviembre de 2026 (valores, ejes con canales,
+     estructura, puntuación) ronda los 7.000 caracteres en versión compacta; antes eran 4.700 y el
+     tope 6.000. Subirlo fue decisión, no deriva: inyectar ejemplos few-shot lo seguiría
+     disparando. */
+  const MAX = 8000;
   for (const t of TEXT_TYPES) {
     const prompt = buildRewriterPrompt({ ...base, textType: t.id, context: 'x'.repeat(500) });
     assert.ok(prompt.length <= MAX, `${t.id}: el prompt mide ${prompt.length}, tope ${MAX}`);
